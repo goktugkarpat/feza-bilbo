@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Feza ve Bilbo">
+<meta name="theme-color" content="#3a2418">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<title>Feza ve Bilbo'nun Maceraları</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #3a2418; touch-action: none; overscroll-behavior: none;
+    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+  canvas#c, canvas#ev { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  #logo { position: fixed; left: 50%; top: max(6px, env(safe-area-inset-top)); width: min(31vw, 40vh); height: auto; z-index: 5; pointer-events: none;
+    transform-origin: 50% 0; filter: drop-shadow(0 6px 10px rgba(40, 12, 0, 0.35));
+    animation: logoGel 1.1s cubic-bezier(.2,.9,.3,1.25) 0.25s both, logoNefes 4.8s ease-in-out 1.4s infinite; }
+  @media (orientation: portrait) { #logo { width: min(72vw, 40vh); } }
+  .ikon #logo { display: none; }
+  @keyframes logoGel { 0% { transform: translate(-50%, -120%) scale(0.7) rotate(-4deg); opacity: 0; } 60% { opacity: 1; }
+    100% { transform: translate(-50%, 0) scale(1) rotate(0); opacity: 1; } }
+  @keyframes logoNefes { 0%, 100% { transform: translate(-50%, 0) scale(1) rotate(0); } 50% { transform: translate(-50%, 3px) scale(1.025) rotate(0.6deg); } }
+  #flas { position: fixed; inset: 0; pointer-events: none; opacity: 0; z-index: 8;
+    background: radial-gradient(circle at 50% 50%, #fffdf2 0%, #fff4d6 45%, #ffe8c0 100%); }
+  #yukleniyor { position: fixed; inset: 0; z-index: 9; display: flex; align-items: center; justify-content: center; transition: opacity 0.6s;
+    background: radial-gradient(circle at 50% 45%, #ffd9a6, #c9804a 70%, #6a3a20); }
+  #yukleniyor div { width: 74px; height: 74px; border-radius: 50%; border: 9px solid #ffffff55; border-top-color: #fff3c8; animation: don 0.9s linear infinite; }
+  @keyframes don { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<script>if (/[?&]ikon\b/.test(location.search)) document.body.className = 'ikon';</script>
+<canvas id="c"></canvas>
+<img id="logo" src="logo.png" alt="Feza ve Bilbo'nun Maceraları" draggable="false">
+<div id="flas"></div>
+<div id="yukleniyor"><div></div></div>
+<script src="ev-sesler.js"></script>
+<script src="bilbo-ses.js"></script>
+<!-- Maceraların kendi 3D motoru, dokuları ve gerçek Feza / Bilbo / Aytuğ Hala / huysuz modelleri (yalnız okunur) -->
+<script src="hala/vendor/three.js"></script>
+<script src="hala/src/00_core.js"></script>
+<script src="hala/src/01_textures.js"></script>
+<script src="hala/src/04_feza.js"></script>
+<script src="hala/src/04_bilbo.js"></script>
+<script src="hala/src/04_hala.js"></script>
+<script src="orman/src/05_enemies.js"></script>
+<script src="orman/src/05_forest_animals.js"></script>
+<script src="ev-3d.js"></script>
+<script src="ev-2d.js"></script>
+<script>
+// 3D ev; cihazda 3D (WebGL) açılamazsa çizim (2D) ev.
+(function () {
+  var ok = false;
+  try { ok = typeof THREE !== 'undefined' && typeof FEZA !== 'undefined' && typeof BILBO !== 'undefined' && !!renderer && typeof window.EV3D === 'function'; } catch (e) { ok = false; }
+  if (ok && !/[?&]cizim\b/.test(location.search)) {
+    try { window.EV3D(); return; } catch (e) { console.warn('3D ev açılamadı, çizim eve geçiliyor', e); }
+  }
+  var c = document.getElementById('c'); if (c) c.style.display = 'none';
+  var l = document.getElementById('logo'); if (l) l.style.display = 'none';
+  var y = document.getElementById('yukleniyor'); if (y) y.remove();
+  window.EV2D();
+})();
+// İnternetsiz çalışma: tek service worker kökten bütün oyunu (üç macera dahil) saklar.
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+  window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+}
+</script>
+</body>
+</html>

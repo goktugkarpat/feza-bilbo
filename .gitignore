@@ -1,0 +1,6 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.ses_gecici/
+.ses_onbellek/
+.claude/
