@@ -2,6 +2,8 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
+<!-- yazısız yükleme ekranı: her şeyden önce (ilk karede) görünür -->
+<script src="yukleme.js" data-tema="ev"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -26,10 +28,8 @@
   @keyframes logoNefes { 0%, 100% { transform: translate(-50%, 0) scale(1) rotate(0); } 50% { transform: translate(-50%, 3px) scale(1.025) rotate(0.6deg); } }
   #flas { position: fixed; inset: 0; pointer-events: none; opacity: 0; z-index: 8;
     background: radial-gradient(circle at 50% 50%, #fffdf2 0%, #fff4d6 45%, #ffe8c0 100%); }
-  #yukleniyor { position: fixed; inset: 0; z-index: 9; display: flex; align-items: center; justify-content: center; transition: opacity 0.6s;
-    background: radial-gradient(circle at 50% 45%, #ffd9a6, #c9804a 70%, #6a3a20); }
-  #yukleniyor div { width: 74px; height: 74px; border-radius: 50%; border: 9px solid #ffffff55; border-top-color: #fff3c8; animation: don 0.9s linear infinite; }
-  @keyframes don { to { transform: rotate(360deg); } }
+  /* oda logosu yükleme ekranı kalkınca süzülerek gelir */
+  html.yukluyor #logo { animation: none; opacity: 0; }
 </style>
 </head>
 <body>
@@ -37,24 +37,29 @@
 <canvas id="c"></canvas>
 <img id="logo" src="logo.png" alt="Feza ve Bilbo'nun Maceraları" draggable="false">
 <div id="flas"></div>
-<div id="yukleniyor"><div></div></div>
-<script src="ev-sesler.js"></script>
-<script src="ev-muzik.js"></script>
-<script src="bilbo-ses.js"></script>
-<!-- Maceraların kendi 3D motoru, dokuları ve gerçek Feza / Bilbo / Aytuğ Hala / huysuz modelleri (yalnız okunur) -->
-<script src="hala/vendor/three.js"></script>
-<script src="hala/src/00_core.js"></script>
-<script src="hala/src/01_textures.js"></script>
-<script src="hala/src/04_feza.js"></script>
-<script src="hala/src/04_bilbo.js"></script>
-<script src="hala/src/04_hala.js"></script>
-<script src="orman/src/05_enemies.js"></script>
-<script src="orman/src/05_forest_animals.js"></script>
-<script src="ev-3d.js"></script>
-<script src="ev-2d.js"></script>
 <script>
-// 3D ev; cihazda 3D (WebGL) açılamazsa çizim (2D) ev.
+// Ağır dosyalar yükleme ekranı çizildikten SONRA, sırayla yüklenir (ilerleme pati izlerinde görünür); file:// ile de çalışır.
+document.documentElement.className += ' yukluyor';
 (function () {
+  var DOSYA = ['ev-sesler.js', 'bilbo-ses.js',
+    // Maceraların kendi 3D motoru, dokuları ve gerçek Feza / Bilbo / Aytuğ Hala / baba / huysuz modelleri (yalnız okunur)
+    'hala/vendor/three.js', 'hala/src/00_core.js', 'hala/src/01_textures.js', 'hala/src/04_feza.js', 'hala/src/04_bilbo.js', 'hala/src/04_hala.js',
+    'orman/src/04_forest_party_models.js', 'orman/src/05_enemies.js', 'orman/src/05_forest_animals.js', 'ev-muzik.js', 'ev-3d.js', 'ev-2d.js'];
+  var AGIRLIK = { 'ev-sesler.js': 2, 'hala/vendor/three.js': 4, 'ev-muzik.js': 3, 'hala/src/04_hala.js': 2, 'ev-3d.js': 2 }, top = 0, olan = 0;
+  DOSYA.forEach(function (d) { top += AGIRLIK[d] || 1; });
+  var i = 0;
+  function sonraki() {
+    if (i >= DOSYA.length) { setTimeout(evAc, 0); return; }
+    var d = DOSYA[i++], s = document.createElement('script');
+    s.src = d; s.async = false;
+    s.onload = s.onerror = function () { olan += AGIRLIK[d] || 1; if (window.YUKLEME) YUKLEME.ilerle(olan / top * 0.8); sonraki(); };
+    document.body.appendChild(s);
+  }
+  // önce yükleme ekranı bir kez çizilsin
+  requestAnimationFrame(function () { setTimeout(sonraki, 0); });
+})();
+// 3D ev; cihazda 3D (WebGL) açılamazsa çizim (2D) ev. Yükleme ekranını ev-3d.js ilk kare çizilince kaldırır.
+function evAc() {
   var ok = false;
   try { ok = typeof THREE !== 'undefined' && typeof FEZA !== 'undefined' && typeof BILBO !== 'undefined' && !!renderer && typeof window.EV3D === 'function'; } catch (e) { ok = false; }
   if (ok && !/[?&]cizim\b/.test(location.search)) {
@@ -62,9 +67,12 @@
   }
   var c = document.getElementById('c'); if (c) c.style.display = 'none';
   var l = document.getElementById('logo'); if (l) l.style.display = 'none';
-  var y = document.getElementById('yukleniyor'); if (y) y.remove();
+  document.documentElement.className = document.documentElement.className.replace(' yukluyor', '');
+  if (window.YUKLEME) YUKLEME.bitir();
   window.EV2D();
-})();
+}
+// yükleme ekranı kalkınca oda logosu süzülerek gelir
+window.addEventListener('yukleme-bitti', function () { document.documentElement.className = document.documentElement.className.replace(' yukluyor', ''); });
 // İnternetsiz çalışma: tek service worker kökten bütün oyunu (üç macera dahil) saklar.
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
   window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });

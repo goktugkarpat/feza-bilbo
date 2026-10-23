@@ -10,20 +10,20 @@ Arka duvarda **üç büyülü kapı** var; her kapının içinde o maceranın k�
 
 - **Saklı Toplar Ormanı** (soldaki yeşil kapı): Feza, Bilbo, babası ve Kartal kamptan yola çıkar; dereler, sazlıklar,
   meşe koruları ve huysuz orman hayvanları. Bilbo timsahların sakladığı 10 topu koklayıp kazar; sonda Koca Huysuz Timsah.
-  Kapıda: çadır ve kamp ateşi, dere ve sazlık, parlayan saklı toplar, Koca Timsah.
+  Kapıda: önde kocaman, el sallayan babası; tepede uçan Kartal; arkada çadır, dere, Bilbo'nun topu ve Koca Timsah.
 - **Feza ve Bilbo Huysuzlara Karşı** (ortadaki büyük mor kapı, en büyük macera): sekiz hayal dünyası – Köpüklü Tuvalet Rüyası,
   Zıp Zıp Ay, Huysuz Orman, Kefir Vadisi, Köstebek ve Salyangoz Mağarası, Lav Yanardağı, Surlu Şehir ve Ejderhanın Kalesi.
   Feza ışın kılıcı ya da sihirli değnekle sevimli huysuzları neşelendirir. Kapıda: ay, yanardağ, mağara, uzakta ejderhalı kale,
   önde ışın kılıcı ve sevimli huysuzlar.
 - **Dev Ev Macerası – Aytuğ Hala** (sağdaki pembe kapı): Feza, Bilbo ve Aytuğ Hala minicik olur; dev evin mutfak masasını,
   oturma odasını, mutfağı, buzdolabını ve balkonu dolaşırlar, huysuz eşyaları neşelendirip pasta malzemelerini (un, yumurta,
-  çilek, krema) toplarlar; sonda dev pasta ve mumlar. Kapıda: dev fincan, çatal, un torbası, çilek, uzakta dev pasta;
-  minicik Feza, Bilbo ve Aytuğ Hala.
+  çilek, krema) toplarlar; sonda dev pasta ve mumlar. Kapıda: önde kocaman, el sallayan Aytuğ Hala; yanında mumlu dev pasta, dev çilek ve yumurta.
 
 Kapıya dokununca o maceranın cümlesi söylenir; Feza ile Bilbo koşup kapının önünde heyecanla zıplar, cümle bitince kapıdan geçerler ve macera başlar. Evde neşeli bir macera müziği çalar (konuşurken kısılır). Bilbo'ya dokununca havlar, Feza'ya dokununca
 "Merhaba! Ben Feza." der. **Biten macera**nın kapısı altın renginde parlar, üstünde yıldız döner ve odada bir hatıra belirir:
 ormandan Bilbo'nun topu (Bilbo onu kovalar), haladan pasta mumu, huysuzlardan hayal baloncuğu. Üçü de bitince kutlama sesi gelir.
 Bir süre dokunulmazsa kapılar sırayla parlayıp seçmeyi hatırlatır.
+Açılırken ve kapıdan maceraya geçerken yazısız bir yükleme ekranı görünür (logo ya da maceranın simgesi, sırayla beliren Bilbo pati izleri ve zıplayan top).
 Maceradan eve dönmek için: maceranın sol üstündeki **ev düğmesine basılı tutun**.
 
 ## Nasıl açılır?
@@ -43,7 +43,7 @@ Maceradan eve dönmek için: maceranın sol üstündeki **ev düğmesine basıl�
 - **GitHub'a göndermek:** `yayinla.command` dosyasına çift tıklayın. İlk seferde depoyu (goktugkarpat/feza-bilbo) oluşturup
   GitHub Pages'ı açar; sonra yalnız değişiklikleri gönderir. Göndermeden önce internetsiz dosya listesini kendisi yeniler.
 - **Yeni dosya eklendiyse:** `python3 tools/liste.py` internetsiz çalışma listesini (`sw.js`) yeniler.
-- **Evin müziği:** `python3 tools/muzik_yap.py` (`ffmpeg` gerekir) neşeli döngü müziğini yeniden üretir → `ev-muzik.js`. Feza ya da Bilbo konuşurken müzik kendiliğinden kısılır.
+- **Evin müziği:** `python3 tools/muzik_yap.py` (`numpy` ve `ffmpeg` gerekir, ~20 sn) sözsüz, neşeli macera müziğini (flüt, ukulele, marimba, piyano, gitar, yaylılar; ~46 sn dikişsiz döngü) yeniden üretir → `ev-muzik.js`. Feza ya da Bilbo konuşurken müzik kendiliğinden kısılır.
 - **Evin seslerini değiştirmek:** cümleler `tools/ev_sesleri.json` içinde; sonra `python3 tools/ses_kaydet.py`
   (internet, `ffmpeg` ve güncel `edge-tts` gerekir: `python3 -m pip install -U edge-tts`). `ev-sesler.js` yeniden üretilir.
 - Uygulama simgesi `index.html?sessiz&ikon` sayfasının 1024×1024 ekran görüntüsünden yapıldı. Logo: `python3 tools/logo_ciz.py` → `logo.png`.

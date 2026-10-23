@@ -738,7 +738,7 @@
   }
 
   // Her portalın içinde bir tane BÜYÜK, ilk bakışta tanınan kahraman (sade, yakın, net; parlama/hale az):
-  //   orman → Koca Timsah + Bilbo'nun topu + çadır · huysuz → ejderhalı kale + ışın kılıcı + sevimli huysuz · hala → mumlu dev pasta + minicik Feza/Hala/Bilbo
+  //   orman → Feza'nın babası (büyük, el sallar) + Kartal + arkada Koca Timsah, top, çadır · huysuz → ejderhalı kale + ışın kılıcı + sevimli huysuz · hala → mumlu dev pasta + minicik Feza/Hala/Bilbo
   function dunyaOrman(p) {
     var gok = egimDoku([0, '#2f86d8', 0.5, '#46a6ee', 0.78, '#86cdf6', 0.9, '#9fd88a', 1, '#5fae48']);
     var g = bolme(p, gok, TX('grass', 2, 2, { color: 0x9fd77a })), D = -p.derin;
@@ -757,20 +757,60 @@
       mesh(new THREE.CylinderGeometry(0.014, 0.02, 0.7 + (i % 3) * 0.12, 5), std({ color: 0x5f8f34 }), [rx, 0.36, rz], null, [Math.sin(i * 2) * 0.12, 0, Math.cos(i) * 0.1], g);
       mesh(new THREE.CapsuleGeometry(0.035, 0.12, 3, 6), std({ color: 0x7a4a2a }), [rx, 0.74 + (i % 3) * 0.12, rz], null, null, g);
     }
-    // KOCA TİMSAH: büyük, ortada, kameraya dönük (3/4)
-    var koca = modelYap('buyuktimsah', 0.62);
-    if (koca) { koca.root.position.set(-0.3, 0, -2.3); koca.root.rotation.y = 0.45; g.add(koca.root); }
-    // turuncu çadır (sol önde, büyük ve net)
-    mesh(new THREE.ConeGeometry(0.5, 0.85, 4, 1), TX('fabric', 2, 2, { color: 0xff8a2a }), [-1.0, 0.42, -0.7], null, [0, PI / 4, 0], g);
-    mesh(new THREE.ConeGeometry(0.22, 0.6, 3, 1), std({ color: 0x5a3020 }), [-0.86, 0.26, -0.3], null, [0, PI / 4 + 0.6, 0], g);
-    mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.4, 6), std({ color: 0x7a4a2a }), [-1.0, 0.98, -0.7], null, null, g);
-    mesh(new THREE.PlaneGeometry(0.22, 0.14), std({ color: 0xffd23f, side: THREE.DoubleSide }), [-0.89, 1.1, -0.7], null, null, g);
-    // Bilbo'nun topu: büyük, sağ önde, zıplar
-    var top = topModel(0.26); top.position.set(0.5, 0.26, -0.55); g.add(top);
+    // Koca Timsah (arkada, derenin kıyısında; babanın arkasından görünür)
+    var koca = modelYap('buyuktimsah', 0.42);
+    if (koca) { koca.root.position.set(0.95, 0, -3.35); koca.root.rotation.y = -0.55; g.add(koca.root); }
+    // turuncu çadır (sol arkada)
+    mesh(new THREE.ConeGeometry(0.5, 0.85, 4, 1), TX('fabric', 2, 2, { color: 0xff8a2a }), [-1.0, 0.42, -2.3], null, [0, PI / 4, 0], g);
+    mesh(new THREE.ConeGeometry(0.22, 0.6, 3, 1), std({ color: 0x5a3020 }), [-0.86, 0.26, -1.9], null, [0, PI / 4 + 0.6, 0], g);
+    mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.4, 6), std({ color: 0x7a4a2a }), [-1.0, 0.98, -2.3], null, null, g);
+    mesh(new THREE.PlaneGeometry(0.22, 0.14), std({ color: 0xffd23f, side: THREE.DoubleSide }), [-0.89, 1.1, -2.3], null, null, g);
+    // Bilbo'nun topu: babanın yanında, zıplar
+    var top = topModel(0.2); top.position.set(0.78, 0.2, -1.2); g.add(top);
+    // FEZA'NIN BABASI: büyük, önde, ortada; kameraya dönük, gülümser ve sol eliyle el sallar (orman/src/04_forest_party_models.js)
+    var baba = null, kol = {}, kartal = null;
+    try {
+      if (typeof FOREST_PARTY_MODELS !== 'undefined') {
+        baba = FOREST_PARTY_MODELS.father(); baba.root.scale.setScalar(0.78); baba.root.position.set(-0.12, 0, -1.0); baba.root.rotation.y = 0.32;
+        g.add(baba.root);
+        baba.bones.forEach(function (b) { kol[b.name] = b; });
+        // evde baltasız: baltayı tutan el (balta onunla birlikte) küçültülür, yerine boş, açık bir el konur
+        var be = kol['father hand 1'], bo = kol['father forearm 1'];
+        if (be && bo) {
+          be.scale.setScalar(0.001);
+          var em = std({ color: 0xdec0a1, roughness: 0.75 }), yeniEl = new THREE.Group(); yeniEl.position.set(0, -0.3, 0.01); bo.add(yeniEl);
+          mesh(new THREE.SphereGeometry(1, 18, 14), em, [0, -0.07, 0.02], [0.095, 0.11, 0.055], null, yeniEl);
+          mesh(new THREE.SphereGeometry(1, 12, 10), em, [-0.07, -0.05, 0.05], [0.035, 0.058, 0.034], [0.14, 0, -0.35], yeniEl);
+          for (var fi = 0; fi < 4; fi++) mesh(new THREE.CapsuleGeometry(0.02, 0.065, 4, 8), em, [(fi - 1.5) * 0.033, -0.15, 0.03], null, [0.18, 0, 0], yeniEl);
+        }
+        kartal = FOREST_PARTY_MODELS.eagle(); kartal.root.scale.setScalar(0.55); g.add(kartal.root);
+      }
+    } catch (e) { console.warn('baba', e); baba = null; kartal = null; }
+    // yüzü aydınlatan sıcak ışık (havuzdaki boş meşale ışığı: yeni ışık eklemez, gölgelendirici değişmez)
+    var yl = LIGHTS.torches[0]; yl.color.set(0xffe2b8); yl.intensity = 2.2; yl.distance = 3.4; yl.decay = 1.4;
+    yl.position.set(p.x - 0.1, 2.25, DUVAR_Z - 0.3 - 1.0 + 1.25);
+    var ust = kol['father upper arm -1'], on = kol['father forearm -1'], el = kol['father hand -1'];
     anims.push(function (dt, t) {
       dere.material.emissiveIntensity = 0.18 + 0.05 * Math.sin(t * 2);
-      top.position.y = 0.26 + Math.abs(Math.sin(t * 2.4)) * 0.12; top.rotation.z = Math.sin(t * 1.2) * 0.4;
+      top.position.y = 0.2 + Math.abs(Math.sin(t * 2.4)) * 0.1; top.rotation.z = Math.sin(t * 1.2) * 0.4;
       if (koca) koca.anim(dt, { move: 0 });
+      if (baba) {
+        baba.update(dt, { speed: 0 });
+        // el sallama: 4 sn'lik döngünün 2.6 sn'si (kol yukarı kalkar, el sağa-sola)
+        var c = t % 4, w = smooth01(Math.min(c / 0.35, (2.6 - c) / 0.35, 1));
+        if (ust && on && w > 0) {
+          ust.rotation.z = lerp(ust.rotation.z, -2.1, w); ust.rotation.x = lerp(ust.rotation.x, 0.1, w); ust.rotation.y = lerp(ust.rotation.y, 0, w);
+          on.rotation.set(0, 0, lerp(on.rotation.z, -0.75 + 0.38 * Math.sin(t * 8), w));
+          if (el) el.rotation.z = lerp(el.rotation.z, 0.2 * Math.sin(t * 8 - 0.6), w);
+        }
+        baba.root.rotation.y = 0.32 + 0.06 * Math.sin(t * 0.7);
+      }
+      if (kartal) {
+        var a = t * 0.55;
+        kartal.root.position.set(Math.sin(a) * 0.75, 2.25 + Math.sin(t * 1.3) * 0.12, -2.4 + Math.cos(a) * 0.35);
+        kartal.root.rotation.y = a + PI / 2;
+        kartal.update(dt, { bank: -0.12 });
+      }
     });
     golge(g, false, false);
     return g;
@@ -821,7 +861,7 @@
     return g;
   }
 
-  function dunyaHala(p) {   // BÜYÜK mumlu dev pasta; önünde minicik Feza, Bilbo ve Aytuğ Hala (dev evdeler!)
+  function dunyaHala(p) {   // büyük Aytuğ Hala (önde, el sallar) + yanında mumlu dev pasta, dev çilek ve yumurta
     var gok = tuvalDoku(256, 512, function (c, w, h) {
       var gr = c.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#e86fa0'); gr.addColorStop(0.6, '#f7a6c6'); gr.addColorStop(1, '#ffc9dc'); c.fillStyle = gr; c.fillRect(0, 0, w, h);
       for (var y = 10, r = 0; y < h; y += 34, r++) for (var x = (r % 2) * 17 + 6; x < w; x += 34) { c.fillStyle = 'rgba(255,255,255,0.45)'; c.beginPath(); c.arc(x, y, 5, 0, 7); c.fill(); }
@@ -832,7 +872,7 @@
     }, [3, 3]);
     var g = bolme(p, gok, std({ map: ort, roughness: 0.9 }));
     // dev pasta (yakın, ortada, büyük)
-    var pas = new THREE.Group(); pas.position.set(0.05, 0, -2.0); pas.scale.setScalar(1.05); g.add(pas);
+    var pas = new THREE.Group(); pas.position.set(-0.42, 0, -2.25); pas.scale.setScalar(0.95); g.add(pas);
     mesh(new THREE.CylinderGeometry(1.12, 1.12, 0.06, 40), std({ color: 0xffffff, roughness: 0.2 }), [0, 0.03, 0], null, null, pas);
     var katlar = [[0.95, 0.62, 0xff7fae], [0.72, 0.55, 0x8a4a2a], [0.5, 0.48, 0xfff0f6]], y = 0.06;
     katlar.forEach(function (k) {
@@ -850,37 +890,29 @@
     }
     mesh(new THREE.SphereGeometry(0.14, 16, 12), std({ color: 0xe8283f, roughness: 0.15 }), [0, y + 0.14, 0], null, null, pas);
     // dev çilek (sağda) ve yumurta (solda): "her şey dev" hissi
-    mesh(new THREE.SphereGeometry(0.3, 24, 18), std({ color: 0xff3a4a, roughness: 0.25 }), [1.05, 0.3, -0.9], [1, 1.15, 1], [PI, 0, 0.2], g);
-    mesh(new THREE.ConeGeometry(0.2, 0.1, 6), std({ color: 0x4caf50 }), [1.05, 0.63, -0.9], null, null, g);
-    mesh(new THREE.SphereGeometry(0.24, 24, 18), std({ color: 0xfff4e0, roughness: 0.4 }), [-1.08, 0.28, -1.0], [0.85, 1.15, 0.85], null, g);
-    // minicik kahramanlar (pastanın önünde)
-    var mini = [];
-    try {
-      var F2 = FEZA.create(); F2.root.scale.multiplyScalar(0.42); F2.root.position.set(-0.32, 0, -0.55); F2.root.rotation.y = 0.3; g.add(F2.root); golge(F2.root, true, false); mini.push(['f', F2]);
-    } catch (e) { console.warn('mini feza', e); }
-    try {
-      var B2 = BILBO.create(); B2.root.scale.multiplyScalar(0.42); B2.root.position.set(0.38, 0, -0.55); B2.root.rotation.y = -0.4; g.add(B2.root); golge(B2.root, true, false); mini.push(['b', B2]);
-    } catch (e) { console.warn('mini bilbo', e); }
-    var hala = null;
+    mesh(new THREE.SphereGeometry(0.3, 24, 18), std({ color: 0xff3a4a, roughness: 0.25 }), [1.08, 0.3, -2.0], [1, 1.15, 1], [PI, 0, 0.2], g);
+    mesh(new THREE.ConeGeometry(0.2, 0.1, 6), std({ color: 0x4caf50 }), [1.08, 0.63, -2.0], null, null, g);
+    mesh(new THREE.SphereGeometry(0.24, 24, 18), std({ color: 0xfff4e0, roughness: 0.4 }), [-1.1, 0.28, -1.0], [0.85, 1.15, 0.85], null, g);
+    // AYTUĞ HALA: büyük, önde, pastanın yanında; kameraya dönük gülümser ve el sallar (hala/src/04_hala.js)
+    var hala = null, salla = 0;
     try {
       if (typeof HALA !== 'undefined' && HALA.create) {
-        var hg = new THREE.Group(); hg.position.set(-0.75, 0, -0.75); hg.scale.setScalar(0.42); g.add(hg);
+        var hg = new THREE.Group(); hg.position.set(0.42, 0, -0.72); hg.scale.setScalar(1.1); g.add(hg);
         hala = HALA.create(hg); golge(hala, true, false);
         hala.userData.ctx = halaCtx();
       }
     } catch (e) { console.warn('hala', e); hala = null; }
     anims.push(function (dt, t) {
       for (var k = 0; k < alev.length; k++) alev[k].scale.set(0.8, 1.4 + 0.3 * Math.sin(t * 12 + k * 1.7), 0.8);
-      for (k = 0; k < mini.length; k++) {
-        var m = mini[k];
-        if (m[0] === 'f') { m[1].update(dt, { move: 0, attack: -1, cast: -1, hurt: 0, dead: false, cheer: (t % 6) < 1.6, idleT: t }); }
-        else m[1].update(dt, { speed: 0, happy: 1, sit: 1, bark: 0 });
-      }
       if (hala) {
         try {
-          var c = hala.userData.ctx; c.dt = dt; c.t = t; HALA.update(dt, c);
-          hala.position.set(0, 0, 0);
-        } catch (e) { hala = null; }
+          var c = hala.userData.ctx; c.dt = dt; c.t = t;
+          salla -= dt;
+          if (HALA._S) { HALA._S.lookFeza = false; HALA._S.lookT = 9; }   // hep kameraya (Feza'ya) baksın
+          if (salla <= 0 && c.P && HALA._S && HALA._S.ctx) { salla = 4.2; HALA.wave(0, 99, 2.8); }
+          HALA.update(dt, c);
+          hala.position.set(0, 0, 0); hala.rotation.y = -0.38;
+        } catch (e) { console.warn('hala', e); hala = null; }
       }
     });
     golge(g, false, false);
@@ -1036,6 +1068,7 @@
     if (IKON) { camera.position.set(0.1, 1.2, FEZA_EV.z + 3.9); camera.lookAt(0.08, 0.86, FEZA_EV.z - 0.2); bb.sure = 99; fz.elT = 99; if (camera.fov !== 36) { camera.fov = 36; camera.updateProjectionMatrix(); } return; }
     var px = bx, py = kam.y + by + (dik ? 0.4 : 0), pz = kam.z + (dik ? -0.3 : 0) + Math.sin(t * 0.13) * 0.25;
     var hx = bx * 0.2, hy = kam.hy + (dik ? 0.25 : 0), hz = kam.hz;
+    if (yakin >= 0) { var q = PORTAL[yakin]; camera.position.set(q.x, 1.7, DUVAR_Z + 2.6); camera.lookAt(q.x, 1.25, DUVAR_Z - 1); if (camera.fov !== 40) { camera.fov = 40; camera.updateProjectionMatrix(); } return; }   // yalnız test: portal yakın planı
     if (gecis) {   // seçilen portala doğru yaklaş
       var p = PORTAL[gecis.i], u = smooth01((simdi - gecis.t0) / 1.6) * 0.3 + (gecis.gir ? smooth01((simdi - gecis.gir) / GIR) * 0.7 : 0);
       px = lerp(px, p.x, u); py = lerp(py, p.h * 0.5, u); pz = lerp(pz, DUVAR_Z + 1.2, u);
@@ -1187,7 +1220,7 @@
   function imlec(e) { kam.imx = (e.clientX / innerWidth - 0.5) * 2; kam.imy = (e.clientY / innerHeight - 0.5) * 2; }
 
   // ---------- döngü ----------
-  var once = 0, basla = 0;
+  var once = 0, basla = 0, yakin = -1;
   function kare(ms) {
     requestAnimationFrame(kare);
     var t = ms / 1000, dt = Math.min(0.05, t - (once || t)); once = t; simdi = t;
@@ -1245,11 +1278,11 @@
     kameraAyarla(0, 0);
     try { renderer.compile(scene, camera); } catch (e) {}
     requestAnimationFrame(kare);
-    var yuk = document.getElementById('yukleniyor');
-    if (yuk) setTimeout(function () { yuk.style.opacity = 0; setTimeout(function () { yuk.remove(); }, 600); }, 150);
+    // yükleme ekranı: oda ilk iki kez çizildikten sonra yumuşakça kalkar (oda logosu o an süzülerek gelir)
+    requestAnimationFrame(function () { requestAnimationFrame(function () { if (window.YUKLEME) YUKLEME.bitir(); }); });
     window.__ev = {
       kapiyaGit: kapiyaGit, tamam: TAMAM, mod: '3d', ses: function () { return SES.durum(); },
-      gecis: function () { return gecis ? { i: gecis.i, t0: gecis.t0, bitis: gecis.bitis, gir: gecis.gir, simdi: simdi } : null; }, salla: function () { fz.el = 2.6; },
+      gecis: function () { return gecis ? { i: gecis.i, t0: gecis.t0, bitis: gecis.bitis, gir: gecis.gir, simdi: simdi } : null; }, salla: function () { fz.el = 2.6; }, yakin: function (i) { yakin = i; },
       ekran: function () {   // test: portal / Feza / Bilbo ekran noktaları
         var o = { kapilar: PORTAL.map(function (p) { return toScreen(V(p.x, p.h * 0.5, DUVAR_Z)); }) };
         o.feza = toScreen(V(fz.p.x, 0.8, fz.p.z)); o.bilbo = toScreen(V(bb.p.x, 0.5, bb.p.z)); o.sira = PORTAL.map(function (p) { return p.id; });

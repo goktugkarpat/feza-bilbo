@@ -1,7 +1,7 @@
 // Feza ve Bilbo'nun Maceraları – tek service worker (kökte; ev + üç macera).
 // İlk açılıştan sonra bütün oyun cihazda saklanır ve internetsiz çalışır.
 // DOSYA LİSTESİNİ ELLE DEĞİŞTİRMEYİN: `python3 tools/liste.py` listeyi yeniler, bir şey değiştiyse sürümü artırır.
-const CACHE = 'feza-bilbo-v2';
+const CACHE = 'feza-bilbo-v3';
 const ONEK = 'feza-bilbo-';   // aynı sitede başka oyunlar da var: yalnız bu önekli önbellekler silinir
 const DOSYALAR = /*DOSYALAR*/[
  "./",
@@ -11,8 +11,10 @@ const DOSYALAR = /*DOSYALAR*/[
  "./ev-muzik.js",
  "./ev-sesler.js",
  "./index.html",
+ "./logo-kucuk.png",
  "./logo.png",
  "./manifest.webmanifest",
+ "./yukleme.js",
  "./hala/bilbo-ses.js",
  "./hala/ev-dugmesi.js",
  "./hala/index.html",
@@ -113,7 +115,7 @@ const DOSYALAR = /*DOSYALAR*/[
  "./orman/src/ui.css",
  "./orman/vendor/three.js"
 ]/*DOSYALAR-SON*/;
-// imza: 06825696206c
+// imza: 839baf28c91c
 
 self.addEventListener('install', e => e.waitUntil((async () => {
   const c = await caches.open(CACHE);
