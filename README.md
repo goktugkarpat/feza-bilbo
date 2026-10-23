@@ -20,7 +20,7 @@ Arka duvarda **üç büyülü kapı** var; her kapının içinde o maceranın k�
   çilek, krema) toplarlar; sonda dev pasta ve mumlar. Kapıda: dev fincan, çatal, un torbası, çilek, uzakta dev pasta;
   minicik Feza, Bilbo ve Aytuğ Hala.
 
-Kapıya dokununca Feza ile Bilbo koşup kapıdan geçer ve macera başlar. Bilbo'ya dokununca havlar, Feza'ya dokununca
+Kapıya dokununca o maceranın cümlesi söylenir; Feza ile Bilbo koşup kapının önünde heyecanla zıplar, cümle bitince kapıdan geçerler ve macera başlar. Evde neşeli bir macera müziği çalar (konuşurken kısılır). Bilbo'ya dokununca havlar, Feza'ya dokununca
 "Merhaba! Ben Feza." der. **Biten macera**nın kapısı altın renginde parlar, üstünde yıldız döner ve odada bir hatıra belirir:
 ormandan Bilbo'nun topu (Bilbo onu kovalar), haladan pasta mumu, huysuzlardan hayal baloncuğu. Üçü de bitince kutlama sesi gelir.
 Bir süre dokunulmazsa kapılar sırayla parlayıp seçmeyi hatırlatır.
@@ -43,6 +43,7 @@ Maceradan eve dönmek için: maceranın sol üstündeki **ev düğmesine basıl�
 - **GitHub'a göndermek:** `yayinla.command` dosyasına çift tıklayın. İlk seferde depoyu (goktugkarpat/feza-bilbo) oluşturup
   GitHub Pages'ı açar; sonra yalnız değişiklikleri gönderir. Göndermeden önce internetsiz dosya listesini kendisi yeniler.
 - **Yeni dosya eklendiyse:** `python3 tools/liste.py` internetsiz çalışma listesini (`sw.js`) yeniler.
+- **Evin müziği:** `python3 tools/muzik_yap.py` (`ffmpeg` gerekir) neşeli döngü müziğini yeniden üretir → `ev-muzik.js`. Feza ya da Bilbo konuşurken müzik kendiliğinden kısılır.
 - **Evin seslerini değiştirmek:** cümleler `tools/ev_sesleri.json` içinde; sonra `python3 tools/ses_kaydet.py`
   (internet, `ffmpeg` ve güncel `edge-tts` gerekir: `python3 -m pip install -U edge-tts`). `ev-sesler.js` yeniden üretilir.
 - Uygulama simgesi `index.html?sessiz&ikon` sayfasının 1024×1024 ekran görüntüsünden yapıldı. Logo: `python3 tools/logo_ciz.py` → `logo.png`.

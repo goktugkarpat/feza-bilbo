@@ -14,4 +14,7 @@
   `hala/vendor/three.js`, `hala/src/00_core.js`, `01_textures.js`, `04_feza.js`, `04_bilbo.js`, `04_hala.js`, `orman/src/05_enemies.js`,
   `05_forest_animals.js` — bunların genel API'si değişirse ev de etkilenir). Yedek: `ev-2d.js` (WebGL yoksa; `?cizim`). Logo `logo.png`
   (`tools/logo_ciz.py`), sesler `ev-sesler.js` (`tools/ses_kaydet.py`, cümleler `tools/ev_sesleri.json`), sw listesi `tools/liste.py`
-  (yayinla.command çalıştırır). Test bayrakları: `?sessiz`, `?tamam=orman,hala,huysuz` (bitmiş gibi göster, kaydetmez), `?ikon`.
+  (yayinla.command çalıştırır).
+  Müzik `ev-muzik.js` (`tools/muzik_yap.py` sentezler: numpy+ffmpeg, dikişsiz döngü; konuşurken kısılır, sekme gizlenince durur, ?sessiz'de yok).
+  Kapı geçişi: cümle bitene kadar Feza ile Bilbo portalın önünde zıplar, sonra girerler (gerçek ses bitişi ya da EV_SURE tahmini).
+  Test bayrakları: `?sessiz`, `?tamam=orman,hala,huysuz` (bitmiş gibi göster, kaydetmez), `?ikon`.

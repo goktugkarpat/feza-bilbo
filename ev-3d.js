@@ -215,13 +215,13 @@
       c.fillStyle = gr; c.fillRect(0, 0, w, h); var gx = c.createLinearGradient(0, 0, w, 0); gx.addColorStop(0, 'rgba(0,0,0,1)'); gx.addColorStop(0.2, 'rgba(0,0,0,0)'); gx.addColorStop(0.8, 'rgba(0,0,0,0)'); gx.addColorStop(1, 'rgba(0,0,0,1)');
       c.globalCompositeOperation = 'destination-out'; c.fillStyle = gx; c.fillRect(0, 0, w, h);
     }), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, opacity: 0.4, toneMapped: false });
-    var A = V(PEN_X, PY, DUVAR_Z + 0.1), Bn = V(PEN_X + 1.6, 0.02, DUVAR_Z + 3.4), mid = A.clone().add(Bn).multiplyScalar(0.5), L = A.distanceTo(Bn);
+    var A = V(PEN_X, PY, DUVAR_Z + 0.1), Bn = V(PEN_X + 0.75, 0.02, DUVAR_Z + 3.4), mid = A.clone().add(Bn).multiplyScalar(0.5), L = A.distanceTo(Bn);
     var huz = mesh(new THREE.PlaneGeometry(PW * 1.1, L), hm, [mid.x, mid.y, mid.z], null, null, scene);
     huz.lookAt(mid.x + 0.0, mid.y + 10, mid.z); huz.up.set(0, 1, 0);
     var dir = Bn.clone().sub(A).normalize(); huz.quaternion.setFromUnitVectors(V(0, -1, 0), dir);
     var huz2 = huz.clone(); huz2.rotateY(PI / 2); huz2.scale.x = 0.7; scene.add(huz2);
     var yer = mesh(new THREE.PlaneGeometry(1.6, 1.3), new THREE.MeshBasicMaterial({ map: noktaDoku(), color: new THREE.Color(0.9, 0.6, 0.3), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }), [Bn.x, 0.015, Bn.z - 0.3], null, [-PI / 2, 0, 0], scene);
-    anims.push(function (dt, t) { hm.opacity = 0.34 + 0.06 * Math.sin(t * 0.7); });
+    anims.push(function (dt, t) { hm.opacity = 0.24 + 0.05 * Math.sin(t * 0.7); });
   }
   function flama() {   // portalların üstünde gerçek kumaş flamalar: dikişli kenar, rüzgârla dalgalanır
     var renk = ['#ff8a8a', '#ffd166', '#7fd6a8', '#79b8ff', '#c79bff'], mats = renk.map(function (r) {
@@ -382,7 +382,7 @@
     anims.push(function (dt, t) {
       for (var i = 0; i < N; i++) {
         var p = ph[i], u = (p[0] + t * 0.012 * (0.5 + p[1])) % 1;
-        pos[i * 3] = PEN_X - 0.5 + p[1] * 1.2 + u * 1.6 + Math.sin(t * 0.3 + i) * 0.1;
+        pos[i * 3] = PEN_X - 0.5 + p[1] * 1.0 + u * 0.8 + Math.sin(t * 0.3 + i) * 0.1;
         pos[i * 3 + 1] = 3.2 - u * 2.8 + Math.sin(t * 0.5 + i * 2) * 0.15 + p[2] * 0.5;
         pos[i * 3 + 2] = DUVAR_Z + 0.3 + u * 3.0 + Math.cos(t * 0.4 + i) * 0.1;
       }
@@ -624,7 +624,7 @@
     golge(cer, true, true);
     // ışıklı iç kenar (parlama)
     var yol = kemerYolu(p.w - 0.02, p.h - 0.01, 30);
-    var kenarMat = parlak(tamam ? 0xffe08a : p.isik, tamam ? 2.4 : 2.0);
+    var kenarMat = parlak(tamam ? 0xffe08a : p.isik, tamam ? 1.8 : 1.35);
     mesh(new THREE.TubeGeometry(yol, 90, 0.035, 6), kenarMat, [0, 0, 0.26], null, null, g);
     // büyülü zar: hafif dönen ışık (içi görünür kalır)
     var zarMat = new THREE.ShaderMaterial({
@@ -634,7 +634,7 @@
       fragmentShader: 'uniform float t,k,w,h; uniform vec3 c; varying vec2 vP;' +
         'void main(){ vec2 q = vec2(vP.x/(w*0.5), (vP.y-h*0.55)/(h*0.5)); float r = length(q), a = atan(q.y,q.x);' +
         ' float sw = 0.5+0.5*sin(a*3.0 + r*7.0 - t*1.6); float edge = smoothstep(0.55,1.05,r);' +
-        ' float v = (0.25*sw + edge*0.5) * k; gl_FragColor = vec4(c*v*2.0, 1.0); }'
+        ' float v = (0.12*sw + edge*0.8) * k; gl_FragColor = vec4(c*v*2.0, 1.0); }'
     });
     var zar = mesh(new THREE.ShapeGeometry(kemerSekli(p.w, p.h, 0, 0), 32), zarMat, [0, 0, 0.05], null, null, g);
     zar.renderOrder = 5;
@@ -737,196 +737,134 @@
     } catch (e) { console.warn('model', tip, e); return null; }
   }
 
-  function dunyaOrman(p) {   // kamp, dere, sazlık, meşeler, parlayan saklı toplar, uzakta Koca Timsah
-    var gok = egimDoku([0, '#5fb8ff', 0.5, '#bfe9ff', 0.72, '#fff2c8', 1, '#9fd77a']);
-    var g = bolme(p, gok, TX('grass', 2, 2, { color: 0xbfe39a }));
-    var D = -p.derin;
-    // uzak tepeler
-    var tm = std({ color: 0x6fbf5a, roughness: 0.9 });
-    mesh(new THREE.SphereGeometry(1, 24, 12), tm, [-1.0, -0.2, D + 0.4], [1.8, 1.4, 0.6], null, g);
-    mesh(new THREE.SphereGeometry(1, 24, 12), std({ color: 0x5aac4c, roughness: 0.9 }), [1.2, -0.3, D + 0.5], [1.6, 1.2, 0.6], null, g);
-    hale(0xfff0b0, 1.6, [0.9, 3.3, D + 0.4], g, 1.4);
-    // meşeler
-    var ym = TX('leaves', 1, 1, { color: 0x67b14f });
-    agac(g, -1.3, D + 0.8, 0.7, 0, ym); agac(g, 1.35, D + 1.1, 0.75, 0, ym);
-    // dere (parlak su) + sazlık
-    var su = std({ color: 0x3fa8e8, roughness: 0.08, metalness: 0.1, emissive: 0x0a3a60, emissiveIntensity: 0.35 });
-    var sg = new THREE.PlaneGeometry(p.cw, 0.9, 30, 4), sp = sg.attributes.position;
-    for (var i = 0; i < sp.count; i++) sp.setY(i, sp.getY(i) + Math.sin(sp.getX(i) * 2.2) * 0.18);
-    var dere = mesh(sg, su, [0, 0.012, -1.75], null, [-PI / 2, 0, 0], g);
-    for (i = 0; i < 16; i++) {
-      var rx = -1.4 + (i % 8) * 0.38 + Math.sin(i) * 0.1, rz = i < 8 ? -1.2 : -2.35;
-      var sz = mesh(new THREE.CylinderGeometry(0.012, 0.018, 0.55 + (i % 3) * 0.12, 5), std({ color: 0x6a9a3a }), [rx, 0.3, rz], null, [Math.sin(i * 2) * 0.15, 0, Math.cos(i) * 0.12], g);
-      if (i % 2) mesh(new THREE.CapsuleGeometry(0.03, 0.1, 3, 6), std({ color: 0x7a4a2a }), [rx, 0.58 + (i % 3) * 0.12, rz], null, null, g);
+  // Her portalın içinde bir tane BÜYÜK, ilk bakışta tanınan kahraman (sade, yakın, net; parlama/hale az):
+  //   orman → Koca Timsah + Bilbo'nun topu + çadır · huysuz → ejderhalı kale + ışın kılıcı + sevimli huysuz · hala → mumlu dev pasta + minicik Feza/Hala/Bilbo
+  function dunyaOrman(p) {
+    var gok = egimDoku([0, '#2f86d8', 0.5, '#46a6ee', 0.78, '#86cdf6', 0.9, '#9fd88a', 1, '#5fae48']);
+    var g = bolme(p, gok, TX('grass', 2, 2, { color: 0x9fd77a })), D = -p.derin;
+    // uzak tepeler + iki meşe (arka köşelerde, büyük kahramanı kapatmaz)
+    mesh(new THREE.SphereGeometry(1, 24, 12), std({ color: 0x5aac4c, roughness: 0.9 }), [-1.0, -0.2, D + 0.4], [1.8, 1.3, 0.6], null, g);
+    mesh(new THREE.SphereGeometry(1, 24, 12), std({ color: 0x4e9e44, roughness: 0.9 }), [1.2, -0.3, D + 0.5], [1.6, 1.1, 0.6], null, g);
+    var ym = TX('leaves', 1, 1, { color: 0x5ea548 });
+    agac(g, -1.25, D + 0.5, 0.6, 0, ym); agac(g, 1.3, D + 0.6, 0.65, 0, ym);
+    // dere (timsahın arkasında) + birkaç saz
+    var su = std({ color: 0x2f9be0, roughness: 0.1, metalness: 0.1, emissive: 0x0a3a60, emissiveIntensity: 0.2 });
+    var sg = new THREE.PlaneGeometry(p.cw, 0.8, 30, 4), sp = sg.attributes.position;
+    for (var i = 0; i < sp.count; i++) sp.setY(i, sp.getY(i) + Math.sin(sp.getX(i) * 2.2) * 0.12);
+    var dere = mesh(sg, su, [0, 0.012, -3.1], null, [-PI / 2, 0, 0], g);
+    for (i = 0; i < 6; i++) {
+      var rx = (i < 3 ? -1.25 : 1.0) + (i % 3) * 0.13, rz = -2.6 - (i % 2) * 0.2;
+      mesh(new THREE.CylinderGeometry(0.014, 0.02, 0.7 + (i % 3) * 0.12, 5), std({ color: 0x5f8f34 }), [rx, 0.36, rz], null, [Math.sin(i * 2) * 0.12, 0, Math.cos(i) * 0.1], g);
+      mesh(new THREE.CapsuleGeometry(0.035, 0.12, 3, 6), std({ color: 0x7a4a2a }), [rx, 0.74 + (i % 3) * 0.12, rz], null, null, g);
     }
-    // çadır + kamp ateşi
-    var cad = mesh(new THREE.ConeGeometry(0.62, 0.95, 4, 1), TX('fabric', 2, 2, { color: 0xff9a3a }), [-0.85, 0.47, -0.55], null, [0, PI / 4, 0], g);
-    mesh(new THREE.ConeGeometry(0.2, 0.55, 3, 1), std({ color: 0x5a3020 }), [-0.75, 0.27, -0.12], null, [0, PI / 4 + 0.6, 0], g);
-    var ates = new THREE.Group(); ates.position.set(0.75, 0, -0.5); g.add(ates);
-    for (i = 0; i < 4; i++) mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.42, 8), std({ color: 0x7a4a2a }), [0, 0.05, 0], null, [PI / 2, i * PI / 4, 0.25], ates);
-    for (i = 0; i < 8; i++) mesh(new THREE.DodecahedronGeometry(0.07), std({ color: 0x9a9a9a }), [Math.cos(i * 0.8) * 0.28, 0.03, Math.sin(i * 0.8) * 0.28], null, null, ates);
-    var alev = [], am = [parlak(0xff8a2a, 3.2), parlak(0xffd24a, 3.6)];
-    for (i = 0; i < 3; i++) alev.push(mesh(new THREE.ConeGeometry(0.12 - i * 0.03, 0.4 - i * 0.08, 8), am[i % 2], [Math.sin(i * 2) * 0.04, 0.22, Math.cos(i * 2) * 0.04], null, null, ates));
-    hale(0xff9a3a, 1.1, [0, 0.3, 0], ates, 1.0);
-    var tl = LIGHTS.torches[0]; tl.color.set(0xff9a40); tl.intensity = 4.5; tl.distance = 4; tl.decay = 1.6;
-    var ap = V(); ates.updateMatrixWorld(true);
-    // saklı toplar (parlak)
-    var toplar = [];
-    [[-1.25, -2.9], [1.15, -2.7], [0.1, -1.0], [-0.2, -3.3]].forEach(function (q, k) {
-      var tp = topModel(0.11); tp.position.set(q[0], 0.11, q[1]); g.add(tp); hale(0x9fd8ff, 0.55, [q[0], 0.15, q[1]], g, 1.2); toplar.push(tp);
-    });
-    // Koca Huysuz Timsah (gerçek model) dere kıyısında, küçük timsah suda
-    var koca = modelYap('buyuktimsah', 0.42);
-    if (koca) { koca.root.position.set(0.35, 0, -3.05); koca.root.rotation.y = -0.35; g.add(koca.root); }
-    var kucuk = modelYap('ormantimsah', 0.6);
-    if (kucuk) { kucuk.root.position.set(-0.4, -0.12, -1.75); kucuk.root.rotation.y = 0.9; g.add(kucuk.root); }
+    // KOCA TİMSAH: büyük, ortada, kameraya dönük (3/4)
+    var koca = modelYap('buyuktimsah', 0.62);
+    if (koca) { koca.root.position.set(-0.3, 0, -2.3); koca.root.rotation.y = 0.45; g.add(koca.root); }
+    // turuncu çadır (sol önde, büyük ve net)
+    mesh(new THREE.ConeGeometry(0.5, 0.85, 4, 1), TX('fabric', 2, 2, { color: 0xff8a2a }), [-1.0, 0.42, -0.7], null, [0, PI / 4, 0], g);
+    mesh(new THREE.ConeGeometry(0.22, 0.6, 3, 1), std({ color: 0x5a3020 }), [-0.86, 0.26, -0.3], null, [0, PI / 4 + 0.6, 0], g);
+    mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.4, 6), std({ color: 0x7a4a2a }), [-1.0, 0.98, -0.7], null, null, g);
+    mesh(new THREE.PlaneGeometry(0.22, 0.14), std({ color: 0xffd23f, side: THREE.DoubleSide }), [-0.89, 1.1, -0.7], null, null, g);
+    // Bilbo'nun topu: büyük, sağ önde, zıplar
+    var top = topModel(0.26); top.position.set(0.5, 0.26, -0.55); g.add(top);
     anims.push(function (dt, t) {
-      for (var k = 0; k < alev.length; k++) { alev[k].scale.set(1 + 0.15 * Math.sin(t * 13 + k), 1 + 0.25 * Math.sin(t * 9 + k * 2), 1); }
-      if (!ap.x) { ates.getWorldPosition(ap); }
-      tl.position.set(ap.x, 0.5, ap.z); tl.intensity = 4.2 + Math.sin(t * 11) * 0.5 + Math.sin(t * 17) * 0.3;
-      dere.material.emissiveIntensity = 0.3 + 0.08 * Math.sin(t * 2);
-      for (var j = 0; j < toplar.length; j++) toplar[j].position.y = 0.11 + Math.abs(Math.sin(t * 2.2 + j)) * 0.06;
+      dere.material.emissiveIntensity = 0.18 + 0.05 * Math.sin(t * 2);
+      top.position.y = 0.26 + Math.abs(Math.sin(t * 2.4)) * 0.12; top.rotation.z = Math.sin(t * 1.2) * 0.4;
       if (koca) koca.anim(dt, { move: 0 });
-      if (kucuk) { kucuk.anim(dt, { move: 0 }); kucuk.root.position.y = -0.12 + Math.sin(t * 1.8) * 0.03; }
     });
     golge(g, false, false);
     return g;
   }
 
-  function dunyaHuysuz(p) {   // sekiz hayal dünyası katman katman: ay, yanardağ, mağara, orman, kefir vadisi, surlu şehir, en arkada ejderha kalesi
-    var gok = egimDoku([0, '#1c1050', 0.35, '#4a2aa0', 0.62, '#c46ad8', 0.8, '#ffb07a', 1, '#ffd9a0'], 140);
-    var zm = TX('cobble', 2, 4, { color: 0xb9a8e8 });
+  function dunyaHuysuz(p) {   // büyük ejderha kalesi + ön planda ışın kılıcı ve sevimli huysuz
+    var gok = egimDoku([0, '#2a1a6a', 0.4, '#5a3ab8', 0.68, '#c070d0', 0.86, '#ffa070', 1, '#ffcf90'], 90);
+    var zm = TX('cobble', 2, 4, { color: 0xa898d8 });
     var g = bolme(p, gok, zm), D = -p.derin;
-    // ay (Zıp Zıp Ay)
-    mesh(new THREE.SphereGeometry(0.55, 32, 20), new THREE.MeshStandardMaterial({ color: 0xfff3c8, emissive: 0xfff0b0, emissiveIntensity: 1.3, roughness: 0.9 }), [-1.15, 5.0, D + 0.6], null, null, g);
-    hale(0xfff0c0, 2.4, [-1.15, 5.0, D + 0.7], g, 0.9);
-    // en arkada tepe + Ejderhanın Kalesi
-    var tepe = std({ color: 0x5a3a8a, roughness: 0.9 });
-    mesh(new THREE.SphereGeometry(1, 28, 14), tepe, [0.4, -0.5, D + 0.9], [2.2, 2.0, 1.0], null, g);
-    var kale = new THREE.Group(); kale.position.set(0.45, 1.35, D + 1.0); g.add(kale);
-    var tas = TX('castleFloor', 1, 1, { color: 0xd8c8ff }), cat = std({ color: 0xe0506a, roughness: 0.5 });
-    [[-0.55, 0.9, 0.2], [0.55, 0.85, 0.2], [0, 1.35, 0.26], [-0.25, 0.65, 0.16], [0.28, 0.7, 0.16]].forEach(function (t) {
-      mesh(new THREE.CylinderGeometry(t[2], t[2], t[1], 14), tas, [t[0], t[1] / 2, 0], null, null, kale);
-      mesh(new THREE.ConeGeometry(t[2] * 1.3, t[2] * 2.2, 14), cat, [t[0], t[1] + t[2] * 1.1, 0], null, null, kale);
-      mesh(new THREE.PlaneGeometry(0.06, 0.1), parlak(0xffd27a, 2.4), [t[0], t[1] * 0.6, t[2] + 0.01], null, null, kale);
+    // ay
+    mesh(new THREE.SphereGeometry(0.42, 32, 20), new THREE.MeshStandardMaterial({ color: 0xfff3c8, emissive: 0xfff0b0, emissiveIntensity: 0.9, roughness: 0.9 }), [-1.15, 4.4, D + 1.0], null, null, g);
+    // tepe + BÜYÜK Ejderhanın Kalesi (yakın, ortada)
+    mesh(new THREE.SphereGeometry(1, 28, 14), std({ color: 0x5a3a8a, roughness: 0.9 }), [0.1, -0.75, -4.2], [2.3, 1.2, 1.3], null, g);
+    var kale = new THREE.Group(); kale.position.set(0.1, 0.2, -4.1); kale.scale.setScalar(1.12); g.add(kale);
+    var tas = TX('castleFloor', 1, 1, { color: 0xe4d8ff }), cat = std({ color: 0xe0405a, roughness: 0.45 });
+    [[-0.6, 0.95, 0.21], [0.6, 0.9, 0.21], [0, 1.45, 0.28], [-0.3, 0.7, 0.17], [0.32, 0.75, 0.17]].forEach(function (t) {
+      mesh(new THREE.CylinderGeometry(t[2], t[2], t[1], 16), tas, [t[0], t[1] / 2, 0], null, null, kale);
+      mesh(new THREE.ConeGeometry(t[2] * 1.3, t[2] * 2.2, 16), cat, [t[0], t[1] + t[2] * 1.1, 0], null, null, kale);
+      mesh(new THREE.PlaneGeometry(0.07, 0.12), parlak(0xffd27a, 1.4), [t[0], t[1] * 0.6, t[2] + 0.01], null, null, kale);
+      mesh(new THREE.PlaneGeometry(0.16, 0.1), std({ color: 0xffd23f, side: THREE.DoubleSide }), [t[0] + 0.08, t[1] + t[2] * 2.3, 0], null, null, kale);
     });
-    mesh(new THREE.BoxGeometry(1.1, 0.5, 0.3), tas, [0, 0.25, 0.05], null, null, kale);
-    var ejd = modelYap('ejderha', 0.17);
-    if (ejd) { ejd.root.position.set(0.15, 1.9, 0.25); ejd.root.rotation.y = 0.3; kale.add(ejd.root); }
-    // yanardağ (Lav Yanardağı)
-    var yan = new THREE.Group(); yan.position.set(-1.25, 0, D + 2.4); g.add(yan);
-    mesh(new THREE.CylinderGeometry(0.22, 0.95, 1.5, 20, 1, true), TX('basalt', 1, 1, { color: 0x6a4a5a }), [0, 0.75, 0], null, null, yan);
-    var lav = mesh(new THREE.CircleGeometry(0.22, 20), parlak(0xff6a2a, 3.0), [0, 1.49, 0], null, [-PI / 2, 0, 0], yan);
-    mesh(new THREE.BoxGeometry(0.08, 0.9, 0.02), parlak(0xff7a2a, 2.4), [0.18, 1.0, 0.42], null, [0.45, 0, -0.35], yan);
-    hale(0xff7a3a, 1.5, [0, 1.6, 0], yan, 1.1);
-    var duman = [];
-    for (var i = 0; i < 4; i++) duman.push(mesh(new THREE.SphereGeometry(0.16, 12, 8), std({ color: 0xc8b8d8, roughness: 1, transparent: true, opacity: 0.7 }), [0, 1.7 + i * 0.3, 0], null, null, yan));
-    // mağara kemeri (Köstebek ve Salyangoz Mağarası)
-    var mag = new THREE.Group(); mag.position.set(1.25, 0, D + 2.7); g.add(mag);
-    mesh(new THREE.TorusGeometry(0.55, 0.25, 12, 24, PI), TX('rock', 1, 1, { color: 0x9a8a8a }), [0, 0, 0], null, null, mag);
-    mesh(new THREE.CircleGeometry(0.42, 20, 0, PI), basic({ color: 0x1a1020 }), [0, 0, -0.05], null, null, mag);
-    for (i = 0; i < 3; i++) hale([0x6af0ff, 0xc08aff, 0x7aff9a][i], 0.25, [-0.2 + i * 0.2, 0.15 + (i % 2) * 0.12, 0.05], mag, 1.6);
-    // kefir vadisi: beyaz yumuşak tepecikler + Huysuz Orman ağaçları
-    var kef = std({ color: 0xfff8f0, roughness: 0.35 });
-    mesh(new THREE.SphereGeometry(1, 20, 12), kef, [0.1, -0.1, D + 3.4], [0.8, 0.45, 0.4], null, g);
-    mesh(new THREE.SphereGeometry(1, 20, 12), kef, [-0.6, -0.15, D + 3.6], [0.5, 0.35, 0.3], null, g);
-    var om = std({ color: 0x5a8a4a, roughness: 0.8 });
-    agac(g, -1.35, D + 4.4, 0.55, 0x4a9a5a); agac(g, 1.4, D + 4.2, 0.6, 0x6a5ab0); agac(g, 1.0, D + 4.9, 0.4, 0x3f8f6a);
-    // Köpüklü Tuvalet Rüyası: köpük baloncukları
-    var bal = [], bm = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.05, metalness: 0, transparent: true, opacity: 0.35, iridescence: 1, iridescenceIOR: 1.3, envMapIntensity: 1.5, depthWrite: false });
-    for (i = 0; i < 9; i++) { var b = mesh(new THREE.SphereGeometry(1, 24, 16), bm, [0, 0, 0], 0.08 + (i % 3) * 0.05, null, g); b.userData.f = i / 9; bal.push(b); }
-    // önde: Feza'nın ışın kılıcı (yere saplı, parlıyor) + sevimli huysuz jöle
-    var kl = new THREE.Group(); kl.position.set(-0.75, 0, -1.35); kl.rotation.z = 0.18; kl.rotation.x = -0.1; g.add(kl);
-    mesh(new THREE.CylinderGeometry(0.045, 0.05, 0.36, 12), std({ color: 0xc9d0da, metalness: 0.85, roughness: 0.2 }), [0, 1.25, 0], null, null, kl);
-    mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.05, 12), std({ color: 0x3d4a5c }), [0, 1.12, 0], null, null, kl);
-    var bicak = mesh(new THREE.CylinderGeometry(0.04, 0.04, 1.15, 12), parlak(0x6fd0ff, 3.6), [0, 0.5, 0], null, null, kl);
-    var kh = mesh(new THREE.CylinderGeometry(0.09, 0.09, 1.2, 12, 1, true), new THREE.MeshBasicMaterial({ color: new THREE.Color(0x3aa0ff).multiplyScalar(1.6), transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }), [0, 0.5, 0], null, null, kl);
-    hale(0x6fc8ff, 1.3, [0, 0.6, 0], kl, 1.0);
-    var tl = LIGHTS.torches[1]; tl.color.set(0x7ac8ff); tl.intensity = 2.5; tl.distance = 4; tl.decay = 1.6;
+    mesh(new THREE.BoxGeometry(1.2, 0.55, 0.32), tas, [0, 0.27, 0.06], null, null, kale);
+    for (var i = 0; i < 6; i++) mesh(new THREE.BoxGeometry(0.11, 0.11, 0.34), tas, [-0.5 + i * 0.2, 0.6, 0.06], null, null, kale);
+    mesh(new THREE.CircleGeometry(0.17, 20, 0, PI), basic({ color: 0x3a2050 }), [0, 0, 0.23], null, null, kale);
+    var ejd = modelYap('ejderha', 0.15);
+    if (ejd) { ejd.root.position.set(0.05, 0.95, 0.55); ejd.root.rotation.y = 0.25; kale.add(ejd.root); }
+    // yan ağaçlar (sade)
+    agac(g, -1.35, -3.0, 0.55, 0x4a9a5a); agac(g, 1.4, -3.2, 0.55, 0x6a5ab0);
+    // ön planda: Feza'nın büyük ışın kılıcı (yere saplı)
+    var kl = new THREE.Group(); kl.position.set(-0.78, 0, -1.15); kl.rotation.z = 0.16; kl.rotation.x = -0.08; kl.scale.setScalar(1.25); g.add(kl);
+    mesh(new THREE.CylinderGeometry(0.05, 0.055, 0.36, 12), std({ color: 0xc9d0da, metalness: 0.85, roughness: 0.2 }), [0, 1.25, 0], null, null, kl);
+    mesh(new THREE.CylinderGeometry(0.065, 0.065, 0.05, 12), std({ color: 0x3d4a5c }), [0, 1.08, 0], null, null, kl);
+    var bicak = mesh(new THREE.CylinderGeometry(0.045, 0.045, 1.1, 12), parlak(0x6fd0ff, 1.6), [0, 0.5, 0], null, null, kl);
+    var kh = mesh(new THREE.CylinderGeometry(0.075, 0.075, 1.12, 12, 1, true), new THREE.MeshBasicMaterial({ color: new THREE.Color(0x3aa0ff), transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }), [0, 0.5, 0], null, null, kl);
+    var tl = LIGHTS.torches[1]; tl.color.set(0x7ac8ff); tl.intensity = 1.6; tl.distance = 3; tl.decay = 1.6;
     var kp = V();
-    var jole = modelYap('jole', 1.0);
-    if (jole) { jole.root.position.set(0.75, 0, -1.6); jole.root.rotation.y = -0.4; g.add(jole.root); }
-    var mantar = modelYap('mantar', 0.7);
-    if (mantar) { mantar.root.position.set(-0.05, 0, -3.0); mantar.root.rotation.y = 0.2; g.add(mantar.root); }
-    var yarasa = modelYap('yarasa', 0.8);
-    if (yarasa) { g.add(yarasa.root); }
+    // sevimli huysuz (jöle), büyük, sağ önde
+    var jole = modelYap('jole', 1.35);
+    if (jole) { jole.root.position.set(0.7, 0, -1.3); jole.root.rotation.y = -0.35; g.add(jole.root); }
     anims.push(function (dt, t) {
-      lav.material.color.setRGB(3.0, 0.9 + 0.3 * Math.sin(t * 3), 0.25);
-      for (var k = 0; k < duman.length; k++) { var u = (t * 0.25 + k / duman.length) % 1; duman[k].position.y = 1.6 + u * 1.3; duman[k].scale.setScalar(0.6 + u * 1.2); duman[k].material.opacity = 0.7 * (1 - u); }
-      for (k = 0; k < bal.length; k++) { var f = (t * 0.07 + bal[k].userData.f) % 1; bal[k].position.set(-1.3 + (k * 0.37) % 2.6 + Math.sin(t + k) * 0.15, 0.3 + f * 4.5, -0.8 - (k % 4) * 0.9); }
-      bicak.material.color.setRGB(0.9, 2.6 + 0.4 * Math.sin(t * 9), 3.8); kh.scale.x = kh.scale.z = 1 + 0.15 * Math.sin(t * 7);
+      bicak.material.color.setRGB(0.55, 1.45 + 0.15 * Math.sin(t * 9), 2.0); kh.scale.x = kh.scale.z = 1 + 0.12 * Math.sin(t * 7);
       if (!kp.x) kl.getWorldPosition(kp);
-      tl.position.set(kp.x, 0.9, kp.z + 0.2);
-      if (ejd) { ejd.anim(dt, { move: 0 }); }
-      if (jole) { jole.anim(dt, { move: 0.35 }); jole.root.position.x = 0.75 + Math.sin(t * 0.8) * 0.15; }
-      if (mantar) mantar.anim(dt, { move: 0 });
-      if (yarasa) { yarasa.anim(dt, { move: 1 }); yarasa.root.position.set(Math.sin(t * 0.6) * 1.0, 2.6 + Math.sin(t * 1.3) * 0.3, -4.2 + Math.cos(t * 0.6) * 0.8); yarasa.root.rotation.y = t * 0.6 + PI / 2; }
+      tl.position.set(kp.x, 0.9, kp.z + 0.3);
+      if (ejd) ejd.anim(dt, { move: 0 });
+      if (jole) { jole.anim(dt, { move: 0.35 }); jole.root.position.x = 0.7 + Math.sin(t * 0.8) * 0.1; }
     });
     golge(g, false, false);
     return g;
   }
 
-  function dunyaHala(p) {   // dev ev: kareli örtü, dev fincan/çatal/un torbası/çilek, uzakta dev pasta; minicik Feza, Bilbo ve Aytuğ Hala
+  function dunyaHala(p) {   // BÜYÜK mumlu dev pasta; önünde minicik Feza, Bilbo ve Aytuğ Hala (dev evdeler!)
     var gok = tuvalDoku(256, 512, function (c, w, h) {
-      var gr = c.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#ffd6e6'); gr.addColorStop(1, '#ffeaf2'); c.fillStyle = gr; c.fillRect(0, 0, w, h);
-      for (var y = 10, r = 0; y < h; y += 34, r++) for (var x = (r % 2) * 17 + 6; x < w; x += 34) { c.fillStyle = 'rgba(255,255,255,0.75)'; c.beginPath(); c.arc(x, y, 5, 0, 7); c.fill(); }
-      c.fillStyle = '#e9b48a'; c.fillRect(0, h * 0.72, w, h * 0.06);   // dev pencere pervazı/raf çizgisi
+      var gr = c.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#e86fa0'); gr.addColorStop(0.6, '#f7a6c6'); gr.addColorStop(1, '#ffc9dc'); c.fillStyle = gr; c.fillRect(0, 0, w, h);
+      for (var y = 10, r = 0; y < h; y += 34, r++) for (var x = (r % 2) * 17 + 6; x < w; x += 34) { c.fillStyle = 'rgba(255,255,255,0.45)'; c.beginPath(); c.arc(x, y, 5, 0, 7); c.fill(); }
+      c.fillStyle = '#c98a5a'; c.fillRect(0, h * 0.74, w, h * 0.05);   // dev raf çizgisi
     });
     var ort = tuvalDoku(256, 256, function (c, w, h) {
-      for (var i = 0; i < 8; i++) for (var j = 0; j < 8; j++) { c.fillStyle = (i + j) % 2 ? '#ffffff' : '#ef5a6a'; c.fillRect(i * 32, j * 32, 32, 32); }
-      c.fillStyle = 'rgba(239,90,106,0.35)'; for (i = 0; i < 8; i++) { c.fillRect(i * 32, 0, 32, h); }
+      for (var i = 0; i < 8; i++) for (var j = 0; j < 8; j++) { c.fillStyle = (i + j) % 2 ? '#ffffff' : '#e8485a'; c.fillRect(i * 32, j * 32, 32, 32); }
     }, [3, 3]);
-    var g = bolme(p, gok, std({ map: ort, roughness: 0.9 })), D = -p.derin;
-    // dev pasta (uzakta)
-    var pas = new THREE.Group(); pas.position.set(0.15, 0, D + 1.0); g.add(pas);
-    var katlar = [[1.0, 0.7, 0xff9cc2], [0.78, 0.6, 0x9b5b3a], [0.56, 0.5, 0xffd6e6]], y = 0;
+    var g = bolme(p, gok, std({ map: ort, roughness: 0.9 }));
+    // dev pasta (yakın, ortada, büyük)
+    var pas = new THREE.Group(); pas.position.set(0.05, 0, -2.0); pas.scale.setScalar(1.05); g.add(pas);
+    mesh(new THREE.CylinderGeometry(1.12, 1.12, 0.06, 40), std({ color: 0xffffff, roughness: 0.2 }), [0, 0.03, 0], null, null, pas);
+    var katlar = [[0.95, 0.62, 0xff7fae], [0.72, 0.55, 0x8a4a2a], [0.5, 0.48, 0xfff0f6]], y = 0.06;
     katlar.forEach(function (k) {
       mesh(new THREE.CylinderGeometry(k[0], k[0], k[1], 40), std({ color: k[2], roughness: 0.45 }), [0, y + k[1] / 2, 0], null, null, pas);
-      mesh(new THREE.TorusGeometry(k[0], 0.07, 10, 40), std({ color: 0xfffaf2, roughness: 0.3 }), [0, y + k[1], 0], null, [PI / 2, 0, 0], pas);
-      for (var d = 0; d < 10; d++) { var a = d / 10 * 2 * PI; mesh(new THREE.CapsuleGeometry(0.05, 0.12 + (d % 3) * 0.06, 3, 8), std({ color: 0xfffaf2, roughness: 0.3 }), [Math.cos(a) * k[0], y + k[1] - 0.1, Math.sin(a) * k[0]], null, null, pas); }
+      mesh(new THREE.TorusGeometry(k[0], 0.07, 10, 40), std({ color: 0xffffff, roughness: 0.3 }), [0, y + k[1], 0], null, [PI / 2, 0, 0], pas);
+      for (var d = 0; d < 10; d++) { var a = d / 10 * 2 * PI; mesh(new THREE.CapsuleGeometry(0.05, 0.12 + (d % 3) * 0.06, 3, 8), std({ color: 0xffffff, roughness: 0.3 }), [Math.cos(a) * k[0], y + k[1] - 0.1, Math.sin(a) * k[0]], null, null, pas); }
+      for (d = 0; d < 7; d++) { var b2 = d / 7 * 2 * PI + 0.3; mesh(new THREE.SphereGeometry(0.06, 10, 8), std({ color: 0xe8283f, roughness: 0.2 }), [Math.cos(b2) * (k[0] - 0.15), y + k[1] + 0.05, Math.sin(b2) * (k[0] - 0.15)], null, null, pas); }
       y += k[1];
     });
     var alev = [];
     for (var i = 0; i < 5; i++) {
-      var a = i / 5 * 2 * PI, mx = Math.cos(a) * 0.32, mz = Math.sin(a) * 0.32;
-      mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.38, 10), std({ color: i % 2 ? 0x8fd0ff : 0xffe27a, roughness: 0.4 }), [mx, y + 0.19, mz], null, null, pas);
-      alev.push(mesh(new THREE.SphereGeometry(0.06, 10, 8), parlak(0xffc04a, 3.6), [mx, y + 0.45, mz], [0.8, 1.5, 0.8], null, pas));
+      var a = i / 5 * 2 * PI + 0.6, mx = Math.cos(a) * 0.3, mz = Math.sin(a) * 0.3;
+      mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.42, 10), std({ color: [0x8fd0ff, 0xffe27a, 0x9be08a][i % 3], roughness: 0.4 }), [mx, y + 0.21, mz], null, null, pas);
+      alev.push(mesh(new THREE.SphereGeometry(0.065, 10, 8), parlak(0xffb03a, 1.7), [mx, y + 0.5, mz], [0.8, 1.5, 0.8], null, pas));
     }
-    mesh(new THREE.SphereGeometry(0.12, 16, 12), std({ color: 0xe8283f, roughness: 0.15 }), [0, y + 0.12, 0], null, null, pas);
-    hale(0xffc860, 1.4, [0, y + 0.5, 0], pas, 0.8);
-    // dev fincan
-    var fn = new THREE.Group(); fn.position.set(-1.0, 0, -1.6); g.add(fn);
-    var prof = [[0, 0], [0.42, 0], [0.5, 0.08], [0.58, 0.55], [0.62, 0.9], [0.58, 0.9], [0.54, 0.55], [0.46, 0.12], [0, 0.12]].map(function (q) { return new THREE.Vector2(q[0], q[1]); });
-    mesh(new THREE.LatheGeometry(prof, 36), std({ color: 0xffffff, roughness: 0.18 }), null, null, null, fn);
-    mesh(new THREE.CylinderGeometry(0.61, 0.61, 0.12, 36, 1, true), std({ color: 0x6ac8d8, roughness: 0.3, side: THREE.DoubleSide }), [0, 0.65, 0], null, null, fn);
-    mesh(new THREE.TorusGeometry(0.2, 0.05, 10, 24, PI * 1.3), std({ color: 0xffffff, roughness: 0.18 }), [0.62, 0.5, 0], null, [0, 0, -PI * 0.65], fn);
-    mesh(new THREE.CircleGeometry(0.55, 32), std({ color: 0x8a5030, roughness: 0.15 }), [0, 0.8, 0], null, [-PI / 2, 0, 0], fn);
-    mesh(new THREE.CylinderGeometry(0.8, 0.85, 0.06, 40), std({ color: 0xffffff, roughness: 0.2 }), [0, 0.03, 0], null, null, fn);
-    // dev çatal (yatık)
-    var ct = new THREE.Group(); ct.position.set(0.95, 0.04, -2.35); ct.rotation.y = -0.6; g.add(ct);
-    var gm = std({ color: 0xd8dee8, metalness: 0.9, roughness: 0.18 });
-    mesh(new THREE.BoxGeometry(0.16, 0.05, 1.6), gm, [0, 0, 0.6], null, null, ct);
-    mesh(new THREE.BoxGeometry(0.4, 0.05, 0.3), gm, [0, 0, -0.32], null, null, ct);
-    for (i = 0; i < 4; i++) mesh(new THREE.BoxGeometry(0.06, 0.05, 0.55), gm, [-0.15 + i * 0.1, 0, -0.72], null, null, ct);
-    // un torbası + dev çilek + yumurta
-    var un = mesh(G.rbox(3), TX('fabric', 1, 1, { color: 0xf3e6c8 }), [1.0, 0.45, -1.35], [0.62, 0.9, 0.5], [0, -0.3, 0], g);
-    mesh(new THREE.ConeGeometry(0.2, 0.25, 12), std({ color: 0xf3e6c8, roughness: 0.9 }), [1.0, 1.0, -1.35], null, null, g);
-    mesh(new THREE.TorusGeometry(0.13, 0.025, 6, 16), std({ color: 0xc0504a }), [1.0, 0.92, -1.35], null, [PI / 2, 0, 0], g);
-    var cil = mesh(new THREE.SphereGeometry(0.35, 24, 18), std({ color: 0xff3a4a, roughness: 0.25 }), [-0.3, 0.33, -2.7], [1, 1.15, 1], [PI, 0, 0.2], g);
-    mesh(new THREE.ConeGeometry(0.22, 0.1, 6), std({ color: 0x4caf50 }), [-0.3, 0.7, -2.7], null, null, g);
-    mesh(new THREE.SphereGeometry(0.26, 24, 18), std({ color: 0xfff4e0, roughness: 0.4 }), [-1.2, 0.3, -2.9], [0.85, 1.15, 0.85], null, g);
-    // minicik kahramanlar
+    mesh(new THREE.SphereGeometry(0.14, 16, 12), std({ color: 0xe8283f, roughness: 0.15 }), [0, y + 0.14, 0], null, null, pas);
+    // dev çilek (sağda) ve yumurta (solda): "her şey dev" hissi
+    mesh(new THREE.SphereGeometry(0.3, 24, 18), std({ color: 0xff3a4a, roughness: 0.25 }), [1.05, 0.3, -0.9], [1, 1.15, 1], [PI, 0, 0.2], g);
+    mesh(new THREE.ConeGeometry(0.2, 0.1, 6), std({ color: 0x4caf50 }), [1.05, 0.63, -0.9], null, null, g);
+    mesh(new THREE.SphereGeometry(0.24, 24, 18), std({ color: 0xfff4e0, roughness: 0.4 }), [-1.08, 0.28, -1.0], [0.85, 1.15, 0.85], null, g);
+    // minicik kahramanlar (pastanın önünde)
     var mini = [];
     try {
-      var F2 = FEZA.create(); F2.root.scale.multiplyScalar(0.5); F2.root.position.set(-0.15, 0, -0.7); F2.root.rotation.y = 0.35; g.add(F2.root); golge(F2.root, true, false); mini.push(['f', F2]);
+      var F2 = FEZA.create(); F2.root.scale.multiplyScalar(0.42); F2.root.position.set(-0.32, 0, -0.55); F2.root.rotation.y = 0.3; g.add(F2.root); golge(F2.root, true, false); mini.push(['f', F2]);
     } catch (e) { console.warn('mini feza', e); }
     try {
-      var B2 = BILBO.create(); B2.root.scale.multiplyScalar(0.5); B2.root.position.set(0.45, 0, -0.75); B2.root.rotation.y = -0.4; g.add(B2.root); golge(B2.root, true, false); mini.push(['b', B2]);
+      var B2 = BILBO.create(); B2.root.scale.multiplyScalar(0.42); B2.root.position.set(0.38, 0, -0.55); B2.root.rotation.y = -0.4; g.add(B2.root); golge(B2.root, true, false); mini.push(['b', B2]);
     } catch (e) { console.warn('mini bilbo', e); }
     var hala = null;
     try {
       if (typeof HALA !== 'undefined' && HALA.create) {
-        var hg = new THREE.Group(); hg.position.set(-0.7, 0, -1.1); hg.scale.setScalar(0.5); g.add(hg);
+        var hg = new THREE.Group(); hg.position.set(-0.75, 0, -0.75); hg.scale.setScalar(0.42); g.add(hg);
         hala = HALA.create(hg); golge(hala, true, false);
         hala.userData.ctx = halaCtx();
       }
@@ -980,13 +918,19 @@
     if (fz.sevinc > 0) fz.sevinc -= dt;
     if (fz.hedef) {   // koş
       var dx = fz.hedef.x - fz.p.x, dz = fz.hedef.z - fz.p.z, d = Math.hypot(dx, dz);
-      fz.hiz = Math.min(4.2, fz.hiz + dt * 9);
-      if (d > 0.05) { var s = Math.min(d, fz.hiz * dt); fz.p.x += dx / d * s; fz.p.z += dz / d * s; fz.yon = yonaDon(fz.yon, Math.atan2(dx, dz), 12, dt); }
-      FST.move = Math.min(1, fz.hiz / 4.2); FST.idleT = 0;
+      if (d > 0.05) {
+        fz.hiz = Math.min(4.2, fz.hiz + dt * 9);
+        var s = Math.min(d, fz.hiz * dt); fz.p.x += dx / d * s; fz.p.z += dz / d * s; fz.yon = yonaDon(fz.yon, Math.atan2(dx, dz), 12, dt);
+        FST.move = Math.min(1, fz.hiz / 4.2); FST.idleT = 0;
+      } else {   // portalın önünde: kameraya dönüp heyecanla zıpla
+        fz.hiz = 0; fz.yon = yonaDon(fz.yon, 0.35 + Math.sin(t * 2.2) * 0.25, 6, dt);
+        if (gecis && !gecis.gir) { FST.cheer = true; }
+      }
     } else {
       fz.yon = yonaDon(fz.yon, 0.15 + Math.sin(t * 0.3) * 0.12, 3, dt);
     }
     H.root.position.copy(fz.p); H.root.rotation.y = fz.yon;
+    if (gecis && !gecis.gir && fz.hedef && FST.move === 0) H.root.position.y = Math.abs(Math.sin(t * 6.5)) * 0.2;
     H.update(dt, FST);
     // el sallama (kemik pozunun üstüne): ara ara ve dokununca
     fz.elT -= dt;
@@ -1026,8 +970,11 @@
         else { bb.durum = 'koklaGit'; var a = Math.random() * 2 * PI; bb.hedef = V(BILBO_EV.x + 0.35 + Math.cos(a) * 0.45, 0, BILBO_EV.z - 0.45 + Math.sin(a) * 0.25); }
       }
     }
+    var bekle = bb.durum === 'portal' && gecis && !gecis.gir && hiz === 0;
+    if (bekle) { bb.hiz = 0; bb.yon = yonaDon(bb.yon, -0.15 + Math.sin(t * 1.7) * 0.3, 5, dt); bb.hav = (t % 1.4) < 0.35 ? 0.5 : 0; }
     BST.speed = hiz; BST.sit = bb.durum === 'otur' ? 1 : 0; BST.sniff = bb.durum === 'kokla'; BST.happy = 1; BST.bark = bb.hav;
     B.root.position.copy(bb.p); B.root.rotation.y = bb.yon;
+    if (bekle) B.root.position.y = Math.max(0, Math.sin(t * 7.5 + 1)) * 0.16;
     B.update(dt, BST);
   }
   function topGuncelle(dt) {   // ormandan getirilen top: Bilbo itince yuvarlanır
@@ -1090,7 +1037,7 @@
     var px = bx, py = kam.y + by + (dik ? 0.4 : 0), pz = kam.z + (dik ? -0.3 : 0) + Math.sin(t * 0.13) * 0.25;
     var hx = bx * 0.2, hy = kam.hy + (dik ? 0.25 : 0), hz = kam.hz;
     if (gecis) {   // seçilen portala doğru yaklaş
-      var p = PORTAL[gecis.i], u = smooth01((t - gecis.t0 - 0.35) / (gecis.sure - 0.35));
+      var p = PORTAL[gecis.i], u = smooth01((simdi - gecis.t0) / 1.6) * 0.3 + (gecis.gir ? smooth01((simdi - gecis.gir) / GIR) * 0.7 : 0);
       px = lerp(px, p.x, u); py = lerp(py, p.h * 0.5, u); pz = lerp(pz, DUVAR_Z + 1.2, u);
       hx = lerp(hx, p.x, u); hy = lerp(hy, p.h * 0.5, u); hz = lerp(hz, DUVAR_Z - 3, u);
       fov = lerp(fov, fov * 0.9, u);
@@ -1102,6 +1049,10 @@
   // ---------- ses (Emel + Bilbo havlaması); ?sessiz → hiç ses yok ----------
   var SES = (function () {
     var ctx = null, tampon = {}, simdiki = null, bekleyen = null, AC = window.AudioContext || window.webkitAudioContext;
+    // Müzik (ev-muzik.js: sentezlenmiş mp3, dikişsiz döngü). Konuşurken kısılır (ducking), sekme gizlenince durur.
+    var MZ = window.EV_MUZIK || null, muzG = null, muzKaynak = null, MUZ_SEVIYE = MZ ? MZ.KAZANC : 0, DUCK = 0.33;
+    var konusma = {};   // ad → { bas: perf sn, bit: perf sn } (son çalınan cümlenin gerçek zamanı)
+    function perf() { return performance.now() / 1000; }
     function b64(s) { var bin = atob(s), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u.buffer; }
     function coz(ad, veri) {
       if (!veri || tampon[ad]) return; tampon[ad] = 'bekle';
@@ -1113,19 +1064,51 @@
         try { ctx = new AC(); } catch (e) { return false; }
         var S = window.EV_SES || {}; for (var k in S) coz(k, S[k]);
         coz('hav', window.BILBO_BARK_MP3);
+        muzikBaslat();
+        document.addEventListener('visibilitychange', function () {
+          if (!ctx) return;
+          if (document.hidden) { try { ctx.suspend(); } catch (e) {} }
+          else { try { ctx.resume(); } catch (e) {} }
+        });
       }
       if (ctx.state === 'suspended') ctx.resume();
       try { var b = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource(); s.buffer = b; s.connect(ctx.destination); s.start(0); } catch (e) {}
       return true;
     }
+    function muzikBaslat() {
+      if (!MZ || !MZ.mp3 || muzG) return;
+      muzG = ctx.createGain(); muzG.gain.value = 0.0001; muzG.connect(ctx.destination);
+      try {
+        ctx.decodeAudioData(b64(MZ.mp3), function (b) {
+          if (muzKaynak) return;
+          var s = ctx.createBufferSource(); s.buffer = b; s.loop = true;
+          s.loopStart = MZ.PAY; s.loopEnd = Math.min(b.duration, MZ.PAY + MZ.SURE);
+          s.connect(muzG); s.start(0, MZ.PAY); muzKaynak = s;
+          var n = ctx.currentTime; muzG.gain.cancelScheduledValues(n); muzG.gain.setValueAtTime(0.0001, n);
+          muzG.gain.exponentialRampToValueAtTime(simdiki ? MUZ_SEVIYE * DUCK : MUZ_SEVIYE, n + 1.8);
+        }, function () {});
+      } catch (e) {}
+    }
+    function muzikHedef(v, sure) {   // müzik düzeyini yumuşakça değiştir
+      if (!muzG) return; var n = ctx.currentTime;
+      muzG.gain.cancelScheduledValues(n); muzG.gain.setValueAtTime(Math.max(0.0001, muzG.gain.value), n);
+      muzG.gain.exponentialRampToValueAtTime(Math.max(0.0001, v), n + sure);
+    }
     function cal(ad, ses) {
       if (!ctx) return; var b = tampon[ad];
       if (b === 'bekle') { bekleyen = ad; return; }
       if (!b) return;
-      if (ad !== 'hav' && simdiki) { try { simdiki.stop(); } catch (e) {} simdiki = null; }
+      if (ad !== 'hav' && simdiki) { try { simdiki.onended = null; simdiki.stop(); } catch (e) {} simdiki = null; }
       var s = ctx.createBufferSource(), gn = ctx.createGain(); gn.gain.value = ses || 1;
-      s.buffer = b; s.connect(gn); gn.connect(ctx.destination); s.start(0); if (ad !== 'hav') simdiki = s;
+      s.buffer = b; s.connect(gn); gn.connect(ctx.destination); s.start(0);
+      if (ad !== 'hav') {
+        simdiki = s; konusma[ad] = { bas: perf(), bit: perf() + b.duration };
+        if (!muzikSondu) muzikHedef(MUZ_SEVIYE * DUCK, 0.15);
+        s.onended = function () { if (simdiki === s) { simdiki = null; if (!muzikSondu) muzikHedef(MUZ_SEVIYE, 0.9); } };
+      }
     }
+    var muzikSondu = false;
+    function muzikSon(sure) { muzikSondu = true; muzikHedef(0.0001, sure || 0.8); }
     function cin() {
       if (!ctx) return; var n = ctx.currentTime, notes = [784, 988, 1175, 1568, 1976];
       for (var i = 0; i < notes.length; i++) {
@@ -1134,7 +1117,10 @@
         o.connect(gg); gg.connect(ctx.destination); o.start(n + i * 0.07); o.stop(n + i * 0.07 + 0.65);
       }
     }
-    return { ac: ac, cal: cal, cin: cin, calisiyor: function () { return !!ctx; } };
+    return { ac: ac, cal: cal, cin: cin, calisiyor: function () { return !!ctx && ctx.state !== 'closed'; }, muzikSon: muzikSon,
+      bekliyor: function (ad) { return bekleyen === ad || tampon[ad] === 'bekle'; },
+      konusma: function (ad) { return konusma[ad] || null; },
+      durum: function () { return { ctx: ctx ? ctx.state : null, muzik: !!muzKaynak, muzikDuzey: muzG ? muzG.gain.value : 0, konusuyor: !!simdiki }; } };
   })();
 
   // ---------- dokunma ----------
@@ -1145,17 +1131,41 @@
     if (!h.length) return null;
     var u = h[0].object.userData; return u.kapi !== undefined ? 'k' + u.kapi : u.kim;
   }
+  // Kapıya dokununca: kapının cümlesi çalar; Feza ile Bilbo koşup portalın önünde heyecanla zıplar.
+  // Cümle bitince (+ kısa pay) portaldan geçerler ve macera sayfası açılır. Ses yoksa / kilitliyse cümle süresi tahmini (EV_SURE) beklenir.
+  var GIR = 1.25, MIN_BEKLE = 1.7, PAY_SN = 0.35;
   function kapiyaGit(i) {
-    if (gecis) return;
-    var p = PORTAL[i], sure = 2.5;
-    if (SES.calisiyor()) { SES.cal(p.id); SES.cin(); }
-    gecis = { i: i, t0: simdi, sure: sure };
-    fz.hedef = V(p.x, 0, DUVAR_Z - 1.2); fz.el = 0; fz.hiz = 1.5;
-    bb.durum = 'portal'; bb.hedef = V(p.x + 0.5, 0, DUVAR_Z - 1.0); bb.hiz = 2;
+    if (gecis) return;   // ikinci dokunuş geçişi yeniden başlatmaz
+    var p = PORTAL[i], tahmin = ((window.EV_SURE || {})[p.id] || 3) + PAY_SN;
+    var sesli = SES.calisiyor();
+    if (sesli) { SES.cal(p.id); SES.cin(); }
+    gecis = { i: i, t0: simdi, bitis: simdi + Math.max(MIN_BEKLE, tahmin), gir: 0, sesli: sesli, gitti: false };
+    fz.hedef = V(p.x - 0.5, 0, DUVAR_Z + 1.05); fz.el = 0; fz.hiz = 1.5;
+    bb.durum = 'portal'; bb.hedef = V(p.x + 0.6, 0, DUVAR_Z + 1.5); bb.hiz = 2;
     portallar[i].vurgu = 1;
     var lg = document.getElementById('logo');
     if (lg) { lg.style.animation = 'none'; lg.style.transform = 'translate(-50%, 0)'; lg.style.transition = 'opacity 0.5s'; lg.style.opacity = '0'; }
-    setTimeout(function () { location.href = p.yol + Qs; }, sure * 1000);
+    // güvenlik: kare döngüsü bir sebeple durursa da en geç ~12 sn'de maceraya geç
+    setTimeout(function () { if (!gecis.gitti) { gecis.gitti = true; location.href = p.yol + Qs; } }, 12000);
+  }
+  function gecisGuncelle() {
+    if (!gecis) return;
+    var p = PORTAL[gecis.i];
+    if (!gecis.gir) {
+      if (gecis.sesli) {   // gerçek cümle çaldıysa onun bitişini bekle (çözülmesi gecikirse de)
+        var k = SES.konusma(p.id), bek = SES.bekliyor(p.id);
+        if (k && k.bas >= gecis.t0 - 0.05) gecis.bitis = Math.max(gecis.t0 + MIN_BEKLE, k.bit + PAY_SN);
+        else if (bek && simdi - gecis.t0 < 6) gecis.bitis = Math.max(gecis.bitis, simdi + 0.1);
+      }
+      if (simdi >= gecis.bitis) {   // şimdi portaldan geç
+        gecis.gir = simdi;
+        fz.hedef = V(p.x, 0, DUVAR_Z - 1.2); fz.hiz = Math.max(fz.hiz, 2); fz.sevinc = 0;
+        bb.hedef = V(p.x + 0.35, 0, DUVAR_Z - 1.0); bb.hiz = 2;
+        SES.muzikSon(GIR);
+      }
+    } else if (!gecis.gitti && simdi - gecis.gir >= GIR) {
+      gecis.gitti = true; location.href = p.yol + Qs;
+    }
   }
   function selamla() {
     if (!SES.calisiyor()) return;
@@ -1191,7 +1201,7 @@
     for (i = 0; i < portallar.length; i++) {
       var o = portallar[i], p = o.p;
       o.vurgu = gecis && gecis.i === i ? Math.min(1, o.vurgu + dt * 1.5) : damp(o.vurgu, sira === i ? 1 : 0, 4, dt);
-      o.zarMat.uniforms.t.value = t; o.zarMat.uniforms.k.value = 0.1 + o.vurgu * 0.6 + (o.tamam ? 0.08 : 0);
+      o.zarMat.uniforms.t.value = t; o.zarMat.uniforms.k.value = 0.035 + o.vurgu * 0.45 + (o.tamam ? 0.05 : 0);
       var pa = o.pts.geometry.attributes.position, r = p.w / 2;
       for (var k = 0; k < o.ph.length; k++) {
         var u = (o.ph[k] + t * 0.05 * (k % 2 ? 1 : -0.7)) % 1; if (u < 0) u += 1;
@@ -1201,15 +1211,16 @@
         pa.setXYZ(k, x * (1 + j * 0.3) , y + Math.sin(t * 3 + k) * 0.05, Math.sin(t + k) * 0.08);
       }
       pa.needsUpdate = true;
-      if (o.hale) o.hale.material.opacity = 0.55 + 0.3 * Math.sin(t * 2.5 + i);
+      if (o.hale) o.hale.material.opacity = 0.22 + 0.1 * Math.sin(t * 2.5 + i);   // biten kapının altın halesi: içi bulanmasın
     }
     // hatıralar beliriyor
     var gor = clamp((t - basla - 0.8) / 0.9, 0, 1), ss = gor < 1 ? Math.sin(gor * PI * 0.5) * (1 + Math.sin(gor * PI) * 0.25) : 1;
     for (i = 0; i < hatiraNesne.length; i++) hatiraNesne[i].scale.setScalar(Math.max(0.001, hatiraNesne[i].userData.s * ss));
     if (!sesliBos && !gecis && !ilk && bos > 14) { sesliBos = true; SES.cal('secin'); }
+    gecisGuncelle();
     kameraAyarla(t, dt);
     if (gecis) {
-      var gp = clamp((t - gecis.t0 - (gecis.sure - 0.9)) / 0.8, 0, 1);
+      var gp = gecis.gir ? clamp((t - gecis.gir - (GIR - 0.75)) / 0.65, 0, 1) : 0;
       flas.style.opacity = gp; POST.exposure = 1.06 + gp * 0.8;
     }
     renderFrame();
@@ -1237,7 +1248,8 @@
     var yuk = document.getElementById('yukleniyor');
     if (yuk) setTimeout(function () { yuk.style.opacity = 0; setTimeout(function () { yuk.remove(); }, 600); }, 150);
     window.__ev = {
-      kapiyaGit: kapiyaGit, tamam: TAMAM, mod: '3d', salla: function () { fz.el = 2.6; },
+      kapiyaGit: kapiyaGit, tamam: TAMAM, mod: '3d', ses: function () { return SES.durum(); },
+      gecis: function () { return gecis ? { i: gecis.i, t0: gecis.t0, bitis: gecis.bitis, gir: gecis.gir, simdi: simdi } : null; }, salla: function () { fz.el = 2.6; },
       ekran: function () {   // test: portal / Feza / Bilbo ekran noktaları
         var o = { kapilar: PORTAL.map(function (p) { return toScreen(V(p.x, p.h * 0.5, DUVAR_Z)); }) };
         o.feza = toScreen(V(fz.p.x, 0.8, fz.p.z)); o.bilbo = toScreen(V(bb.p.x, 0.5, bb.p.z)); o.sira = PORTAL.map(function (p) { return p.id; });

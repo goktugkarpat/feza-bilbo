@@ -551,7 +551,7 @@ window.EV2D = function () {
     if (gecis) return;
     var m = MACERA[i];
     var sure = 1.7;
-    if (SES.calisiyor()) { SES.cal(m.id); sure = Math.min(3.0, Math.max(1.7, ((window.EV_SURE || {})[m.id] || 1.7) - 0.25)); }
+    if (SES.calisiyor()) { SES.cal(m.id); sure = Math.max(1.7, ((window.EV_SURE || {})[m.id] || 1.7) + 0.45); }   // cümle bitmeden sayfa açılmasın
     SES.cin();
     gecis = { i: i, t0: t, sure: sure }; fezaZipla = 0.001; bilboZipla = 0.001;
     setTimeout(function () { location.href = m.yol + Q; }, sure * 1000);
