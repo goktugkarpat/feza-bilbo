@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """Records every narrator line (AUD.LINES) with a natural Turkish female voice and writes sesler.js.
 
-English: python3 tools/gen_english_voices.py generates sesler-en.js from voice-en-text.json.
-Turkish recordings and pronunciation rules remain independent.
-
 Needs:  python3 -m pip install edge-tts   (internet while recording)   and ffmpeg
 Run:    python3 gen_voice.py            only new/changed lines are recorded; the rest come from .ses_onbellek/
         python3 gen_voice.py --hepsi    record everything again
@@ -28,7 +25,7 @@ RATE = "-5%"
 PITCH = "+2Hz"
 
 # How words should *sound* (subtitles keep the normal spelling). Regex → spoken form.
-# English-ish words get a Turkish spelling of their pronunciation (e.g. unicorn → yunikorn).
+# Foreign words get a Turkish spelling of their pronunciation (e.g. unicorn → yunikorn).
 # Avoid short capitalised words the engine may read as abbreviations ("Aa" was read as "Anadolu Ajansı").
 PRONOUNCE = [
     (r"(?i)\bunicorn", "yunikorn"),

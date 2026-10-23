@@ -33,7 +33,7 @@ RATE = "-5%"
 PITCH = "+2Hz"
 
 # How words should *sound* (subtitles keep the normal spelling). Regex → spoken form.
-# English-ish words get a Turkish spelling of their pronunciation (e.g. unicorn → yunikorn).
+# Foreign words get a Turkish spelling of their pronunciation (e.g. unicorn → yunikorn).
 # Avoid short capitalised words the engine may read as abbreviations ("Aa" was read as "Anadolu Ajansı").
 PRONOUNCE = [
     (r"(?i)\bunicorn", "yunikorn"),

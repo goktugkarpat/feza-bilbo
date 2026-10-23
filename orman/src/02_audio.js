@@ -1215,7 +1215,6 @@ const AUD = (() => {
     if (it.shown) sub(null);
     vcur = null; A.current = null;
   }
-  window.addEventListener('feza-language-change', () => { stopCur(); VQ.length = 0; clearTimeout(vgap); vgap = null; duck(false); });
   function say(key, o) {
     o = o || {};
     const text = voiceText(key);

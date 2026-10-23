@@ -1124,13 +1124,12 @@ const AUD = (() => {
   // ───────────────────────── narrator ─────────────────────────
   const GAP = 0.3, vbufs = {}, vpend = {}, VQ = [];
   let vcur = null, vgap = null, ducked = false;
-  const voiceLanguage = () => window.FEZA_LANG && window.FEZA_LANG.language() === 'en' ? 'en' : 'tr';
-  const voiceKey = key => voiceLanguage() + ':' + key;
-  const voiceText = key => voiceLanguage() === 'en' ? (window.FEZA_VOICE_EN_TEXT && window.FEZA_VOICE_EN_TEXT[key] || '') : (A.LINES[key] || '');
-  const mp3 = key => { const bank = voiceLanguage() === 'en' ? window.FEZA_VOICE_EN_MP3 : window.VOICE_MP3; return bank && bank[key] || null; };
+  const voiceKey = key => 'tr:' + key;
+  const voiceText = key => A.LINES[key] || '';
+  const mp3 = key => { const bank = window.VOICE_MP3; return bank && bank[key] || null; };
   // Recorded length if known (sesler.js also writes VOICE_DUR), otherwise ~14 characters per second.
   function lineDur(key) {
-    const bank = voiceLanguage() === 'en' ? window.FEZA_VOICE_EN_DUR : window.VOICE_DUR;
+    const bank = window.VOICE_DUR;
     const d = bank && bank[key];
     if (d) return d;
     if (vbufs[voiceKey(key)]) return vbufs[voiceKey(key)].duration;
@@ -1199,7 +1198,6 @@ const AUD = (() => {
     if (it.shown) sub(null);
     vcur = null; A.current = null;
   }
-  window.addEventListener('feza-language-change', () => { stopCur(); VQ.length = 0; clearTimeout(vgap); vgap = null; duck(false); });
   function say(key, o) {
     o = o || {};
     const text = voiceText(key);

@@ -35,7 +35,7 @@ Child-friendly forest balance: Father/eagle/Bilbo attack weights are .60/.16/.30
 
 ## Final polish and Turkish-only release
 
-- `FEZA_LANG` is a small Turkish-only compatibility facade: t/html preserve text, choose resolves immediately, and language is always tr even for old English preferences or ?lang=en. No English narration, language picker or English manifest is loaded. `AUD` uses only VOICE_MP3 / VOICE_DUR and Turkish LINES.
+- `FEZA_LANG` is a small Turkish-only compatibility facade: t/html preserve text, choose resolves immediately, and language is always tr. No second-language narration, language picker or second manifest is loaded. `AUD` uses only VOICE_MP3 / VOICE_DUR and Turkish LINES.
 - Forest skill icons and attack/weapon symbols use fixed, illustrated SVGs created once on slot unlock. Touch targets, cooldown layers and keyboard bindings are unchanged.
 - Palamut caps and spinning leaves reuse shared bark/leaf normal maps. Yaprak Kasırgası uses soft tapered wind wisps. Ormanın Kucaklaması has eight tapered, staggered roots in one InstancedMesh (one draw instead of eight) and gently moving elongated petals; damage, unlocks and cooldowns are unchanged.
 - Forest water uses the same two noise texture reads, with shallow-edge tint, restrained shoreline ripples and coherent animated normals. Camp embers/smoke share existing GPU point batches and add no lights.

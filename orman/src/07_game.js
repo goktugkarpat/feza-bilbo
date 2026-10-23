@@ -204,13 +204,13 @@ const GAME = (() => {
   };
   // v3: only manual saves (Kaydet) from now on — the automatic v2 saves are ignored, so every device starts fresh once.
   // Older keys (.v1, .v2) stay untouched on the device as leftovers. Keep in sync with 09_ui.js.
-  const MAIN_SAVE_KEY = 'bilboSakliToplar.save.v1', FOREST_SAVE_KEY = 'bilboSakliToplar.save.v1';
+  const MAIN_SAVE_KEY = 'orman_bilboSakliToplar.save.v1', FOREST_SAVE_KEY = 'orman_bilboSakliToplar.save.v1';
   let SAVE_KEY = MAIN_SAVE_KEY, forestParty = null, forestDirective = null, forestDogOverride = false;
   let forestSeen = new Set(), forestNoticeAt = -99, forestStoryAt = 0;
   const forestZone = () => zones() ? zones().findIndex(z => z.expansion) : -1;
   const forestMode = () => !!zdef().expansion;
   function forestSaved() { try { const s = JSON.parse(localStorage.getItem(FOREST_SAVE_KEY) || 'null'); return s && s.v === 1 && s.zid === 'uzunorman' ? s : null; } catch (err) { return null; } }
-  const MAP_KEY = 'bilboSakliToplar.map.v1';
+  const MAP_KEY = 'orman_bilboSakliToplar.map.v1';
   let mapOpen = false;
   try { mapOpen = localStorage.getItem(MAP_KEY) === 'acik'; } catch(e) {}
   function mapUnlocked() { return false; }
@@ -220,8 +220,8 @@ const GAME = (() => {
     if(GAME.state==='title') { const saved=readSave(); if(saved)applySave(saved); else resetPlayer(); }
     SAVE_KEY = MAIN_SAVE_KEY; GAME.paused=false; aud('stopVoice'); C.keyX=C.keyZ=0; loadZone(index); return true;
   }
-  const LEGACY_HARDCORE_KEY = 'bilboSakliToplar.legacyHardcore.v1';
-  const LEGACY_IGNORED_KEY = 'bilboSakliToplar.legacyIgnored.v1';
+  const LEGACY_HARDCORE_KEY = 'orman_bilboSakliToplar.legacyHardcore.v1';
+  const LEGACY_IGNORED_KEY = 'orman_bilboSakliToplar.legacyIgnored.v1';
   const HC = { hp: 1.35, bossHp: 1.25, dmg: 1.5, bossDmg: 1.45, special: 1.55, speed: 1.12, cd: 0.78, wind: 0.85 };
   let hard = false, legacyIgnored = false;   // one adventure/save flow; difficulty changes only combat
 
@@ -6133,6 +6133,7 @@ const GAME = (() => {
     if (GAME.state === 'end') return;
     if (!forestMode()) { mapOpen = true; try {localStorage.setItem(MAP_KEY,'acik');}catch(e){} }
     GAME.state = 'end'; C.cheerT = 1e9;
+    try { if (window.FEZA_BILBO_TAMAM) window.FEZA_BILBO_TAMAM('orman'); } catch (e) { /* macera bitti bilgisi: ev ekranı için */ }
     C.targetE = null; C.targetObj = null; C.hasT = false; C.drag = false; C.swing = null; C.vel = 0;
     if (crystal) faceTo(crystal.x, crystal.z);
     emit('victory', {});

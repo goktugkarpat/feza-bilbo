@@ -12,7 +12,7 @@ Anlatıcı Aytuğ Hala'nın kendisi. Bütün yaratıklar sevimli ve güler yüzl
 - **İnternette:** https://goktugkarpat.github.io/feza-aytug-hala/
 - **Bilgisayarda:** `index.html` dosyasına çift tıkla. Kurulum ya da internet gerekmez.
 - **iPad'de:** Safari ile oyun adresini açıp Paylaş › **Ana Ekrana Ekle** de. Oyun kendi simgesiyle, tam ekran bir uygulama gibi açılır.
-  İlk açılıştan sonra **internet olmadan da** çalışır (`sw.js` oyunu cihaza kaydeder).
+  İlk açılıştan sonra **internet olmadan da** çalışır (ana oyunun `../sw.js` dosyası bu macerayı da cihaza kaydeder).
 - **Yerel deneme:** `python3 serve.py` çalıştır; yazdığı adres aynı Wi-Fi'daki tablette de açılır.
 
 ## Nasıl oynanır
@@ -150,7 +150,7 @@ kaldığın yerden sürmek için **Kaydet**'e bas. Seviye, eşyalar, kostümler,
 | `sesler.js` | Aytuğ Hala'nın Türkçe kadın sesiyle kaydedilmiş cümleleri (dosyaya gömülü) |
 | `bilbo-ses.js`, `assets/audio/` | Bilbo'nun havlaması |
 | `gen_voice.py` | Cümle değişirse sesleri yeniden kaydeder |
-| `manifest.webmanifest`, `sw.js`, `icons/` | iPad'de uygulama gibi açılma, simge ve internetsiz çalışma |
+| `ev-dugmesi.js` | Sol üstteki ev düğmesi (basılı tut → Feza ile Bilbo'nun evine dön) |
 | `yayinla.command` | Çift tıklayınca değişiklikleri GitHub'a gönderir |
 | `serve.py` | İsteğe bağlı yerel sunucu (iPad'i aynı Wi-Fi'dan bağlamak için) |
 

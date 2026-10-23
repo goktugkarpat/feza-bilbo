@@ -11,5 +11,7 @@
 - Kamera, kalite ve simge seçenekleri: `?kam=uzaklık,eğim`, `?basit`, `?hd`, `?ikon`.
 - GitHub'a SADECE kullanıcı "yükle / GitHub'a gönder" dediğinde gönder (depo: github.com/goktugkarpat/feza-huysuzlara-karsi, `main`'e doğrudan).
   Kullanıcı `yayinla.command` ile de gönderebilir (ilk seferde depoyu oluşturup GitHub Pages'ı açar).
-- iPad uygulaması: `manifest.webmanifest`, `sw.js` (dosya eklenirse `CORE` listesine ekle; önemli değişiklikte `CACHE` sürümünü artır), `icons/`.
-  Simge `index.html?sessiz&ikon` sayfasının 1024x1024 ekran görüntüsünden üretilir.
+- **Feza ve Bilbo'nun Maceraları içinde (huysuz/):** kendi `sw.js`, `manifest.webmanifest`, `icons/` yok; kökteki `../sw.js` her şeyi önbelleğe alır,
+  `index.html` `../manifest.webmanifest` ve `../icons/` kullanır. `ev-dugmesi.js` (üç macerada aynı dosya) sol üstte basılı tutulan ev düğmesi
+  (→ `../index.html` + sorgu) ve `FEZA_BILBO_TAMAM(id)`; `victory()` bunu `'huysuz'` ile çağırır (localStorage `fezaBilboTamam`).
+  Kayıt/ayar anahtarları `huysuz_` önekli. Yalnız Türkçe; dil seçimi yok.

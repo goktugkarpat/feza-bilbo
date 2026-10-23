@@ -3,7 +3,7 @@
 const UI = (() => {
   'use strict';
 
-  const PREF_KEY = 'bilboSakliToplar.preferences.v1';
+  const PREF_KEY = 'orman_bilboSakliToplar.preferences.v1';
   const SLOTS = ['weapon', 'hat', 'cape'];
   const SLOT_AD = { weapon: 'Orman Silahları', hat: 'Şapkalar', cape: 'Pelerinler' };
   const SLOT_EMO = { weapon: '⚔️', hat: '🎩', cape: '🦸' };   // weapon: replaced by the tiny saber SVG once SVG exists (below)
@@ -16,7 +16,7 @@ const UI = (() => {
   // (the game has 3 skills); more would spill onto an outer arc.
   const ARC = [[142, 45], [142, 0], [142, 90], [238, 45], [238, 14], [238, 76]];
   const MAP_VIEW = 22, MAP_REVEAL = 11;   // minimap: metres from centre to rim; fog reveal radius
-  const SAVE_KEY = 'bilboSakliToplar.save.v1';   // same key as GAME's (only manual saves: Mola › Kaydet)
+  const SAVE_KEY = 'orman_bilboSakliToplar.save.v1';   // same key as GAME's (only manual saves: Mola › Kaydet)
 
   // ── Modules (resolved at boot; any may be missing in tests). typeof on a module that threw at load → TDZ error. ──
   const M = {};
@@ -3131,11 +3131,7 @@ const UI = (() => {
     bindInput();
     // Measure browser cadence while only the loading spinner is visible, before 3D work can slow rAF down.
     perfMeasure(() => setTimeout(heavyInit, 0));
-    // offline play: register sw.js on every http(s) build (it serves src/*.js network-first, so dev files are never stale)
-    if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
-      const reg = () => navigator.serviceWorker.register('sw.js').catch(() => {});
-      if (document.readyState === 'complete') reg(); else addEventListener('load', reg);
-    }
+    // offline play: the single root sw.js (Feza ve Bilbo'nun Maceraları) caches this adventure too
     return readyP;
   }
   function heavyInit() {

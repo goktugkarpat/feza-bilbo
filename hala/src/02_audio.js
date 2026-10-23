@@ -1203,7 +1203,6 @@ const AUD = (() => {
     if (it.shown) sub(null);
     vcur = null; A.current = null; lastVoiceEnd = wallNow();
   }
-  window.addEventListener('feza-language-change', () => { stopCur(); VQ.length = 0; clearTimeout(vgap); vgap = null; duck(false); });
   // ── Konuşma sırası (Dev Ev): her cümlenin bir sınıfı var: hikâye 5 > boss 4 > görev/oda 3 > tanıtım 2 > övgü 1.
   // Aynı anda birçok sistem konuşmak isterse: yüksek sınıf kuyrukta öne geçer; övgü konuşma varken hiç söylenmez;
   // tanıtım ancak kuyruk boşsa bekler; yüksek sınıf gelince kuyruktaki övgü/tanıtımlar atılır ve o an çalan övgü/tanıtım kesilir;

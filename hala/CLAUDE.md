@@ -12,5 +12,7 @@
 - Kontrol sırasında oyunu `?sessiz` ile aç. `?hepsiacik` Pasta Krallığı kilidini açar (test). `?kam=uzaklık,eğim`, `?basit`, `?hd`, `?ikon`.
 - GitHub'a SADECE kullanıcı "yükle / GitHub'a gönder" dediğinde gönder (depo: github.com/goktugkarpat/feza-aytug-hala, `main`'e doğrudan).
   Kullanıcı `yayinla.command` ile de gönderebilir (ilk seferde depoyu oluşturup GitHub Pages'ı açar).
-- iPad uygulaması: `manifest.webmanifest`, `sw.js` (dosya eklenirse `SRC`/`CORE` listesine ekle; önemli değişiklikte `CACHE` sürümünü artır;
-  önek `feza-aytug-hala-`, eski önbellek silerken yalnız bu önek), `icons/` (yeniden üretilecek).
+- **Feza ve Bilbo'nun Maceraları içinde (hala/):** kendi `sw.js`, `manifest.webmanifest`, `icons/` yok; kökteki `../sw.js` her şeyi önbelleğe alır,
+  `index.html` `../manifest.webmanifest` ve `../icons/` kullanır. `ev-dugmesi.js` (üç macerada aynı dosya) sol üstte basılı tutulan ev düğmesi
+  (→ `../index.html` + sorgu) ve `FEZA_BILBO_TAMAM(id)`; `victory()` bunu `'hala'` ile çağırır (localStorage `fezaBilboTamam`).
+  Kayıt/ayar anahtarları `hala_` önekli. Yalnız Türkçe; dil seçimi yok.

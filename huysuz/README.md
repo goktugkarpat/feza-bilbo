@@ -1,6 +1,6 @@
 # Feza ve Bilbo Huysuzlara Karşı ⚔️✨
 
-5 yaşındaki Feza için yapılmış, üç boyutlu, Türkçe ve İngilizce seslendirmeli bir macera oyunu (Diablo tarzı, ama çocuklara göre).
+5 yaşındaki Feza için yapılmış, üç boyutlu, Türkçe seslendirmeli bir macera oyunu (Diablo tarzı, ama çocuklara göre).
 Gerçek Bilbo'dan esinlenen çikolata renkli Labrador Bilbo, maceranın başından sonuna kadar Feza'nın yanında koşar ve yakındaki huysuzlara havlayarak yardım eder.
 Feza tuvalette kitabını okurken Bilbo’yla neşeli bir hayal kuruyor. Başlangıç ekranındaki gerçek Feza modeli klozette oturup kitabını okur;
 özel masal banyosunda oyuncaklar, kitaplar ve içinde dünyalar olan hayal baloncukları bulunur. Her kapı yeni bir hayale açılır.
@@ -12,12 +12,11 @@ onlar sevinçten kocaman gülümseyip kalpler saçarak kayboluyorlar. Bütün ya
 - **Bilgisayarda:** `index.html` dosyasına çift tıklamanız yeterli. Kurulum ya da internet gerekmez.
 - **iPad'de:** Oyun GitHub Pages'ta yayınlanınca iPad'de Safari ile https://goktugkarpat.github.io/feza-huysuzlara-karsi/ adresini açıp
   Paylaş › **Ana Ekrana Ekle** deyin. Oyun kendi simgesiyle, tam ekran bir uygulama gibi açılır.
-  İlk açılıştan sonra **internet olmadan da** çalışır (`sw.js` oyunu cihaza kaydeder).
+  İlk açılıştan sonra **internet olmadan da** çalışır (ana oyunun `../sw.js` dosyası bu macerayı da cihaza kaydeder).
 - Aynı Wi-Fi'daki iPad'de denemek için Mac'te `python3 serve.py` çalıştırıp yazdığı adresi iPad'de açabilirsiniz.
 
 ## Nasıl oynanır
 
-- **Dil:** Açılışta **Türkçe** veya **English** seçilir. Menüler, eşya/yetenek adları, bölüm yazıları ve konuşmalar seçilen dilde açılır. İngilizce anlatım önceden kaydedilmiş doğal bir kadın sesidir; kayıtlar oyuna gömülüdür ve internet gerektirmez. Başlangıç ekranının sol üstündeki dil düğmesiyle değiştirilebilir. Dil tercihi oyun kaydını, çantayı veya ilerlemeyi değiştirmez.
 
 - **Karakter:** Oyna düğmesinden sonra Savaşçı Feza, Büyücü Feza veya **Büyülü Şövalye Feza** seçilir. Savaşçı ışın kılıcıyla yaklaşır; büyücü ahşap değneğiyle uzaktan vurur. Büyülü şövalye iki silahı birlikte taşır: yakında kılıç, uzakta değnek kullanır.
 - **Yürümek:** Parmağını ekranda gitmek istediğin yere bas. Feza parmağının altındaki yere koşar; parmağını kaydırdıkça peşinden gider.
@@ -68,7 +67,7 @@ ve **Gezegen** değnekleri; **Kedi Kulaklı Bere**, **Dondurma Şapkası**, **Yu
 - **İstediğin sırada rahat oyna:** Şehir, mağara veya kale baştan seçildiğinde eski son bölüm gücü uygulanmaz.
   Sıradan huysuzlar benzer sayıda vuruşta neşelenir; iri ve seçkinler biraz daha dayanıklıdır. Normalde aynı anda en fazla iki yakın ve bir uzaktan saldıran huysuz sırasını alır.
   İlk seviyelerde saldırı işaretleri daha uzun görünür, vuruşlar arasında toparlanmak için daha çok zaman vardır; boss karşılaşmaları da başlangıç silahıyla oynanabilecek uzunluktadır.
-- Bölüm tanıtımları önce başka bir bölümü bitirmiş olmanı beklemez. Türkçe ve İngilizce anlatıcı, seçtiğin hayali anlatır; haritadan farklı sırayla gezebilirsin.
+- Bölüm tanıtımları önce başka bir bölümü bitirmiş olmanı beklemez. Anlatıcı, seçtiğin hayali anlatır; haritadan farklı sırayla gezebilirsin.
 - Büyücü Feza'nın normal değnek atışı biraz daha hızlıdır.
 - Bossun kendi küçük oyununu başarıp onu sersemletince, sersemleme boyunca saldırıların **%25 daha fazla hasar** verir.
   Ejderhaya gönderilen dostluk kalbinin sabit hasarı ve şövalyenin sancakları bu artışa dahil değildir.
@@ -169,7 +168,7 @@ Mola menüsünde **Devam Et**, **Zorluk**, **Kaydet** ve **Baştan Başla** bulu
 | `vendor/three.js` | 3D kütüphanesi (three.js r170, MIT lisansı) |
 | `sesler.js` | Türkçe kadın sesiyle kaydedilmiş anlatıcı cümleleri (dosyaya gömülü) |
 | `gen_voice.py` | Cümle değişirse sesleri yeniden kaydeder |
-| `manifest.webmanifest`, `sw.js`, `icons/` | iPad'de uygulama gibi açılma, simge ve internetsiz çalışma |
+| `ev-dugmesi.js` | Sol üstteki ev düğmesi (basılı tut → Feza ile Bilbo'nun evine dön) |
 | `yayinla.command` | Çift tıklayınca değişiklikleri GitHub'a gönderir |
 | `serve.py` | İsteğe bağlı yerel sunucu (iPad'i aynı Wi-Fi'dan bağlamak için) |
 

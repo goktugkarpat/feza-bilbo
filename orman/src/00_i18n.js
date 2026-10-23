@@ -5,7 +5,6 @@ window.FEZA_LANG = (() => {
   function set() {
     document.documentElement.lang = 'tr';
     document.title = 'Bilbo ve Saklı Toplar Ormanı';
-    try { localStorage.removeItem('bilboSakliToplar.language.v1'); } catch (_) {}
   }
   set();
   return { t: text, html: text, choose: () => Promise.resolve('tr'), reopen: set, set, language: () => 'tr' };
