@@ -70,6 +70,10 @@ const AUD = (() => {
       brass: wave(c, [1, 0.8, 0.55, 0.38, 0.25, 0.16, 0.1, 0.06, 0.035, 0.02]),
       flute: wave(c, [1, 0.16, 0.05, 0.015]),
       rec: wave(c, [1, 0.1, 0.18, 0.035, 0.05, 0.012, 0.012]),   // recorder: pure, a touch of odd "woodiness"
+      clar: wave(c, [1, 0.04, 0.55, 0.03, 0.3, 0.02, 0.14, 0.01, 0.06]),   // clarinet: hollow odd harmonics
+      reed: wave(c, [1, 0.85, 0.75, 0.55, 0.5, 0.32, 0.22, 0.14, 0.09, 0.05]),   // bassoon reed
+      harm: wave(c, [1, 0.7, 0.5, 0.45, 0.3, 0.2, 0.12, 0.07]),   // harmonica reed
+      frog: wave(c, [1, 0.6, 0.9, 0.3, 0.5, 0.2, 0.25]),   // raspy frog throat
     };
     return m;
   }
@@ -641,6 +645,180 @@ const AUD = (() => {
       T(m, o, t + 0.1, 165 * p, 0.9, 0.05, { fs: [[0, 165 * p], [0.25, 175 * p], [0.9, 118 * p]], hold: 1, a: 0.15, rel: 0.45 });
       return 1.05;
     },
+    // ── Orman (6 bölüm): the forest friends and the five new zone bosses. Cartoon voices: round, soft and cute, never a growl or a smack.
+    beaverSlap(m, o, t, p) {   // Huysuz Kunduz's flat tail slaps the water: a round wet "şap!", a little spray and a few drops
+      N(m, o, t, 0.06, 0.3, { fs: [[0, 1700 * p], [0.06, 700 * p]], q: 0.8, a: 0.001 });
+      T(m, o, t, 240 * p, 0.12, 0.34, { f1: 110 * p, a: 0.0015 });
+      N(m, o, t + 0.02, 0.3, 0.14, { fs: [[0, 2100 * p], [0.3, 600 * p]], q: 0.9, a: 0.01 });
+      for (let i = 0; i < 5; i++) { const f = rnd(600, 1300) * p; T(m, o, t + rnd(0.06, 0.34), f, 0.045, 0.08, { f1: f * 1.8, a: 0.002 }); }
+      return 0.42;
+    },
+    beaverGnaw(m, o, t, p) {   // busy beaver teeth on a log: a quick "kırt-kırt-kırt" of tiny woody scrapes and a little sniff
+      for (let i = 0; i < 9; i++) {
+        const tt = t + i * 0.055 + rnd(0, 0.01), q = p * (1 + (i % 3) * 0.08);
+        N(m, o, tt, 0.035, rnd(0.1, 0.14), { f: 2000 * q, q: 2, a: 0.002 });
+        T(m, o, tt, 620 * q, 0.03, 0.06, { f1: 480 * q, a: 0.001 });
+      }
+      N(m, o, t + 0.56, 0.08, 0.05, { f: 1600 * p, q: 1, a: 0.01 });
+      return 0.66;
+    },
+    beaverHappy(m, o, t, p) {   // the beaver cheers up: two squeaky "iik-iik!" giggles, a happy tail pat on the water, a sparkle
+      [[0, 1300], [0.13, 1560]].forEach(([dt, f]) => T(m, o, t + dt, f * p, 0.1, 0.13, { fs: [[0, f * 0.85 * p], [0.04, f * 1.12 * p], [0.1, f * p]], type: 'triangle', a: 0.004, vib: [20, 30, 0.02] }));
+      N(m, o, t + 0.3, 0.05, 0.12, { fs: [[0, 1500 * p], [0.05, 700 * p]], q: 0.8, a: 0.001 });
+      T(m, o, t + 0.3, 260 * p, 0.09, 0.14, { f1: 140 * p, a: 0.002 });
+      arp(m, o, t + 0.36, [1319, 1568, 2093], 0.06, 0.4, 0.05, p); return 0.8;
+    },
+    frogCroak(m, o, t, p) {   // Koca Kurbağa: a deep, round "vrrRAAK" (purring throat that opens up) and a tiny bubbly gulp; cute, not a growl
+      const c = m.c, os = c.createOscillator(), g = gainNode(c, 0), bq = c.createBiquadFilter(), d = 0.48, end = t + d + 0.05;
+      os.setPeriodicWave(m.waves.frog);
+      curve(os.frequency, t, [[0, 96 * p], [0.3, 104 * p], [0.42, 122 * p], [0.48, 112 * p]]);
+      const am = gainNode(c, 0.6), l = c.createOscillator(), lg = gainNode(c, 0.4);
+      curve(l.frequency, t, [[0, 22], [0.3, 30], [0.48, 18]]); l.connect(lg); lg.connect(am.gain);   // the rolled "rrr"
+      bq.type = 'bandpass'; bq.Q.value = 1.6; curve(bq.frequency, t, [[0, 380 * p], [0.3, 520 * p], [0.4, 900 * p], [0.48, 620 * p]]);   // "vr" → "AA" → "k"
+      os.connect(bq); bq.connect(am); am.connect(g);
+      env(g.gain, t, 0.03, 0.75, d, 1, 0.06); g.connect(o);
+      os.start(t); l.start(t); os.stop(end); l.stop(end);
+      T(m, o, t, 190 * p, 0.42, 0.1, { f1: 230 * p, hold: 1, a: 0.04, rel: 0.1 });   // throat-sac hum (high enough for tablet speakers)
+      T(m, o, t + 0.5, 330 * p, 0.08, 0.12, { f1: 700 * p, a: 0.004 });   // "gulp"
+      return 0.62;
+    },
+    frogRibbit(m, o, t, p) {   // a little pond frog: "rib-bit!"
+      [[0, 1, 0.055], [0.1, 1.25, 0.07]].forEach(([dt, k, d]) => {
+        const f = 230 * p * k;
+        T(m, o, t + dt, f, d, 0.32, { wave: 'frog', fs: [[0, f * 0.9], [d, f * 1.08]], bp: f * 3, q: 1.4, a: 0.003 });
+      });
+      return 0.2;
+    },
+    frogTongue(m, o, t, p) {   // the tongue shoots out and back: a springy "thwip!", a sticky little "tök" and a quick slurp home
+      T(m, o, t, 300 * p, 0.14, 0.3, { f1: 1500 * p, glide: 0.12, a: 0.003 });
+      N(m, o, t, 0.12, 0.08, { fs: [[0, 900 * p], [0.12, 3000 * p]], q: 1.5, a: 0.01 });
+      T(m, o, t + 0.15, 900 * p, 0.04, 0.08, { f1: 600 * p, a: 0.002 });
+      N(m, o, t + 0.2, 0.18, 0.14, { fs: [[0, 1600 * p], [0.18, 600 * p]], q: 2.5, a: 0.02, am: [30, 0.7] });
+      return 0.4;
+    },
+    frogHappy(m, o, t, p) {   // the big frog sings: "rib, bit, rib-biiit!" climbing like a little tune, bubbles, a twinkle
+      [[0, 196], [0.12, 247], [0.28, 294], [0.4, 392]].forEach(([dt, f], i) => T(m, o, t + dt, f * p, i === 3 ? 0.24 : 0.08, 0.26,
+        { wave: 'frog', fs: [[0, f * 0.92 * p], [0.05, f * p]], bp: f * 3 * p, q: 1.4, a: 0.004, hold: i === 3 ? 1 : 0, rel: 0.08, vib: i === 3 ? [24, 30, 0.02] : null }));
+      for (let i = 0; i < 3; i++) { const f = rnd(500, 900) * p; T(m, o, t + 0.5 + i * 0.07, f, 0.06, 0.07, { f1: f * 1.9, a: 0.003 }); }
+      arp(m, o, t + 0.55, [1568, 2093, 2637], 0.06, 0.4, 0.045, p); return 0.95;
+    },
+    bearYawn(m, o, t, p) {   // Uykucu Ayı wakes: a sleepy grumble "hrrm", then a big yawn "haaaa-uumm" (rises, opens, sinks) and a lip pop
+      N(m, o, t, 0.32, 0.12, { type: 'lowpass', f: 420 * p, q: 1, a: 0.06, hold: 1, rel: 0.1, am: [24, 0.85] });   // grumble
+      T(m, o, t, 110 * p, 0.32, 0.07, { type: 'triangle', hold: 1, a: 0.06, rel: 0.1, vib: [24, 40, 0.02] });
+      const c = m.c, t0 = t + 0.3, os = c.createOscillator(), g = gainNode(c, 0), d = 1.35, end = t0 + d + 0.05;
+      os.setPeriodicWave(m.waves.brass);
+      curve(os.frequency, t0, [[0, 130 * p], [0.35, 175 * p], [0.8, 160 * p], [1.35, 105 * p]]);
+      const l = c.createOscillator(), lg = gainNode(c, 0); l.frequency.value = 5;
+      lg.gain.setValueAtTime(0, t0); lg.gain.linearRampToValueAtTime(18, t0 + 0.8); l.connect(lg); lg.connect(os.detune);
+      const f1 = c.createBiquadFilter(), f2 = c.createBiquadFilter(), g2 = gainNode(c, 0.5);
+      f1.type = 'bandpass'; f1.Q.value = 2.5; curve(f1.frequency, t0, [[0, 500 * p], [0.4, 850 * p], [0.9, 600 * p], [1.35, 320 * p]]);   // "a" → "o" → "u-m"
+      f2.type = 'bandpass'; f2.Q.value = 3; curve(f2.frequency, t0, [[0, 1200 * p], [0.4, 1300 * p], [0.9, 900 * p], [1.35, 700 * p]]);
+      os.connect(f1); os.connect(f2); f2.connect(g2); f1.connect(g); g2.connect(g);
+      env(g.gain, t0, 0.25, 0.5, d, 1, 0.4); g.connect(o);
+      os.start(t0); l.start(t0); os.stop(end); l.stop(end);
+      N(m, o, t0, 0.9, 0.05, { fs: [[0, 1100 * p], [0.9, 700 * p]], q: 1, a: 0.2, hold: 1, rel: 0.4 });   // breath
+      T(m, o, t0 + 1.42, 420 * p, 0.06, 0.12, { f1: 700 * p, a: 0.002 });   // "mp"
+      return 1.85;
+    },
+    bearHum(m, o, t, p) {   // a happy bear hums with its mouth closed: "mm-hm-mmm!" (a little three-note tune), a giggly breath, a twinkle
+      [[0, 220, 0.2], [0.24, 277, 0.18], [0.46, 330, 0.42]].forEach(([dt, f, d]) => {
+        T(m, o, t + dt, f * p, d, 0.22, { wave: 'brass', lp: 520 * p, q: 1.2, hold: 1, a: 0.04, rel: 0.08, vib: [5.5, 14, 0.1] });
+        T(m, o, t + dt, f * 2 * p, d, 0.05, { hold: 1, a: 0.04, rel: 0.08 });
+      });
+      N(m, o, t + 0.9, 0.12, 0.05, { f: 1200 * p, q: 1, a: 0.02 });
+      arp(m, o, t + 0.92, [1047, 1319, 1568], 0.06, 0.4, 0.04, p); return 1.25;
+    },
+    bearSnore(m, o, t, p) {   // a cosy snore: a purring "hrrrr" in, a tiny whistle "fiuuu" out
+      N(m, o, t, 0.7, 0.16, { type: 'lowpass', fs: [[0, 300 * p], [0.7, 600 * p]], q: 1.2, a: 0.3, hold: 1, rel: 0.2, am: [26, 0.9] });
+      T(m, o, t, 95 * p, 0.7, 0.08, { f1: 120 * p, type: 'triangle', hold: 1, a: 0.3, rel: 0.2, vib: [26, 40, 0.05] });
+      T(m, o, t + 0.85, 1300 * p, 0.5, 0.05, { f1: 900 * p, hold: 1, a: 0.08, rel: 0.25 });
+      N(m, o, t + 0.85, 0.5, 0.04, { f: 900 * p, q: 1, a: 0.1, hold: 1, rel: 0.25 });
+      return 1.4;
+    },
+    bearStomp(m, o, t, p) {   // a big furry paw on the ground: a soft padded "pöff", a little bounce, some leaves jumping
+      T(m, o, t, 180 * p, 0.32, 0.5, { f1: 70 * p, a: 0.003 });
+      N(m, o, t, 0.3, 0.3, { type: 'lowpass', fs: [[0, 900], [0.3, 150]], q: 0.5 });
+      T(m, o, t + 0.05, 260 * p, 0.25, 0.12, { fs: [[0, 260 * p], [0.05, 420 * p], [0.25, 330 * p]], a: 0.004, vib: [13, 50, 0.04] });
+      for (let i = 0; i < 4; i++) N(m, o, t + 0.05 + rnd(0, 0.25), 0.06, rnd(0.04, 0.07), { f: rnd(2500, 3800), q: 1, a: 0.01 });
+      return 0.45;
+    },
+    goatBleat(m, o, t, p) {   // a cute goat "meeeh-eh-eh": a bright nasal "e" with the goat's quick tremble, gently falling
+      const c = m.c, os = c.createOscillator(), g = gainNode(c, 0), d = 0.7, end = t + d + 0.05;
+      os.setPeriodicWave(m.waves.brass);
+      curve(os.frequency, t, [[0, 400 * p], [0.08, 470 * p], [0.5, 440 * p], [0.7, 380 * p]]);
+      const l = c.createOscillator(), lg = gainNode(c, 0), ag = gainNode(c, 0), am = gainNode(c, 0.6);
+      curve(l.frequency, t, [[0, 7], [0.7, 6]]);
+      lg.gain.setValueAtTime(10, t); lg.gain.linearRampToValueAtTime(60, t + 0.3);
+      ag.gain.setValueAtTime(0.1, t); ag.gain.linearRampToValueAtTime(0.4, t + 0.3);
+      l.connect(lg); lg.connect(os.detune); l.connect(ag); ag.connect(am.gain);
+      const f1 = c.createBiquadFilter(), f2 = c.createBiquadFilter(), lp = c.createBiquadFilter();
+      f1.type = 'peaking'; f1.frequency.value = 550 * p; f1.Q.value = 2; f1.gain.value = 8;
+      f2.type = 'peaking'; f2.frequency.value = 1900 * p; f2.Q.value = 2; f2.gain.value = 9;
+      lp.type = 'lowpass'; lp.frequency.value = 3000;
+      os.connect(f1); f1.connect(f2); f2.connect(lp); lp.connect(am); am.connect(g);
+      env(g.gain, t, 0.04, 0.22, d, 1, 0.18); g.connect(o);
+      os.start(t); l.start(t); os.stop(end); l.stop(end);
+      N(m, o, t, 0.06, 0.04, { f: 2000 * p, q: 1, a: 0.01 });
+      return 0.8;
+    },
+    goatHappy(m, o, t, p) {   // the goat cheers up: a short high "meh-eh!", its little neck bell jingles, a sparkle
+      SFX.goatBleat(m, o, t, p * 1.22);
+      for (let i = 0; i < 4; i++) { const tt = t + 0.45 + i * 0.09 + rnd(0, 0.02); T(m, o, tt, 1760 * p, 0.3, 0.06, { a: 0.001 }); T(m, o, tt, 4752 * p, 0.12, 0.02, { a: 0.001 }); }
+      arp(m, o, t + 0.5, [1568, 2093, 2637], 0.06, 0.4, 0.04, p); return 1.0;
+    },
+    goatCharge(m, o, t, p) {   // little hooves scrabbling on rock ("tıkı-tıkı") into a soft toy horn "tonk"
+      for (let i = 0; i < 4; i++) {
+        const tt = t + i * 0.07, q = p * (i & 1 ? 0.85 : 1);
+        T(m, o, tt, 1100 * q, 0.035, 0.14, { f1: 800 * q, a: 0.0006 }); N(m, o, tt, 0.02, 0.08, { f: 2400 * q, q: 3, a: 0.0005 });
+      }
+      N(m, o, t + 0.1, 0.25, 0.12, { fs: [[0, 500 * p], [0.25, 1500 * p]], q: 1.2, a: 0.08 });
+      T(m, o, t + 0.34, 520 * p, 0.18, 0.22, { f1: 380 * p, a: 0.001 }); T(m, o, t + 0.34, 1290 * p, 0.08, 0.05, { a: 0.001 });
+      return 0.55;
+    },
+    owlHoot(m, o, t, p) {   // a friendly owl: "huu-huuu", round breathy hoots, the second a little longer and lower
+      [[0, 0.26, 470], [0.36, 0.48, 430]].forEach(([dt, d, f]) => {
+        T(m, o, t + dt, f * p, d, 0.3, { fs: [[0, f * 0.9 * p], [0.06, f * p], [d, f * 0.94 * p]], hold: 1, a: 0.05, rel: d * 0.5, vib: [5, 10, 0.1] });
+        T(m, o, t + dt, f * 2 * p, d, 0.025, { hold: 1, a: 0.05, rel: d * 0.5 });
+        N(m, o, t + dt, d, 0.05, { f: f * 2.5 * p, q: 1.2, hold: 1, a: 0.04, rel: d * 0.5 });
+      });
+      return 0.9;
+    },
+    owlFlap(m, o, t, p) {   // big soft wings: three feathery "fwuff"s of air (no clap)
+      for (let i = 0; i < 3; i++) {
+        const tt = t + i * 0.19;
+        N(m, o, tt, 0.16, 0.3 - i * 0.05, { fs: [[0, 350 * p], [0.07, 1100 * p], [0.16, 400 * p]], q: 0.9, a: 0.04 });
+        N(m, o, tt, 0.12, 0.06, { type: 'lowpass', f: 400, a: 0.03 });
+      }
+      return 0.6;
+    },
+    owlFeather(m, o, t, p) {   // a floating feather is thrown: a soft "fwip" and a gentle twinkle as it glides
+      N(m, o, t, 0.18, 0.18, { fs: [[0, 800 * p], [0.18, 2600 * p]], q: 1.4, a: 0.03 });
+      T(m, o, t + 0.04, 1200 * p, 0.25, 0.04, { f1: 1800 * p, a: 0.02 });
+      B(m, o, t + 0.1, 2349 * p, 0.35, 0.03, 3.5, 0.7); return 0.4;
+    },
+    owlHappy(m, o, t, p) {   // the owl cheers up: a bright "hu-hu-huu!" going up, a fluffy flutter, a sparkle
+      [[0, 520, 0.1], [0.14, 587, 0.1], [0.28, 698, 0.3]].forEach(([dt, f, d]) => T(m, o, t + dt, f * p, d, 0.26, { fs: [[0, f * 0.92 * p], [0.04, f * p]], hold: 1, a: 0.03, rel: d * 0.5, vib: [6, 12, 0.05] }));
+      N(m, o, t + 0.55, 0.3, 0.08, { f: 900 * p, q: 1, a: 0.05, am: [16, 0.8] });
+      arp(m, o, t + 0.6, [1397, 1760, 2093], 0.06, 0.4, 0.045, p); return 1.0;
+    },
+    quack(m, o, t, p) {   // a little duck on the pond: "vak-vak"
+      for (let i = 0; i < 2; i++) {
+        const tt = t + i * 0.17, f = 330 * p * (i ? 0.95 : 1), fs = [[0, f * 1.05], [0.12, f * 0.85]];
+        T(m, o, tt, f, 0.12, 0.2, { wave: 'saw', fs, bp: 1100 * p, q: 3, a: 0.006 });
+        T(m, o, tt, f, 0.12, 0.06, { wave: 'sq', fs, lp: 1800, a: 0.006 });
+      }
+      return 0.32;
+    },
+    cricket(m, o, t, p) {   // one soft cricket: "cri-cri-cri, cri-cri-cri"
+      for (let k = 0; k < 2; k++) for (let i = 0; i < 3; i++) T(m, o, t + k * 0.22 + i * 0.035, 3900 * p, 0.022, 0.05, { a: 0.003 });
+      return 0.4;
+    },
+    bossHappy(m, o, t, p) {   // a zone boss becomes a friend: a marimba run up, a toy horn "ta-daa", claps and sparkles
+      [523, 659, 784, 1047, 1319].forEach((f, i) => INST.marimba(m, o, t + i * 0.06, f * p, 0.2, 0.16));
+      [[0.36, 784, 0.09], [0.47, 1047, 0.45]].forEach(([dt, f, d]) => T(m, o, t + dt, f * p, d, 0.09, { wave: 'brass', hold: 1, a: 0.015, rel: 0.12, lp: f * 3 * p, vib: [6, 15, 0.12] }));
+      for (let i = 0; i < 6; i++) N(m, o, t + 0.45 + rnd(0, 0.4), 0.025, rnd(0.06, 0.11), { f: rnd(1300, 2300), q: 1.2, a: 0.001 });
+      sparkle(m, o, t + 0.5, 8, 2000 * p, 4000 * p, 0.45, 0.025); return 1.1;
+    },
     // extras
     nope(m, o, t, p) { T(m, o, t, 330 * p, 0.1, 0.14, { type: 'triangle', hold: 1, rel: 0.03 }); T(m, o, t + 0.12, 262 * p, 0.14, 0.14, { type: 'triangle', hold: 1, rel: 0.05 }); return 0.3; },
     open(m, o, t, p) { T(m, o, t, 620 * p, 0.09, 0.13, { f1: 930 * p }); B(m, o, t + 0.05, 1397 * p, 0.3, 0.05, 4, 0.7); return 0.35; },
@@ -660,6 +838,8 @@ const AUD = (() => {
     fizz: 2.55, cork: 1.04, slurp: 3.1, squish: 1.19, moo: 0.64,
     neigh: 0.49, gallop: 1.09, drum: 0.7, broom: 2.75, horn: 0.99, bell: 0.77, clank: 1.04,
     bonk: 1.08, hiccup: 1.44, munch: 1.8, sigh: 1.27, bilboBark: 0.95,
+    /*ORMAN-SVOL*/beaverSlap: 2.3, beaverGnaw: 2.4, beaverHappy: 2.1, frogCroak: 0.66, frogRibbit: 1.2, frogTongue: 3.2, frogHappy: 1.07, bearYawn: 0.87, bearHum: 0.66, 
+    bearSnore: 1.35, bearStomp: 1.1, goatBleat: 0.67, goatHappy: 0.54, goatCharge: 1.1, owlHoot: 0.48, owlFlap: 2.85, owlFeather: 3.05, owlHappy: 0.48, quack: 1.95, cricket: 3, bossHappy: 1.1,/*ORMAN-SVOL-SON*/
   };
   // Random pitch spread (semitones, default 0.45), min retrigger gap (s) and "droppable when busy".
   const SVAR = { levelup: 0.05, unlock: 0.05, checkpoint: 0.05, chest: 0.1, dropLegend: 0.05, dropRare: 0.15, portal: 0.1, click: 0.15, coin: 0.05, pop: 0.08,
@@ -673,6 +853,13 @@ const AUD = (() => {
     bonk: 0.08, hiccup: 0.2, munch: 0.3, sigh: 0.8, bilboBark: 1.5 };   // munch: one per chew (GAME calls it every 0.5 s)   // gallop: one per hoof beat, strides ≥ 0.15 s apart all play
   const LOW = { step: 1, hitSoft: 1, swing: 1, bat: 1, spit: 1, drop: 1, click: 1, whoosh: 1, dig: 1, bubblePop: 1, lava: 1, chirp: 1, splat: 1,
     fizz: 1, squish: 1, moo: 1, broom: 1, clank: 1, munch: 1 };
+  // Orman animals: voices keep their character (small pitch spread), calls are rare ambients, the busy little ones are droppable.
+  Object.assign(SVAR, { frogCroak: 0.3, frogHappy: 0.1, bearYawn: 0.3, bearHum: 0.05, bearSnore: 0.3, goatBleat: 0.6, goatHappy: 0.1, owlHoot: 0.4, owlHappy: 0.1, bossHappy: 0.05, quack: 0.8 });
+  Object.assign(SGAP, { beaverSlap: 0.15, beaverGnaw: 0.5, frogCroak: 0.6, frogRibbit: 0.25, frogTongue: 0.2, bearYawn: 1.6, bearHum: 1, bearSnore: 1.4, bearStomp: 0.2,
+    goatBleat: 0.6, goatCharge: 0.3, owlHoot: 0.9, owlFlap: 0.4, owlFeather: 0.08, quack: 0.4, cricket: 0.5, beaverHappy: 0.5, frogHappy: 0.5, goatHappy: 0.5, owlHappy: 0.5, bossHappy: 1 });
+  Object.assign(LOW, { beaverGnaw: 1, frogRibbit: 1, quack: 1, cricket: 1, owlFeather: 1 });
+  // short names the forest animal code may ask for (HAYVAN: 'croak', 'yawn', 'hoot', 'bleat'; 'quack' is its own recipe)
+  [['croak', 'frogCroak'], ['yawn', 'bearYawn'], ['hoot', 'owlHoot'], ['bleat', 'goatBleat']].forEach(([a, b]) => { SFX[a] = SFX[b]; for (const tb of [SVOL, SVAR, SGAP, LOW]) if (b in tb) tb[a] = tb[b]; });
   const STREAK = [0, 2, 4, 7, 9, 12, 14, 16];   // coins picked up / enemies cheered up in a row climb a pentatonic scale
 
   function playRecipe(m, name, o, t) {
@@ -782,6 +969,92 @@ const AUD = (() => {
       const step = 0.076, n = Math.min(8, Math.floor(d / step));
       for (let i = 0; i < n; i++) one(t + i * step, v * (i ? 0.52 - i * 0.025 : 1));
     },
+    // ── Orman (6 bölüm): the camp trip's band ──
+    // nylon guitar: warm pluck whose brightness settles quickly into a round body, a soft fingertip at the start
+    guitar(m, out, t, f, d, v) {
+      const dd = cl(d * 2.4, 0.7, 1.8);
+      T(m, out, t, f, dd, v * 0.62, { wave: 'saw', fs: [[0, f * 1.004], [0.03, f]], lp: [[0, f * 6], [0.07, f * 2.4], [dd, f * 1.15]], q: 0.8, a: 0.002 });
+      T(m, out, t, f, dd * 1.2, v * 0.42, { type: 'triangle', a: 0.002 });
+      N(m, out, t, 0.018, v * 0.16, { f: Math.min(f * 4, 5000), q: 1.4, a: 0.0006 });
+    },
+    // wooden flute: pure and airy, a breathy edge at the start, gentle late vibrato
+    flute(m, out, t, f, d, v) {
+      d = Math.max(d, 0.08);
+      T(m, out, t, f, d, v, { wave: 'flute', fs: [[0, f * 0.992], [0.035, f]], hold: 1, a: 0.035, rel: 0.09, vib: [5, 11, 0.22] });
+      N(m, out, t, 0.05, v * 0.1, { f: Math.min(f * 3, 7000), q: 2.5, a: 0.006 });
+      if (d > 0.25) N(m, out, t, d, v * 0.03, { f: f * 1.5, q: 5, hold: 1, a: 0.08, rel: 0.08 });
+    },
+    // clarinet: hollow odd harmonics (woody), soft tongue, a hint of vibrato
+    clarinet(m, out, t, f, d, v) {
+      d = Math.max(d, 0.07);
+      T(m, out, t, f, d, v, { wave: 'clar', lp: Math.min(f * 3.5, 2800), q: 0.6, hold: 1, a: 0.025, rel: 0.07, vib: [4.8, 6, 0.3] });
+      N(m, out, t, 0.03, v * 0.08, { f: Math.min(f * 2, 4000), q: 2, a: 0.003 });
+    },
+    // bassoon: round, slightly nasal reed (the friendly grandpa of the orchestra)
+    bassoon(m, out, t, f, d, v) {
+      d = Math.max(d, 0.08);
+      T(m, out, t, f, d, v, { wave: 'reed', lp: [[0, Math.min(f * 3, 1400)], [0.04, Math.min(f * 5, 2000)], [d, Math.min(f * 4, 1700)]], q: 1.6, hold: 1, a: 0.02, rel: 0.06, vib: [4.5, 5, 0.3] });
+      if (f < 260) T(m, out, t, f * 2, d, v * 0.25, { hold: 1, a: 0.02, rel: 0.06 });   // octave partial: low notes still speak on tablet speakers
+    },
+    // string section: three bows a hair apart, a slow bloom and late vibrato, rounded top
+    strings(m, out, t, f, d, v) {
+      const a = Math.min(0.35, d * 0.3), r = Math.min(0.6, d * 0.35), lp = Math.min(f * 4, 3200);
+      for (const det of [-7, 0, 6]) T(m, out, t, f, d, v / 3, { wave: 'saw', det, lp, q: 0.5, hold: 1, a, rel: r, vib: [5 + det * 0.04, 9, 0.35] });
+    },
+    // harp: round plucked string, low strings ring longer
+    harp(m, out, t, f, d, v) {
+      const dd = cl(1.4 + 300 / f, 1.0, 2.4);
+      T(m, out, t, f, dd, v, { a: 0.003 });
+      T(m, out, t, f * 2, dd * 0.4, v * 0.22, { a: 0.002 });
+      T(m, out, t, f, 0.25, v * 0.3, { type: 'triangle', a: 0.0015 });
+      N(m, out, t, 0.012, v * 0.08, { f: Math.min(f * 3, 4500), q: 2, a: 0.0006 });
+    },
+    // music box: a tiny comb tine, pure ring with a glassy edge
+    musicbox(m, out, t, f, d, v) {
+      T(m, out, t, f, 1.6, v, { a: 0.0015 });
+      B(m, out, t, f, 0.5, v * 0.45, 3, 0.5);
+      T(m, out, t, Math.min(f * 4.07, 12000), 0.18, v * 0.1, { a: 0.0008 });
+    },
+    // pizzicato strings: a plucked "pum"
+    pizz(m, out, t, f, d, v) {
+      T(m, out, t, f, 0.32, v, { type: 'triangle', fs: [[0, f * 1.01], [0.02, f]], a: 0.002 });
+      T(m, out, t, f, 0.18, v * 0.35, { wave: 'saw', lp: [[0, f * 5], [0.08, f * 1.5]], a: 0.002 });
+    },
+    // tuba: friendly oom-pah brass with a soft lip "puh" start and an octave partial tablets can play
+    tuba(m, out, t, f, d, v) {
+      d = cl(d, 0.12, 0.6);
+      T(m, out, t, f, d, v, { wave: 'brass', fs: [[0, f * 0.97], [0.03, f]], lp: [[0, f * 2], [0.04, f * 4.5], [d, f * 2.5]], q: 0.8, hold: 1, a: 0.018, rel: 0.07 });
+      T(m, out, t, f * 2, d * 0.7, v * 0.25, { hold: 1, a: 0.015, rel: 0.06 });
+    },
+    // banjo: bright twangy pluck that dies quickly; long notes roll like a banjo picker
+    banjo(m, out, t, f, d, v) {
+      const one = (tt, vv) => {
+        T(m, out, tt, f, 0.3, vv * 0.6, { wave: 'saw', det: 3, lp: [[0, Math.min(f * 10, 9000)], [0.04, f * 3], [0.3, f * 1.5]], q: 2, a: 0.0008 });
+        T(m, out, tt, f * 2, 0.12, vv * 0.2, { type: 'triangle', a: 0.0008 });
+        T(m, out, tt, f, 0.2, vv * 0.3, { a: 0.0008 });
+      };
+      if (d < 0.36) { one(t, v); return; }
+      const step = 0.085, n = Math.min(8, Math.floor(d / step));
+      for (let i = 0; i < n; i++) one(t + i * step, v * (i ? 0.5 - i * 0.03 : 1));
+    },
+    // harmonica: two reeds a hair apart, breathy, a little bend up into each note
+    harmonica(m, out, t, f, d, v) {
+      d = Math.max(d, 0.08);
+      const lp = [[0, f * 1.6], [0.06, f * 3.5], [d, f * 2.6]];
+      T(m, out, t, f, d, v * 0.6, { wave: 'harm', fs: [[0, f * 0.975], [0.05, f]], lp, q: 1.2, hold: 1, a: 0.03, rel: 0.08, vib: [5.8, 14, 0.25] });
+      T(m, out, t, f, d, v * 0.4, { wave: 'harm', det: 9, lp, q: 1.2, hold: 1, a: 0.03, rel: 0.08 });
+      N(m, out, t, Math.min(d, 0.5), v * 0.05, { f: f * 2, q: 3, hold: 1, a: 0.04, rel: 0.06 });
+    },
+    // French horn: warm, round, slow-blooming brass (majestic but soft)
+    horn(m, out, t, f, d, v) {
+      d = Math.max(d, 0.12);
+      T(m, out, t, f, d, v, { wave: 'brass', lp: [[0, f * 1.2], [0.08, f * 2.6], [d, f * 2]], q: 0.7, hold: 1, a: 0.06, rel: 0.14, vib: [4.8, 6, 0.35] });
+    },
+    // a frog singing the tune: a nasal "vrak" voice with a throaty purr, cartoon-cute
+    frogsing(m, out, t, f, d, v) {
+      d = Math.max(d, 0.1);
+      T(m, out, t, f, d, v, { wave: 'frog', fs: [[0, f * 0.94], [0.05, f]], bp: [[0, f * 2.2], [Math.min(0.1, d), f * 3.4], [d, f * 2.6]], q: 1.4, hold: 1, a: 0.02, rel: 0.06, vib: [26, 25, 0.01] });
+    },
   };
   const DRUM = {
     kick(m, o, t, v) { T(m, o, t, 150, 0.22, v, { fs: [[0, 150], [0.09, 50]], a: 0.002 }); N(m, o, t, 0.012, v * 0.2, { type: 'lowpass', f: 1800 }); },
@@ -801,6 +1074,94 @@ const AUD = (() => {
     dum(m, o, t, v) { T(m, o, t, 150, 0.3, v, { fs: [[0, 150], [0.05, 104]], a: 0.002 }); T(m, o, t, 245, 0.11, v * 0.35, { f1: 195, a: 0.002 }); N(m, o, t, 0.02, v * 0.15, { type: 'lowpass', f: 1500 }); },
     tek(m, o, t, v) { T(m, o, t, 720, 0.06, v * 0.5, { f1: 640, a: 0.0008 }); N(m, o, t, 0.05, v, { f: 3200, q: 1.4, a: 0.0008 }); },
     ka(m, o, t, v) { N(m, o, t, 0.035, v, { f: 2600, q: 1.6, a: 0.001 }); T(m, o, t, 680, 0.04, v * 0.3, { a: 0.001 }); },
+    // ── Orman: the forest's own percussion ──
+    frog(m, o, t, v, f = 190) {   // "rib-bit": two throaty little croaks, the second higher
+      [[0, 1, 0.05], [0.085, 1.22, 0.06]].forEach(([dt, k, d]) => T(m, o, t + dt, f * k, d, v, { wave: 'frog', fs: [[0, f * k * 0.92], [d, f * k * 1.06]], bp: f * k * 3.2, q: 1.3, a: 0.004 }));
+    },
+    blup(m, o, t, v, f = 170) { T(m, o, t, f, 0.12, v, { f1: f * 2.2, glide: 0.09, a: 0.008 }); T(m, o, t, f * 2, 0.07, v * 0.18, { f1: f * 4, glide: 0.06, type: 'triangle', a: 0.006 }); },   // swamp mud bubble
+    log(m, o, t, v) { T(m, o, t, 520, 0.09, v, { f1: 430, a: 0.001 }); T(m, o, t, 1340, 0.03, v * 0.25, { a: 0.0008 }); N(m, o, t, 0.02, v * 0.3, { f: 1800, q: 2, a: 0.0008 }); },   // hollow log knock
+    cajon(m, o, t, v) { T(m, o, t, 120, 0.16, v, { fs: [[0, 135], [0.05, 95]], a: 0.002 }); T(m, o, t, 230, 0.06, v * 0.3, { a: 0.002 }); N(m, o, t, 0.03, v * 0.25, { type: 'lowpass', f: 1600 }); },   // a box drum by the fire
+    scrape(m, o, t, v) { N(m, o, t, 0.08, v, { fs: [[0, 2500], [0.08, 4200]], q: 2, a: 0.01, am: [55, 0.9] }); },   // washboard
+  };
+
+  // ── Orman: soft nature sounds painted into a theme's bar, always well under the tune (p = the Player, len = one bar) ──
+  // A steady noise texture cut into ≤ 2 s pieces (the noise buffer is 3 s long) joined by equal-power crossfades, so the
+  // join is not heard as a dip. o: {type='bandpass', f, q, am:[hz, depth]}
+  const EP_UP = new Float32Array(33), EP_DN = new Float32Array(33);
+  for (let i = 0; i <= 32; i++) { EP_UP[i] = Math.sin(i / 32 * Math.PI / 2); EP_DN[i] = Math.cos(i / 32 * Math.PI / 2); }
+  function bed(p, t, len, vol, o) {
+    const c = p.M.c, n = Math.max(1, Math.ceil(len / 1.8)), seg = len / n, x = 0.45;
+    for (let i = 0; i < n; i++) {
+      // (a bar scheduled late starts "now": curves never begin in the past and never overlap — Safari is strict about both)
+      const t1 = Math.max(c.currentTime + 0.01, t + i * seg - x / 2), t2 = t + (i + 1) * seg + x / 2, d = t2 - t1;
+      if (d < 0.2) continue;
+      const xi = Math.min(x, d / 3), xo = Math.min(x, d / 3), s = c.createBufferSource(), bq = c.createBiquadFilter(), g = gainNode(c, 0);
+      s.buffer = p.M.noise; bq.type = o.type || 'bandpass'; bq.frequency.value = o.f || 1000; bq.Q.value = o.q ?? 1;
+      try {
+        g.gain.setValueCurveAtTime(EP_UP.map(v => v * vol), t1, xi);
+        g.gain.setValueCurveAtTime(EP_DN.map(v => v * vol), t2 - xo, xo);
+      } catch (e) { continue; }
+      s.connect(bq); bq.connect(g);
+      if (o.am) {
+        const a = gainNode(c, 1 - o.am[1] * 0.5), l = c.createOscillator(), lg = gainNode(c, o.am[1] * 0.5);
+        l.frequency.value = o.am[0]; l.connect(lg); lg.connect(a.gain); g.connect(a); a.connect(p.out); l.start(t1); l.stop(t2 + 0.03);
+      } else g.connect(p.out);
+      s.start(t1, rnd(0, Math.max(0, p.M.noise.duration - d - 0.1)), d + 0.03);
+    }
+  }
+  const AMB = {
+    stream(p, t, len, v = 1) {   // a babbling brook: running water and little "plip"s over the pebbles
+      bed(p, t, len, 0.011 * v, { f: 1300, q: 0.55, am: [rnd(2.5, 4.5), 0.5] });
+      bed(p, t, len, 0.0035 * v, { f: 3000, q: 0.9, am: [rnd(6, 9), 0.6] });
+      for (let i = 0, n = 4 + (Math.random() * 5 | 0); i < n; i++) { const f = rnd(700, 1500); T(p.M, p.out, t + rnd(0, len), f, 0.05, rnd(0.004, 0.009) * v, { f1: f * rnd(1.5, 2.1), a: 0.004 }); }
+    },
+    lake(p, t, len, v = 1) {   // still lake water lapping at the reeds: slow soft swells and an odd "plop"
+      bed(p, t, len, 0.016 * v, { type: 'lowpass', f: 650, q: 0.5, am: [rnd(0.4, 0.7), 0.7] });
+      bed(p, t, len, 0.003 * v, { f: 2200, q: 0.8, am: [rnd(0.5, 0.9), 0.8] });
+      if (Math.random() < 0.6) { const f = rnd(380, 600); T(p.M, p.out, t + rnd(0, len), f, 0.09, 0.008 * v, { f1: f * 2, glide: 0.07, a: 0.005 }); }
+    },
+    falls(p, t, len, v = 1) {   // the waterfall far below: a wide soft roar (low, never hissy) and a little bright spray
+      bed(p, t, len, 0.02 * v, { type: 'lowpass', f: 900, q: 0.4 });
+      bed(p, t, len, 0.004 * v, { f: 2600, q: 0.5, am: [rnd(0.3, 0.6), 0.4] });
+    },
+    swamp(p, t, len, v = 1) {   // swamp mud: lazy "blup"s rising from below and a damp low murmur
+      bed(p, t, len, 0.006 * v, { type: 'lowpass', f: 420, q: 0.6, am: [0.5, 0.5] });
+      for (let i = 0, n = 1 + (Math.random() * 3 | 0); i < n; i++) {
+        const f = rnd(140, 230), tt = t + rnd(0, len);
+        T(p.M, p.out, tt, f, 0.13, 0.016 * v, { f1: f * 2.3, glide: 0.1, a: 0.01 }); T(p.M, p.out, tt + 0.1, f * 3, 0.04, 0.004 * v, { f1: f * 5, a: 0.003 });
+      }
+    },
+    rustle(p, t, len, n = 1, v = 1) {   // autumn leaves: a soft papery rustle drifting by
+      for (let i = 0; i < n; i++) {
+        const tt = t + rnd(0, len * 0.8), d = rnd(0.35, 0.7);
+        N(p.M, p.out, tt, d, 0.011 * v, { fs: [[0, rnd(2200, 2800)], [d, rnd(3000, 3800)]], q: 0.8, hold: 1, a: d * 0.4, rel: d * 0.45, am: [rnd(18, 32), 0.85] });
+      }
+    },
+    crickets(p, t, len, v = 1) {   // crickets in the grass: soft "cri-cri-cri" from two or three places, never in step
+      for (let c = 0; c < 3; c++) {
+        if (Math.random() < 0.3) continue;
+        const f = rnd(3300, 4100), gap = rnd(0.032, 0.045), every = rnd(0.55, 0.9);
+        for (let tt = t + rnd(0, 0.4); tt < t + len - 0.15; tt += every) for (let i = 0; i < 3; i++) T(p.M, p.out, tt + i * gap, f, 0.02, 0.0045 * v, { a: 0.003 });
+      }
+    },
+    fire(p, t, len, v = 1) {   // the campfire: a warm low flutter and a few soft crackles (bandpassed: cosy, never sharp)
+      bed(p, t, len, 0.006 * v, { type: 'lowpass', f: 380, q: 0.5, am: [rnd(3, 6), 0.6] });
+      for (let i = 0, n = 3 + (Math.random() * 5 | 0); i < n; i++) N(p.M, p.out, t + rnd(0, len), 0.012, rnd(0.008, 0.018) * v, { f: rnd(1300, 2600), q: 2.2, a: 0.001 });
+    },
+    bird(p, t, v = 1) {   // a little songbird: three quick "cip"s and a trill
+      for (let i = 0; i < 3; i++) { const f = rnd(2600, 3100); T(p.M, p.out, t + i * 0.13, f, 0.07, 0.006 * v, { fs: [[0, f * 0.85], [0.03, f * 1.1], [0.07, f * 0.95]], a: 0.004 }); }
+      T(p.M, p.out, t + 0.45, 2900, 0.3, 0.004 * v, { a: 0.01, vib: [22, 80, 0.01] });
+    },
+    quack(p, t, v = 1) { const g = gainNode(p.M.c, 0.04 * v); g.connect(p.out); SFX.quack(p.M, g, t, rnd(0.95, 1.08)); },
+    frogs(p, t, len, n = 2, v = 1) { for (let i = 0; i < n; i++) p.drum('frog', t + rnd(0, len - 0.3), rnd(0.008, 0.016) * v, rnd(160, 300)); },
+    eagle(p, t, v = 1) {   // the eagle's call, far and soft: a gliding "kiii-ah" and its echo off the cliffs
+      [[0, 1, 0.011], [0.55, 0.98, 0.004]].forEach(([dt, k, vol]) => T(p.M, p.out, t + dt, 1500 * k, 0.7, vol * v,
+        { type: 'triangle', fs: [[0, 1450 * k], [0.09, 1780 * k], [0.7, 1150 * k]], lp: 2600, hold: 1, a: 0.06, rel: 0.35, vib: [7, 25, 0.12] }));
+    },
+    owl(p, t, v = 1) { const g = gainNode(p.M.c, 0.035 * v); g.connect(p.out); SFX.owlHoot(p.M, g, t, 0.92); },
+    woodpecker(p, t, v = 1) { for (let i = 0; i < 6; i++) { const tt = t + i * 0.065; T(p.M, p.out, tt, 1150, 0.035, (0.014 - i * 0.0015) * v, { f1: 900, a: 0.0006 }); N(p.M, p.out, tt, 0.015, 0.006 * v, { f: 2400, q: 2.5, a: 0.0005 }); } },
+    acorn(p, t, v = 1) { const f = rnd(700, 950); T(p.M, p.out, t, f, 0.06, 0.012 * v, { f1: f * 0.7, a: 0.0008 }); T(p.M, p.out, t + 0.11, f * 1.1, 0.04, 0.006 * v, { f1: f * 0.8, a: 0.0008 }); },   // an acorn drops and bounces
+    strum(p, t, ch, lo, vol, inst = 'uke') { voice(ch, lo, 4).forEach((mm, k) => p.note(inst, t + k * 0.014, mm, 0.2, vol)); },
   };
 
   // ───────────────────────── music: themes ─────────────────────────
@@ -969,6 +1330,212 @@ const AUD = (() => {
       voice(ch, 81, 3).forEach((mm, i) => p.note('recorder', t + p.beat * (2.8 + i * .28), mm, .14, .012));
     },
   };
+  // ── Orman: the six-part camp trip with Dad. Each zone has its own little band and nature sounds; '<zone>_boss' is the same
+  // band in a happy hurry (the zone boss), '<zone>_ani' the short, warm camp moment at the end of the zone.
+  // AUD.music('boss') / AUD.music('kampani') pick the current zone's version (see resolveTheme).
+  const strumIntro = (inst, vol) => (p, t0) => { voice(p.th.prog[0], 55, 6).forEach((mm, i) => p.note(inst, t0 + i * 0.06, mm, 1.4, vol)); return p.beat * 2; };
+  THEMES.orman_kamp = {   // camp by the stream: fingerpicked nylon guitar, a soft ukulele on 2 and 4, a campfire harmonica tune, the brook
+    bpm: 92, key: 2, scale: MAJ, vol: 1, swing: .12, drumsIn: 2,
+    prog: form(C(38, 'M'), C(43, 'M7'), C(47, 'm7'), C(45, 's4'), C(45, 'M'), [C(43, 'M'), C(38, 'M'), C(40, 'm7'), C(45, 's4')]),
+    pad: { vol: .014, lo: 57, n: 3, cut: 1000 },
+    bass: { inst: 'guitar', pat: ['r...5...', 'r...5.3.'], vol: .125, oct: 12 },
+    arp: { inst: 'guitar', step: 8, pat: ['.21.32.1', '.21.3213'], lo: 57, vol: .03 },
+    lead: { inst: 'harmonica', alt: 'guitar', lo: 66, hi: 81, vol: .072, cells: 'slow', plan: [1, 1, 2, 1], orn: .1 },
+    kit: { shaker: ['..o...o...o...o.', .007], cajon: ['x.......x.....o.', .05] },
+    fill(p, t, bar, ch) { voice(ch, 62, 4).forEach((mm, i) => p.note('guitar', t + p.beat * (3 + i * .12), mm, .5, .016)); },
+    extra(p, t, bar, ch) {
+      AMB.stream(p, t, p.beat * 4);
+      [1, 3].forEach(b => AMB.strum(p, t + p.beat * b, ch, 64, .008));
+      if (bar % 8 === 5 && Math.random() < .6) AMB.bird(p, t + p.beat * rnd(1, 3));
+    },
+  };
+  THEMES.orman_kamp_boss = Object.assign({}, THEMES.orman_kamp, {   // Huysuz Kunduz: the camp band in a hurry, log-drum stomp
+    bpm: 122, vol: .95, swing: .08, drumsIn: 0,
+    bass: { inst: 'pbass', pat: ['r.5.r.5.', 'r.5.r.3o'], vol: .1 },
+    arp: { inst: 'guitar', step: 16, pat: ['0.1.2.1.0.1.2.1.', '0.1.2.1.3.2.1.2.'], lo: 57, vol: .03 },
+    lead: { inst: 'harmonica', alt: 'banjo', lo: 66, hi: 83, vol: .092, cells: 'busy', plan: [1, 1, 2, 1] },
+    kit: { kick: ['x.......x.......', .17], log: ['....x.......x.x.', .07], shaker: ['o.x.o.x.o.x.o.x.', .016], clap: ['....x.......x...', .035] }, crash: .018,
+    fill(p, t) { for (let i = 8; i < 16; i++) p.drum('log', t + i * p.beat / 4, .02 + (i - 8) * .004); },
+    extra(p, t, bar, ch) { AMB.stream(p, t, p.beat * 4, .6); [1, 3].forEach(b => AMB.strum(p, t + p.beat * b, ch, 64, .009)); },
+  });
+  THEMES.orman_kamp_ani = Object.assign({}, THEMES.orman_kamp, {   // fishing with Dad: slower, just the guitar, a hummed harmonica tune and the brook
+    bpm: 80, vol: .95, kit: null, intro: strumIntro('guitar', .02),
+    lead: { inst: 'harmonica', alt: 'guitar', lo: 66, hi: 79, vol: .066, cells: 'slow', plan: [1, 1, 2, 1] },
+    extra(p, t, bar) { AMB.stream(p, t, p.beat * 4, .8); if (bar % 4 === 2 && Math.random() < .5) AMB.bird(p, t + p.beat * rnd(0.5, 3)); },
+  });
+
+  THEMES.orman_gol = {   // Frog Lake: wooden marimba ripples, a flute tune over the water lilies, the frogs keep the beat ("rib-bit")
+    bpm: 104, key: 10, scale: MAJ, vol: .9, swing: .14, drumsIn: 2,
+    prog: form(C(46, 'M'), C(43, 'm7'), C(51, 'M7'), C(41, 's4'), C(41, 'D7'), [C(51, 'M'), C(46, 'M'), C(48, 'm7'), C(41, 's4')]),
+    pad: { vol: .016, lo: 60, n: 3, cut: 1300 },
+    bass: { inst: 'bass', pat: ['r..5..r.', 'r..5.3..'], vol: .036, oct: 12 },
+    arp: { inst: 'marimba', step: 8, pat: ['0.12.1.3', '0.13.2.1'], lo: 62, vol: .022 },
+    lead: { inst: 'flute', alt: 'marimba', lo: 70, hi: 87, vol: .04, cells: 'mid', plan: [1, 1, 2, 1] },
+    kit: { frog: ['....x.......x.o.', .085], bongo: ['..o.......o.....', .04], shaker: ['..o...o...o...o.', .007] },
+    fill(p, t, bar, ch) { voice(ch, 74, 4).forEach((mm, i) => p.note('marimba', t + p.beat * (3 + i * .25), mm, .2, .018)); },
+    extra(p, t, bar) {
+      AMB.lake(p, t, p.beat * 4);
+      if (bar % 8 === 6 && Math.random() < .55) AMB.quack(p, t + p.beat * rnd(1, 3));
+      if (bar % 4 === 1 && Math.random() < .4) AMB.frogs(p, t, p.beat * 4, 2);   // far-away frogs answering
+    },
+  };
+  THEMES.orman_gol_boss = Object.assign({}, THEMES.orman_gol, {   // Koca Kurbağa: marimba sixteenths, congas, the frogs sing the bridge
+    bpm: 124, vol: .95, swing: .1, drumsIn: 0,
+    bass: { inst: 'pbass', pat: ['r..5r.5.', 'r..5r.3o'], vol: .1 },
+    arp: { inst: 'marimba', step: 16, pat: ['0123212301232123'], lo: 62, vol: .028 },
+    lead: { inst: 'flute', alt: 'frogsing', lo: 70, hi: 86, vol: .047, cells: 'busy', plan: [1, 1, 2, 1] },
+    kit: { kick: ['x.......x.......', .16], frog: ['....x.......x...', .1], conga: ['......x...o.x...', .055], bongo: ['..o.......x...o.', .042], shaker: ['o.x.o.x.o.x.o.x.', .014] }, crash: .018,
+    fill(p, t) { for (let i = 8; i < 16; i++) p.drum(i & 1 ? 'bongo' : 'conga', t + i * p.beat / 4, .025 + (i - 8) * .004); },
+    extra(p, t) { AMB.lake(p, t, p.beat * 4, .6); },
+  });
+  THEMES.orman_gol_ani = Object.assign({}, THEMES.orman_gol, {   // the frog choir: the frogs sing the tune, marimba twin, soft claps, bass frogs answer
+    bpm: 100, vol: .9, intro: strumIntro('marimba', .02),
+    lead: { inst: 'frogsing', alt: 'flute', lo: 62, hi: 77, vol: .062, cells: 'mid', plan: [1, 1, 2, 1], dbl: { inst: 'marimba', vol: .012, oct: 12 } },
+    kit: { frog: ['x...x...x...x.x.', .022], clap: ['....x.......x...', .016], shaker: ['..o...o...o...o.', .007] },
+    extra(p, t, bar, ch) {
+      AMB.lake(p, t, p.beat * 4, .7);
+      if (bar % 4 === 3) voice(ch, 50, 3).forEach((mm, i) => p.note('frogsing', t + p.beat * (2 + i * .5), mm, p.beat * .4, .016));
+    },
+  });
+
+  THEMES.orman_mese = {   // Old Oak Grove in autumn: a grandpa bassoon walking along, a clarinet tune, pizzicato acorns, falling leaves
+    bpm: 98, key: 3, scale: MAJ, vol: .9, swing: .2, drumsIn: 4,
+    prog: form(C(39, 'M'), C(48, 'm7'), C(44, 'M7'), C(46, 's4'), C(46, 'D7'), [C(44, 'M'), C(39, 'M'), C(41, 'm7'), C(46, 's4')]),
+    pad: { vol: .016, lo: 58, n: 3, cut: 1000 },
+    bass: { inst: 'bassoon', pat: ['r.5.3.5.', 'r.5.o.5.'], vol: .062, oct: 12 },
+    arp: { inst: 'pizz', step: 8, pat: ['..1...2.', '..1.2.3.'], lo: 63, vol: .046 },
+    lead: { inst: 'clarinet', alt: 'bassoon', lo: 65, hi: 82, vol: .036, cells: 'mid', plan: [1, 1, 2, 1], orn: .15 },
+    kit: { wood: ['....o.......o...', .018], shaker: ['..o...o...o...o.', .006] },
+    fill(p, t, bar, ch) { voice(ch, 63, 4).forEach((mm, i) => p.note('pizz', t + p.beat * (2 + i * .5), mm, .2, .02)); },
+    extra(p, t, bar, ch) {
+      p.note('bass', t, ch.r + 12, p.beat * 3.6, .02);   // a soft round root under the bassoon: autumn, but warm
+      AMB.rustle(p, t, p.beat * 4, Math.random() < .5 ? 1 : 2);
+      if (bar % 16 === 10 && Math.random() < .6) AMB.woodpecker(p, t + p.beat * rnd(1, 2.5));
+      if (bar % 4 === 3 && Math.random() < .5) AMB.acorn(p, t + p.beat * rnd(0.5, 3.5));
+    },
+  };
+  THEMES.orman_mese_boss = Object.assign({}, THEMES.orman_mese, {   // Uykucu Ayı: a grumpy-funny tuba stomp under the clarinet, box drum
+    bpm: 116, vol: .95, swing: .12, drumsIn: 0,
+    bass: { inst: 'tuba', pat: ['r.5.r.5.', 'r.5.r.3o'], vol: .056 },
+    arp: { inst: 'pizz', step: 8, pat: ['0.1.2.1.', '0.2.1.3.'], lo: 63, vol: .045 },
+    lead: { inst: 'clarinet', alt: 'bassoon', lo: 65, hi: 82, vol: .04, cells: 'busy', plan: [1, 1, 2, 1] },
+    kit: { kick: ['x.......x.......', .17], cajon: ['....x.......x...', .075], wood: ['..o...o...o...o.', .018], shaker: ['o.x.o.x.o.x.o.x.', .012] }, crash: .016,
+    fill(p, t) { for (let i = 8; i < 16; i++) p.drum('cajon', t + i * p.beat / 4, .02 + (i - 8) * .005); },
+    extra(p, t) { AMB.rustle(p, t, p.beat * 4, 1); },
+  });
+  THEMES.orman_mese_ani = Object.assign({}, THEMES.orman_mese, {   // honey and acorn feast in the tree house: a cosy clarinet/bassoon duet, tambourine, honey twinkles
+    bpm: 96, vol: .95, intro: strumIntro('pizz', .02),
+    lead: { inst: 'clarinet', alt: 'bassoon', lo: 65, hi: 81, vol: .036, cells: 'mid', plan: [1, 1, 2, 1], orn: .2 },
+    kit: { tamb: ['..o...o...o...o.', .006], wood: ['x.......x.......', .01] },
+    extra(p, t, bar, ch) {
+      p.note('bass', t, ch.r + 12, p.beat * 3.6, .02);
+      AMB.rustle(p, t, p.beat * 4, 1, .6);
+      if (bar % 4 === 1) voice(ch, 72, 3).forEach((mm, i) => p.note('glock', t + p.beat * (3 + i / 4), mm, .3, .008));
+    },
+  });
+
+  THEMES.orman_selale = {   // Waterfall and Eagle Hill: wide strings, a rippling harp, a warm horn tune, the falls below, the eagle's soft call
+    bpm: 84, key: 4, scale: MAJ, vol: .88, swing: 0, drumsIn: 4,
+    prog: form(C(40, 'M'), C(45, 'M7'), C(49, 'm7'), C(47, 's4'), C(47, 'M'), [C(45, 'M'), C(40, 'M'), C(44, 'm7'), C(47, 's4')]),
+    pad: { inst: 'strings', vol: .022, lo: 56, n: 4, cut: 2400 },
+    bass: { inst: 'bass', pat: ['r.......', 'r...5...'], vol: .036, oct: 12 },
+    arp: { inst: 'harp', step: 8, pat: ['01232123', '01233210'], lo: 64, vol: .014 },
+    lead: { inst: 'horn', alt: 'flute', lo: 64, hi: 79, vol: .05, cells: 'slow', plan: [1, 1, 2, 1] },
+    kit: { shaker: ['....o.......o...', .005] },
+    extra(p, t, bar, ch) {
+      AMB.falls(p, t, p.beat * 4);
+      if (bar % 2 === 0) p.drum('timp', t, .03, mtof(ch.r));
+      if (bar % 16 === 9) AMB.eagle(p, t + p.beat * 1.5);
+      if (bar % 8 === 3 && Math.random() < .6) voice(ch, 76, 4).forEach((mm, i) => p.note('harp', t + p.beat * (2 + i * .17), mm, .3, .014));   // a glint of spray
+    },
+  };
+  THEMES.orman_selale_boss = Object.assign({}, THEMES.orman_selale, {   // Huysuz Dağ Keçisi: galloping hooves on the rocks, pizzicato strings, the horn calls
+    bpm: 120, vol: .94, drumsIn: 0,
+    pad: { inst: 'strings', vol: .024, lo: 56, n: 3, cut: 2400 },
+    bass: { inst: 'pbass', pat: ['r.r.5.r.', 'r.r.5.3.'], vol: .11 },
+    arp: { inst: 'pizz', step: 16, pat: ['0.1.2.1.0.1.2.3.'], lo: 64, vol: .04 },
+    lead: { inst: 'horn', alt: 'strings', lo: 64, hi: 81, vol: .07, cells: 'busy', plan: [1, 1, 2, 1] },
+    kit: { kick: ['x.......x.......', .17], log: ['x.xx..x.x.xx..x.', .032], snare: ['....x.......x...', .045] }, crash: .02,
+    fill(p, t) { for (let i = 8; i < 16; i++) p.drum('snare', t + i * p.beat / 4, .015 + (i - 8) * .005); },
+    extra(p, t, bar, ch) { AMB.falls(p, t, p.beat * 4, .6); if (bar % 2 === 0) p.drum('timp', t, .04, mtof(ch.r)); if (bar % 16 === 9) AMB.eagle(p, t + p.beat); },
+  });
+  THEMES.orman_selale_ani = Object.assign({}, THEMES.orman_selale, {   // flying with the eagle: soaring strings, a harp glissando, the horn sings out, wind under the wings
+    bpm: 76, vol: .9, kit: null,
+    intro(p, t0) { voice(p.th.prog[0], 52, 10).forEach((mm, i) => p.note('harp', t0 + i * 0.07, mm, .6, .016)); return p.beat * 2; },
+    lead: { inst: 'horn', alt: 'strings', lo: 66, hi: 81, vol: .04, cells: 'slow', plan: [1, 1, 2, 1], dbl: { inst: 'flute', vol: .012, oct: 12 } },
+    extra(p, t, bar, ch) {
+      bed(p, t, p.beat * 4, .007, { f: 700, q: .7, am: [rnd(0.25, 0.4), 0.8] });   // the wind
+      if (bar % 2 === 0) p.drum('timp', t, .03, mtof(ch.r));
+      if (bar % 8 === 4) AMB.eagle(p, t + p.beat);
+      if (bar % 4 === 3) voice(ch, 64, 8).forEach((mm, i) => p.note('harp', t + p.beat * 3 + i * .06, mm, .4, .011));
+    },
+  });
+
+  THEMES.orman_gece = {   // Firefly Night Camp: music box and celesta under the stars, crickets, a far-away owl; slow, soft, magical
+    bpm: 70, key: 8, scale: MAJ, vol: .86, swing: 0,
+    prog: form(C(44, 'M7'), C(41, 'm7'), C(49, 'M7'), C(39, 's4'), C(39, 'M'), [C(49, 'M7'), C(44, 'M'), C(48, 'm7'), C(39, 's4')]),
+    pad: { vol: .022, lo: 56, n: 3, cut: 900 },
+    bass: { inst: 'bass', pat: ['r.......', 'r...5...'], vol: .038, oct: 12 },
+    arp: { inst: 'musicbox', step: 8, pat: ['0.2.1.3.', '0.3.1.2.'], lo: 68, vol: .016 },
+    lead: { inst: 'celesta', alt: 'musicbox', lo: 72, hi: 88, vol: .045, cells: 'slow', plan: [1, 1, 2, 1] },
+    extra(p, t, bar) {
+      AMB.crickets(p, t, p.beat * 4);
+      if (bar % 16 === 12 && Math.random() < .7) AMB.owl(p, t + p.beat * rnd(0.5, 2));
+      if (Math.random() < .5) B(p.M, p.out, t + p.beat * pick([0.5, 1.5, 2.5, 3.5]), pick([2489, 2794, 3136, 3322]), 0.9, .008, 3.5, .8);   // a firefly twinkle
+    },
+  };
+  THEMES.orman_gece_boss = Object.assign({}, THEMES.orman_gece, {   // Huysuz Baykuş: still magical, just livelier: celesta sixteenths, soft kick and shaker, wind swells
+    bpm: 108, vol: .92, drumsIn: 0,
+    pad: { vol: .024, lo: 56, n: 3, cut: 1200 },
+    bass: { inst: 'pbass', pat: ['r..5r...', 'r..5r.5.'], vol: .1 },
+    arp: { inst: 'celesta', step: 16, pat: ['0.1.2.3.2.1.2.3.'], lo: 68, vol: .012 },
+    lead: { inst: 'musicbox', alt: 'flute', lo: 72, hi: 88, vol: .046, cells: 'mid', plan: [1, 1, 2, 1] },
+    kit: { kick: ['x.......x.......', .14], shaker: ['o.x.o.x.o.x.o.x.', .012], tamb: ['....o.......o...', .009] },
+    fill(p, t) { p.drum('swell', t + p.beat * 2, .012, p.beat * 2); },
+    extra(p, t) { AMB.crickets(p, t, p.beat * 4, .5); },
+  });
+  THEMES.orman_gece_ani = Object.assign({}, THEMES.orman_gece, {   // marshmallows by the fire and stargazing: soft guitar, music box, crackling fire, crickets
+    bpm: 66, vol: .86, intro: strumIntro('guitar', .018),
+    arp: { inst: 'guitar', step: 8, pat: ['0.21.32.', '0.21.321'], lo: 56, vol: .028 },
+    lead: { inst: 'musicbox', alt: 'celesta', lo: 72, hi: 88, vol: .036, cells: 'slow', plan: [1, 1, 2, 1] },
+    extra(p, t) {
+      AMB.fire(p, t, p.beat * 4); AMB.crickets(p, t, p.beat * 4, .6);
+      if (Math.random() < .4) B(p.M, p.out, t + p.beat * pick([1.5, 2.5, 3.5]), pick([2489, 2794, 3136, 3322]), 0.9, .007, 3.5, .8);   // a star twinkles
+    },
+  });
+
+  THEMES.orman_bataklik = {   // Crocodile Swamp: a little bayou band (banjo tune, tuba, washboard); mud bubbles and croaking frogs keep the beat
+    bpm: 112, key: 4, scale: DOR, vol: 1, swing: .16, drumsIn: 2,
+    prog: form(C(40, 'm7'), C(45, 'M'), C(43, 'M'), C(50, 's4'), C(47, 'm7'), [C(43, 'M'), C(45, 'M'), C(40, 'm7'), C(47, 's4')]),
+    pad: { vol: .016, lo: 59, n: 3, cut: 1100 },
+    bass: { inst: 'tuba', pat: ['r...5...', 'r...5.3.'], vol: .068 },
+    stab: { inst: 'pizz', pos: [2, 6], lo: 59, n: 3, vol: .02 },
+    lead: { inst: 'banjo', alt: 'harmonica', lo: 64, hi: 81, vol: .085, cells: 'mid', plan: [1, 1, 2, 1] },
+    kit: { blup: ['x.......x.....o.', .06], frog: ['....x.........x.', .045], scrape: ['..o...o...o...o.', .01] },
+    fill(p, t) { for (let i = 10; i < 16; i++) p.drum('blup', t + i * p.beat / 4, .015 + (i - 10) * .004, 160 + i * 14); },
+    extra(p, t, bar) { AMB.swamp(p, t, p.beat * 4); if (bar % 8 === 5 && Math.random() < .5) AMB.frogs(p, t, p.beat * 4, 3); },
+  };
+  THEMES.orman_bataklik_boss = Object.assign({}, THEMES.orman_bataklik, {   // Koca Huysuz Timsah: the bayou band in a happy hurry
+    bpm: 130, vol: .96, drumsIn: 0, swing: .1,
+    bass: { inst: 'tuba', pat: ['r.5.r.5.', 'r.5.r.3o'], vol: .055 },
+    arp: { inst: 'banjo', step: 16, pat: ['0.1.2.1.0.1.2.3.'], lo: 59, vol: .04 },
+    lead: { inst: 'harmonica', alt: 'banjo', lo: 64, hi: 81, vol: .088, cells: 'busy', plan: [1, 1, 2, 1] },
+    kit: { kick: ['x.......x.......', .16], clap: ['....x.......x...', .044], blup: ['..x.......x.....', .045], frog: ['......x.......x.', .04], scrape: ['o.x.o.x.o.x.o.x.', .008] }, crash: .02,
+    extra(p, t) { AMB.swamp(p, t, p.beat * 4, .6); },
+  });
+  THEMES.orman_bataklik_ani = Object.assign({}, THEMES.orman_bataklik, {   // the final camp festival: the whole bayou band, as happy as it gets
+    bpm: 126, scale: MAJ, vol: 1.04, swing: .14, drumsIn: 0, intro: strumIntro('banjo', .022),
+    prog: form(C(40, 'M'), C(45, 'M'), C(47, 'D7'), C(40, 'M'), C(47, 'D7'), [C(45, 'M'), C(40, 'M'), C(42, 'm7'), C(47, 's4')]),
+    bass: { inst: 'tuba', pat: ['r.5.r.5.', 'r.5.r.3o'], vol: .05 },
+    lead: { inst: 'banjo', alt: 'accordion', lo: 64, hi: 83, vol: .068, cells: 'mid', plan: [1, 1, 2, 1], dbl: { inst: 'xylo', vol: .014, oct: 12 } },
+    kit: { kick: ['x.......x.......', .11], clap: ['....x.......x...', .03], tamb: ['o.x.o.x.o.x.o.x.', .008], scrape: ['..o...o...o...o.', .005] }, crash: .016,
+    fill(p, t) { for (let i = 8; i < 16; i++) p.drum('blup', t + i * p.beat / 4, .015 + (i - 8) * .003, 180 + i * 20); },
+    extra(p, t, bar, ch) {
+      [1, 3].forEach(b => AMB.strum(p, t + p.beat * b, ch, 64, .01));
+      if (bar % 8 === 7) AMB.frogs(p, t, p.beat * 4, 3, 1.4);   // the frogs join the party
+      if (bar % 16 === 15) sparkle(p.M, p.out, t + p.beat * 3, 8, 2000, 4200, 0.6, 0.008);
+    },
+  });
   // Chord tones ascending from lo.
   function voice(ch, lo, n) {
     const pcs = ch.iv.map(i => (ch.r + i) % 12), out = [];
@@ -1069,7 +1636,7 @@ const AUD = (() => {
       const th = this.th, b = this.beat, e8 = b / 2, ch = th.prog[bar % th.prog.length];
       const T8 = i => t + i * e8 + (i & 1 ? th.swing * e8 : 0);
       const T16 = i => t + i * b / 4 + ((i & 3) === 2 ? th.swing * e8 : 0);
-      if (th.pad) for (const mm of voice(ch, th.pad.lo, th.pad.n)) this.note('pad', t, mm, b * 4 + 0.35, th.pad.vol);
+      if (th.pad) for (const mm of voice(ch, th.pad.lo, th.pad.n)) INST[th.pad.inst || 'pad'](this.m, this.padF, t, mtof(mm), b * 4 + 0.35, th.pad.vol);
       if (th.bass) {
         const pat = th.bass.pat[bar % th.bass.pat.length];
         for (let i = 0; i < 8; i++) {
@@ -1325,8 +1892,50 @@ const AUD = (() => {
     return true;
   };
   A.sfx = sfx;
+  // Orman animals by kind and event: AUD.hayvan('kunduz', 'nese', { x, z }). Events: 'ses' (idle call), 'hazirlik' (wind-up),
+  // 'saldiri' (attack), 'nese' (cheered up) + a few kind-specific ones. Unknown kind/event → false (silent). [sfx, pitch]
+  const HAYVAN = {
+    kunduz: { ses: 'beaverGnaw', kemir: 'beaverGnaw', hazirlik: 'beaverGnaw', saldiri: 'beaverSlap', kuyruk: 'beaverSlap', kutuk: 'roll', dalga: 'splash', nese: 'beaverHappy' },
+    kocakurbaga: { ses: 'frogCroak', virak: 'frogCroak', hazirlik: 'frogCroak', saldiri: 'frogTongue', dil: 'frogTongue', zipla: 'bounce', kon: 'splat', nese: 'frogHappy' },
+    uykucuayi: { ses: 'bearSnore', uyku: 'bearSnore', esne: 'bearYawn', uyan: 'bearYawn', hazirlik: 'bearYawn', saldiri: 'bearStomp', vur: 'bearStomp', kovan: 'squish', bal: 'bearHum', nese: 'bearHum' },
+    dagkecisi: { ses: 'goatBleat', mele: 'goatBleat', hazirlik: 'goatBleat', saldiri: 'goatCharge', boynuz: 'goatCharge', tas: 'roll', kon: 'bounce', nese: 'goatHappy' },
+    baykus: { ses: 'owlHoot', hu: 'owlHoot', hazirlik: 'owlHoot', saldiri: 'owlFlap', kanat: 'owlFlap', ruzgar: 'owlFlap', tuy: 'owlFeather', kon: 'owlFlap', nese: 'owlHappy' },
+    buyuktimsah: { nese: 'bossHappy' },
+    ordek: { ses: 'quack', saldiri: ['quack', 1.1], nese: ['quack', 1.2] },
+    ormankurbaga: { ses: 'frogRibbit', saldiri: ['frogRibbit', 0.9], nese: ['frogRibbit', 1.2] },
+    kunduzyavrusu: { ses: ['beaverGnaw', 1.3], saldiri: ['beaverSlap', 1.4], nese: ['beaverHappy', 1.25] },
+    keciyavrusu: { ses: ['goatBleat', 1.45], saldiri: ['goatCharge', 1.3], nese: ['goatHappy', 1.3] },
+    baykusyavrusu: { ses: ['owlHoot', 1.55], saldiri: ['owlFlap', 1.4], nese: ['owlHappy', 1.3] },
+    ormanyarasa: { ses: 'bat', saldiri: 'bat' },
+  };
+  const FOREST_BOSS = { kunduz: 1, kocakurbaga: 1, uykucuayi: 1, dagkecisi: 1, baykus: 1, buyuktimsah: 1 };
+  A.hayvan = function (kind, olay, o) {
+    const h = HAYVAN[kind], e = h && h[olay];
+    if (!e) return false;
+    const [name, pitch] = Array.isArray(e) ? e : [e, 1], oo = Object.assign({}, typeof o === 'number' ? { vol: o } : o);
+    if (pitch !== 1) oo.pitch = (oo.pitch || 1) * pitch;
+    const r = sfx(name, oo);
+    if (olay === 'nese' && FOREST_BOSS[kind] && name !== 'bossHappy') setTimeout(() => sfx('bossHappy', { vol: 0.85 }), 700);   // the band joins in
+    return r;
+  };
   A.setListener = (x, z) => { lx = x; lz = z; };
+  // Orman zones: 'orman_<zone>' (or just '<zone>') is the zone theme and remembered; then 'boss' plays that zone's boss version
+  // and 'kampani' its camp moment. Any other base theme ('title', 'uzunorman', …) forgets the zone, so 'boss' is the old one.
+  const ORMAN_ZONES = ['kamp', 'gol', 'mese', 'selale', 'gece', 'bataklik'];
+  let zoneTheme = null;
+  function resolveTheme(name) {
+    if (!name) return name;
+    if (ORMAN_ZONES.includes(name)) name = 'orman_' + name;
+    const z = /^orman_([a-z]+)$/.exec(name);
+    if (z && ORMAN_ZONES.includes(z[1])) { zoneTheme = z[1]; return name; }
+    if (name === 'boss') return zoneTheme ? 'orman_' + zoneTheme + '_boss' : name;
+    if (name === 'kampani' || name === 'kamp_ani') return zoneTheme ? 'orman_' + zoneTheme + '_ani' : 'title';
+    if (/^boss_[a-z]+$/.test(name) && ORMAN_ZONES.includes(name.slice(5))) return 'orman_' + name.slice(5) + '_boss';
+    if (THEMES[name] && !/_(boss|ani)$/.test(name) && name !== 'zafer') zoneTheme = null;
+    return name;
+  }
   A.music = function (name) {
+    name = resolveTheme(name);
     if (name && !THEMES[name]) { console.warn('AUD.music: unknown theme', name); return; }
     want = name || null; A.theme = want;
     if (ctx && unlocked && A.musicOn) startMusic(want);
@@ -1365,7 +1974,7 @@ const AUD = (() => {
 
   // Test hooks: render into an OfflineAudioContext (never audible) to prove graphs build and measure levels.
   A._test = {
-    sfxNames: Object.keys(SFX), themes: Object.keys(THEMES), svol: SVOL, THEMES,
+    sfxNames: Object.keys(SFX), themes: Object.keys(THEMES), svol: SVOL, THEMES, resolve: n => resolveTheme(n), zone: () => zoneTheme, HAYVAN, AMB,
     render(fn, secs = 2, sr = 44100, raw = false) {
       const OC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
       const c = new OC(2, Math.ceil(secs * sr), sr), m = makeMix(c, true, raw);
@@ -1529,5 +2138,58 @@ AUD.LINES = /*SESLER*/{
   "orman_sazlik": "Timsah sazlığı! Huysuz timsahlar burada oyun oynuyor. Parlayan yerlere dikkat et!",
   "orman_mese": "Kadim meşelerin kocaman kovuklarına bak! Orman arkadaşları burada saklambaç oynuyor.",
   "orman_egrelti": "Eğrelti patikasındayız! Yaprakların arasındaki gizli yolları keşfedelim.",
-  "orman_golet": "Büyük timsah göletine geldik! Hep birlikte son huysuz arkadaşımızı neşelendirelim."
+  "orman_golet": "Büyük timsah göletine geldik! Hep birlikte son huysuz arkadaşımızı neşelendirelim.",
+  "orman_kamp_giris": "Kamp yerine geldik! Huysuz Kunduz dereyi kapatmış. Hadi, iki saklı topu bulalım!",
+  "orman_gol_giris": "Kurbağa Gölü! Nilüferlerin arasında iki top saklı. Koca Kurbağa'ya dikkat!",
+  "orman_mese_giris": "Yaşlı Meşe Korusu! Uykucu Ayı uyanmak üzere. Hadi, iki topu bulalım!",
+  "orman_selale_giris": "Şelale ve Kartal Tepesi! Huysuz Dağ Keçisi tepede bekliyor. Burada bir top saklı.",
+  "orman_gece_giris": "Ateşböcekli gece kampı! Babanın feneri yolumuzu aydınlatıyor. Burada bir top saklı.",
+  "orman_bataklik_giris": "Timsah Bataklığı! Son iki topu bulalım, Koca Huysuz Timsah'ı neşelendirelim!",
+  "orman_harita": "Babanın kamp haritası! Gitmek istediğin yere dokun.",
+  "orman_harita_kilitli": "Burası henüz kilitli. Önce bir önceki yeri bitirelim!",
+  "orman_buyu1": "Yaprak Okları hazır! Düğmeye bas, değneğinden üç yaprak ok uçsun!",
+  "orman_buyu2": "Çiçek Kalkanı hazır! Etrafında çiçekler açsın, seni korusun!",
+  "orman_buyu3": "Ateşböceği Bahçesi hazır! Ateşböcekleri huysuzların üstüne ışık yağdırsın!",
+  "orman_hibrit1": "Yaprak Hilali hazır! Kılıcından yapraklı bir hilal gönder!",
+  "orman_hibrit2": "Sarmaşık Bağı hazır! Etrafında yapraklar dönsün, seni korusun!",
+  "orman_hibrit3": "Mantar Halkası hazır! Yere sihirli mantarlardan bir halka çiz!",
+  "orman_top_getirdi": "Bilbo kalan topları da kokladı ve getirdi! Sihirli kapı açılıyor.",
+  "orman_kamp_kamp": "Feza babasıyla dereden balık tuttu. Balık suyun içinden zıpladı, Bilbo da sevinçle havladı!",
+  "orman_kamp_gol": "Kurbağalar şarkı söylüyor, vırak vırak! Babası ıslık çalıyor, Feza da neşeyle dans ediyor.",
+  "orman_kamp_mese": "Ağaç evinde bal ve palamut ziyafeti! Sincaplar da geldi, hep birlikte paylaşıyoruz.",
+  "orman_kamp_selale": "Kartal, Feza'yı kanatlarıyla tepeye taşıdı. Bak, gökkuşağı! Orman buradan ne kadar güzel görünüyor.",
+  "orman_kamp_gece": "Kamp ateşinde marşmelov kızarttık. Gökyüzünde yıldızlar, etrafımızda ateşböcekleri parlıyor.",
+  "orman_kamp_bataklik": "Bütün toplar geri geldi! Feza, Bilbo, babası ve Kartal hep birlikte kutlama yapıyor. Yaşasın!",
+  "orman_kamp_boss": "Huysuz Kunduz dereyi kapatmış, kütük fırlatıyor! Parlayan yerden uzak dur, sonra yanına koş ve onu neşelendir!",
+  "orman_kamp_bitti": "Kunduz artık gülümsüyor! Barajda küçük bir kapı açtı, dere yeniden şırıl şırıl akıyor.",
+  "orman_gol_boss": "Koca Kurbağa çok huysuz! Dilini uzatıp zıplıyor. Parlayan yere dikkat et, sonra onu neşelendir!",
+  "orman_gol_bitti": "Koca Kurbağa neşeyle vıraklıyor! Nilüferlerin üstünden bize el sallıyor.",
+  "orman_mese_boss": "Uykucu Ayı kış uykusundan huysuz uyandı! Yere vurmadan önce parlayan yerden kaç, sonra onu neşelendir!",
+  "orman_mese_bitti": "Uykucu Ayı balını yedi, şimdi mutlu mutlu mırıldanıyor. Yaşlı meşe de sevindi!",
+  "orman_selale_boss": "Huysuz Dağ Keçisi boynuzlarıyla koşuyor, taş yuvarlıyor! Parlayan yolun dışında kal, sonra onu neşelendir!",
+  "orman_selale_bitti": "Dağ keçisi sevinçle meliyor! Şelalenin üstünde kocaman bir gökkuşağı çıktı.",
+  "orman_gece_boss": "Huysuz Baykuş kanatlarıyla rüzgâr estiriyor, tüy atıyor! Parlayan yere dikkat et, sonra onu neşelendir!",
+  "orman_gece_bitti": "Baykuş artık gülümsüyor, huu huu! Ateşböcekleri onun etrafında dans ediyor.",
+  "orman_timsah_giris": "İşte Koca Huysuz Timsah! Topları o saklamış. Kuyruğunu sallarken parlayan yerden uzak dur, birlikte onu neşelendirelim!",
+  "orman_timsah_bitti": "Koca Timsah kahkahalarla gülüyor! Sakladığı bütün topları geri verdi. Ne güzel bir takım oldunuz!",
+  "orman_kamp_baraj": "Kunduz küçük bir baraj yapıyor! Bir vuruşla yık bakalım!",
+  "orman_gol_cuptur": "Cup! Koca Kurbağa göbeğinin üstüne düştü, sırılsıklam oldu!",
+  "orman_mese_bal": "Ayı balı görünce kendini tutamadı! Hadi, şimdi tam sırası!",
+  "orman_mese_uyandi": "Gıdı gıdı! Uykucu Ayı zıplayarak uyandı!",
+  "orman_selale_takildi": "Keçinin boynuzları kayaya takıldı! Hadi, şimdi!",
+  "orman_gece_gozluk": "Baykuşun gözlüğü kaydı, hiçbir şey göremiyor!"
 }/*SESLER-SON*/;
+
+// Kamp anı müziği: when the game's 'kamp' scene starts (07 emits 'kamp' {on, id}), play that zone's short, warm camp theme;
+// if nothing else changed the music ~1.5 s after the scene ends, go back to the zone theme (the next zone / 'zafer' normally do).
+addEventListener('load', () => {
+  if (typeof GAME === 'undefined' || !GAME || typeof GAME.on !== 'function') return;
+  const ZONES_SES = ['kamp', 'gol', 'mese', 'selale', 'gece', 'bataklik'];
+  let back = null;
+  GAME.on('kamp', d => {
+    if (!d || ZONES_SES.indexOf(d.id) < 0) return;
+    clearTimeout(back);
+    if (d.on) { AUD.music('orman_' + d.id + '_ani'); return; }
+    back = setTimeout(() => { if (AUD.theme === 'orman_' + d.id + '_ani' && GAME.state !== 'kamp') AUD.music('orman_' + d.id); }, 1500);
+  });
+});

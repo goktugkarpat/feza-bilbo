@@ -247,10 +247,22 @@ const UI = (() => {
   const FOREST_SKILL_ART = {
     palamut: '<svg viewBox="0 0 100 100" aria-hidden="true"><g stroke="#5b3b21" stroke-width="3.5" stroke-linejoin="round"><path d="M29 41C25 61 37 80 51 88C68 76 78 58 71 39Z" fill="#dfa35e"/><path d="M22 42Q23 20 48 23Q72 20 80 42Q50 55 22 42Z" fill="#84603d"/><path d="M47 25Q43 13 54 9" fill="none" stroke="#795537"/><path d="M55 16Q68 3 85 13Q80 29 62 29Z" fill="#83b951"/></g><path d="M31 34L38 42M44 29L52 43M60 29L68 39" stroke="#b99363" stroke-width="3" stroke-linecap="round"/><path d="M35 56Q35 68 46 76" fill="none" stroke="#ffe0a5" stroke-width="5" stroke-linecap="round"/><path d="M11 30L7 38M88 49L93 54M15 65L10 72" stroke="#fff0ba" stroke-width="4" stroke-linecap="round"/></svg>',
     yaprakkasirgasi: '<svg viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#f0f5c7" stroke-width="5" stroke-linecap="round"><path d="M12 56C2 32 40 14 70 29C96 43 80 73 48 76C27 78 20 65 33 54C46 45 63 51 58 60"/><path d="M21 83Q61 96 86 67" stroke-width="3"/></g><g stroke="#3c723e" stroke-width="3" stroke-linejoin="round"><path d="M23 47Q12 23 37 14Q51 38 23 47Z" fill="#9ac654"/><path d="M65 70Q73 39 92 47Q92 71 65 70Z" fill="#6bb77c"/><path d="M24 80Q30 61 46 65Q42 84 24 80Z" fill="#d6cb68"/></g><path d="M26 39L35 22M73 64L85 53M30 76L39 69" stroke="#e5efaf" stroke-width="2.5" stroke-linecap="round"/></svg>',
-    ormankucaklamasi: '<svg viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#8b6139" stroke-width="5" stroke-linecap="round"><path d="M49 57L49 83M49 70Q31 60 21 83M50 73Q69 57 80 82M49 82L34 92M50 82L65 92"/></g><g stroke="#9c5672" stroke-width="2.5"><ellipse cx="50" cy="30" rx="11" ry="18" fill="#ffd5dc"/><ellipse cx="50" cy="30" rx="11" ry="18" fill="#efa6bd" transform="rotate(72 50 45)"/><ellipse cx="50" cy="30" rx="11" ry="18" fill="#ffd5dc" transform="rotate(144 50 45)"/><ellipse cx="50" cy="30" rx="11" ry="18" fill="#efa6bd" transform="rotate(216 50 45)"/><ellipse cx="50" cy="30" rx="11" ry="18" fill="#ffd5dc" transform="rotate(288 50 45)"/></g><circle cx="50" cy="45" r="11" fill="#efc96b" stroke="#a67b38" stroke-width="3"/><path d="M26 58Q13 50 11 67Q22 77 34 67M69 62Q77 49 91 61Q85 79 68 71" fill="#83b66a" stroke="#51754c" stroke-width="3"/><circle cx="47" cy="42" r="3" fill="#fff2bc"/></svg>'
+    ormankucaklamasi: '<svg viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#8b6139" stroke-width="5" stroke-linecap="round"><path d="M49 57L49 83M49 70Q31 60 21 83M50 73Q69 57 80 82M49 82L34 92M50 82L65 92"/></g><g stroke="#9c5672" stroke-width="2.5"><ellipse cx="50" cy="30" rx="11" ry="18" fill="#ffd5dc"/><ellipse cx="50" cy="30" rx="11" ry="18" fill="#efa6bd" transform="rotate(72 50 45)"/><ellipse cx="50" cy="30" rx="11" ry="18" fill="#ffd5dc" transform="rotate(144 50 45)"/><ellipse cx="50" cy="30" rx="11" ry="18" fill="#efa6bd" transform="rotate(216 50 45)"/><ellipse cx="50" cy="30" rx="11" ry="18" fill="#ffd5dc" transform="rotate(288 50 45)"/></g><circle cx="50" cy="45" r="11" fill="#efc96b" stroke="#a67b38" stroke-width="3"/><path d="M26 58Q13 50 11 67Q22 77 34 67M69 62Q77 49 91 61Q85 79 68 71" fill="#83b66a" stroke="#51754c" stroke-width="3"/><circle cx="47" cy="42" r="3" fill="#fff2bc"/></svg>',
+    // Büyücü Feza
+    yaprakoklari: '<svg viewBox="0 0 100 100" aria-hidden="true"><g stroke="#3c6b2c" stroke-width="3" stroke-linejoin="round"><path d="M18 70L58 30" stroke="#f0f5c7" stroke-width="4" stroke-linecap="round"/><path d="M58 30Q60 14 78 12Q76 30 58 30Z" fill="#9be06a"/><path d="M28 86L68 46" stroke="#f0f5c7" stroke-width="4" stroke-linecap="round"/><path d="M68 46Q70 30 88 28Q86 46 68 46Z" fill="#7cc653"/><path d="M10 54L44 20" stroke="#f0f5c7" stroke-width="4" stroke-linecap="round"/><path d="M44 20Q46 6 62 4Q60 20 44 20Z" fill="#b8e986"/></g><path d="M62 26L72 16M72 42L82 32M48 16L56 8" stroke="#e7f7b8" stroke-width="2" stroke-linecap="round"/><circle cx="20" cy="80" r="3" fill="#f2ff9e"/><circle cx="12" cy="66" r="2" fill="#f2ff9e"/></svg>',
+    cicekkalkani: '<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="42" fill="#ffd6e6" fill-opacity=".35" stroke="#f08ab5" stroke-width="3" stroke-dasharray="7 5"/><g stroke="#b0507a" stroke-width="2.5"><ellipse cx="50" cy="31" rx="12" ry="17" fill="#ffb3d1"/><ellipse cx="50" cy="31" rx="12" ry="17" fill="#ffc7dd" transform="rotate(72 50 50)"/><ellipse cx="50" cy="31" rx="12" ry="17" fill="#ffb3d1" transform="rotate(144 50 50)"/><ellipse cx="50" cy="31" rx="12" ry="17" fill="#ffc7dd" transform="rotate(216 50 50)"/><ellipse cx="50" cy="31" rx="12" ry="17" fill="#ffb3d1" transform="rotate(288 50 50)"/></g><circle cx="50" cy="50" r="11" fill="#ffd166" stroke="#c98a2a" stroke-width="3"/><circle cx="46" cy="46" r="3" fill="#fff6c2"/></svg>',
+    atesbocegibahcesi: '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M8 92Q20 70 26 92M30 92Q40 64 48 92M54 92Q64 70 70 92M74 92Q86 66 92 92" fill="#7cc653" stroke="#3c6b2c" stroke-width="2.5" stroke-linejoin="round"/><g><circle cx="30" cy="40" r="13" fill="#f2ff9e" opacity=".35"/><ellipse cx="30" cy="40" rx="5" ry="7" fill="#e9ff7a" stroke="#6b7a2a" stroke-width="2"/><ellipse cx="24" cy="34" rx="6" ry="3.5" fill="#fff" fill-opacity=".8" stroke="#6b7a2a" stroke-width="1.5" transform="rotate(-30 24 34)"/><ellipse cx="36" cy="34" rx="6" ry="3.5" fill="#fff" fill-opacity=".8" stroke="#6b7a2a" stroke-width="1.5" transform="rotate(30 36 34)"/></g><g><circle cx="68" cy="26" r="11" fill="#f2ff9e" opacity=".35"/><ellipse cx="68" cy="26" rx="4.2" ry="6" fill="#e9ff7a" stroke="#6b7a2a" stroke-width="2"/><ellipse cx="63" cy="21" rx="5" ry="3" fill="#fff" fill-opacity=".8" stroke="#6b7a2a" stroke-width="1.5" transform="rotate(-30 63 21)"/><ellipse cx="73" cy="21" rx="5" ry="3" fill="#fff" fill-opacity=".8" stroke="#6b7a2a" stroke-width="1.5" transform="rotate(30 73 21)"/></g><g fill="#f2ff9e"><circle cx="70" cy="62" r="6" opacity=".4"/><circle cx="70" cy="62" r="3"/><circle cx="48" cy="18" r="2.5"/><circle cx="16" cy="62" r="2.5"/><circle cx="86" cy="46" r="2.2"/></g></svg>',
+    // Büyülü Şövalye Feza
+    yaprakhilali: '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M22 18A40 40 0 1 0 84 70A32 32 0 1 1 22 18Z" fill="#9be06a" stroke="#3c6b2c" stroke-width="3.5" stroke-linejoin="round"/><path d="M30 34q-6 10 0 20M44 76q10 6 22 2M28 60q4 10 12 14" fill="none" stroke="#e2f7b8" stroke-width="3" stroke-linecap="round"/><g stroke="#3c6b2c" stroke-width="2.5"><path d="M18 22Q8 12 14 4Q24 10 18 22Z" fill="#7cc653"/><path d="M86 66Q98 62 98 74Q86 78 86 66Z" fill="#b8e986"/></g><path d="M58 14L70 26M64 8L66 20" stroke="#f0f5c7" stroke-width="3" stroke-linecap="round"/></svg>',
+    sarmasikbagi: '<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="52" r="32" fill="none" stroke="#5f8f3c" stroke-width="7"/><circle cx="50" cy="52" r="32" fill="none" stroke="#8fd06a" stroke-width="3" stroke-dasharray="10 8"/><g stroke="#3c6b2c" stroke-width="2.5" stroke-linejoin="round"><path d="M50 20Q40 6 52 2Q60 12 50 20Z" fill="#9be06a"/><path d="M80 44Q96 38 96 50Q86 56 80 44Z" fill="#7cc653"/><path d="M28 78Q16 90 8 82Q16 70 28 78Z" fill="#b8e986"/><path d="M74 78Q84 92 92 86Q86 72 74 78Z" fill="#9be06a"/><path d="M20 40Q4 36 6 26Q18 26 20 40Z" fill="#7cc653"/></g><path d="M36 52l10 10 18-20" fill="none" stroke="#fff6c2" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    mantarhalkasi: '<svg viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="70" rx="42" ry="16" fill="#9be06a" fill-opacity=".35" stroke="#5f8f3c" stroke-width="2.5" stroke-dasharray="6 5"/><g stroke="#6b3a2a" stroke-width="2.5" stroke-linejoin="round"><path d="M44 74V58h12v16Z" fill="#fff3dc"/><path d="M30 60Q30 36 50 36Q70 36 70 60Z" fill="#ff7b6b"/><path d="M14 76V66h8v10Z" fill="#fff3dc"/><path d="M6 67Q6 52 18 52Q30 52 30 67Z" fill="#ffd166"/><path d="M78 78V66h8v12Z" fill="#fff3dc"/><path d="M70 67Q70 52 82 52Q94 52 94 67Z" fill="#ff9f6a"/></g><g fill="#fff"><circle cx="42" cy="48" r="3.5"/><circle cx="56" cy="44" r="3"/><circle cx="60" cy="54" r="2.5"/><circle cx="14" cy="60" r="2"/><circle cx="86" cy="59" r="2"/></g><path d="M50 22l2 5 5 1-4 3 1 5-4-3-4 3 1-5-4-3 5-1Z" fill="#fff6c2"/></svg>'
   };
   SVG.sword = '<svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="forestBlade" x1="0" x2="1"><stop stop-color="#d9eab5"/><stop offset=".48" stop-color="#fff6d6"/><stop offset="1" stop-color="#8ab476"/></linearGradient></defs><g transform="rotate(38 50 50)" stroke="#466343" stroke-width="3" stroke-linejoin="round"><path class="u-blade" d="M50 7L62 27L58 64H42L38 27Z" fill="url(#forestBlade)"/><path d="M50 19V61" stroke="#96b784" stroke-width="2"/><path d="M32 61Q50 54 68 61L65 69Q50 65 35 69Z" fill="#be9860" stroke="#6a5133"/><rect x="43" y="68" width="14" height="22" rx="3" fill="#946747" stroke="#63472e"/><path d="M44 74L56 77M44 82L56 85" stroke="#e9cb91" stroke-width="2"/><circle cx="50" cy="92" r="6" fill="#aac477"/></g></svg>';
   SVG.saber = SVG.sword.replace('<svg ', '<svg class="u-emsvg" ');
+  // Orman değneği: yapraklı tahta asa, ucunda bir ateşböceği (büyücü/şövalye vuruş düğmesi ve dolap)
+  SVG.wand = '<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="70" cy="28" r="20" fill="#f2ff9e" opacity=".28"/><path d="M24 86L66 34" stroke="#6b4628" stroke-width="9" stroke-linecap="round"/><path d="M24 86L66 34" stroke="#a8743f" stroke-width="4" stroke-linecap="round"/>' +
+    '<path d="M66 34q-14-4-14-18q14 0 14 18Zm0 0q4-14 18-14q-2 14-18 14Z" fill="#8fd06a" stroke="#3f6b2c" stroke-width="2.5" stroke-linejoin="round"/><circle cx="72" cy="26" r="6" fill="#f2ff9e" stroke="#c9d84a" stroke-width="2"/><circle cx="40" cy="40" r="3" fill="#f2ff9e"/><circle cx="84" cy="52" r="2.5" fill="#f2ff9e"/></svg>';
+  SVG.wandEm = SVG.wand.replace('<svg ', '<svg class="u-emsvg" ');
   SLOT_EMO.weapon = SVG.saber;   // wardrobe row label + thumbnail fallback: a little lightsaber (there is no emoji for it)
 
   // ── State ──
@@ -458,12 +470,13 @@ const UI = (() => {
     const sb = D.sbtns = el('div', 'u-sbtns', tr);
     D.bagBtn = el('button', 'u-rbtn', sb, '<span class="u-emo">🎒</span><span class="u-dot"></span>');
     D.pauseBtn = el('button', 'u-rbtn', sb, SVG.pause + '<span class="u-hold"></span>');   // 0.5 s hold
-    D.dreamBtn = el('button', 'u-rbtn u-dream-open u-hide', sb, '<span class="u-emo">🗺️</span><span class="u-dream-label">Harita</span>');
-    D.dreamBtn.setAttribute('aria-label', FEZA_LANG.t('Hayal haritasını aç'));
+    D.dreamBtn = el('button', 'u-rbtn u-dream-open u-hide', sb, SVG.campMap);
+    D.dreamBtn.setAttribute('aria-label', FEZA_LANG.t('Kamp haritasını aç'));
     const mini = D.mini = el('div', 'u-mini', tr);
     D.map = el('canvas', '', mini);
-    D.forestBalls = el('div', 'u-forest-balls u-hide', mini, '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="#f49b64" stroke="#fff4ca" stroke-width="2"/><path d="M5 14Q20 27 35 14M13 5Q23 20 13 35" fill="none" stroke="#fff4ca" stroke-width="3"/></svg><span>Toplar</span><b>0 / 10</b>');
-    D.forestBallCount = D.forestBalls.querySelector('b');
+    // top sayacı: bu bölümün topları (dolu/boş top resimleri) + altında küçük "toplam / 10"
+    D.forestBalls = el('div', 'u-forest-balls u-hide', mini, '<span class="u-fb-zone"></span><b class="u-fb-all">0 / 10</b>');
+    D.forestBallZone = D.forestBalls.firstChild; D.forestBallCount = D.forestBalls.querySelector('b');
     D.forestBalls.setAttribute('role', 'status');
     D.forestBalls.setAttribute('aria-live', 'polite');
 
@@ -510,13 +523,13 @@ const UI = (() => {
       D.sk.push({ b, ico: b.firstChild, cd: b.children[1], cdn: b.children[2], shown: false, p: -1, n: -1 });
     }
 
-    buildTitle(root); buildChoice(root); buildPause(root); buildBag(root); buildWin(root); buildMerchant(root); buildDreamMap(root); buildDreamTravel(root);
+    buildTitle(root); buildChoice(root); buildPause(root); buildBag(root); buildWin(root); buildMerchant(root); buildDreamMap(root); buildDreamTravel(root); buildZoneIntro(root); buildZoneDone(root);
     // subtitles live above every screen (the victory line plays over the victory panel)
     D.sub = el('div', 'u-sub', root, '<div class="u-subico">✨</div><div class="u-subtxt"></div>');
     D.subIco = D.sub.firstChild; D.subTxt = D.sub.lastChild;
     D.fade = el('div', '', document.body, '<div class="u-fstar">✨</div>');
     D.fade.id = 'uiFade';
-    D.forestBtn.style.display = D.forestCont.style.display = D.titleMap.style.display = 'none';
+    D.forestBtn.style.display = D.forestCont.style.display = 'none';
     D.forestBtn.disabled = D.forestCont.disabled = true;
     wireButtons();
   }
@@ -550,34 +563,61 @@ const UI = (() => {
     D.contBtn = el('button', 'u-btn b', bt, SVG.cont + '<span>Devam Et</span>');   // only with a save (Mola › Kaydet)
     D.forestBtn = el('button', 'u-btn g u-forest-start', bt, '<span>🌳</span><span>Orman Macerası</span>');
     D.forestCont = el('button', 'u-btn b u-hide', bt, SVG.cont + '<span>Ormana Devam Et</span>');
-    D.titleMap = el('button', 'u-btn p u-hide u-dream-title', bt, '<span>🗺️ Hayal Haritası</span>');
+    D.titleMap = el('button', 'u-btn p u-hide u-dream-title u-title-map', bt, SVG.campMap + '<span>Harita</span>');
+    D.titleMap.setAttribute('aria-label', FEZA_LANG.t('Kamp haritası'));
     const tg = el('div', 'u-ttog', t);
     D.tMus = el('button', 'u-rbtn', tg, SVG.note + '<span class="u-slash"></span>'); D.tMus.dataset.tog = 'music';   // sound effects: pause menu only
   }
   // All portraits share Feza's face; the silhouette and equipment make the choice readable without words.
+  // (Dev Ev'deki kartların aynısı; orman: yeşil kamp tişörtü, tahta kılıç, yapraklı/ateşböcekli değnekler)
   function heroArt(id) {
     const wizard = id === 'wizard', hybrid = id === 'hybrid';
+    const sword = '<path d="M156 161 L176 137" stroke="#6b4628" stroke-width="12" stroke-linecap="round"/><path d="M164 132 L184 146" stroke="#8a5a32" stroke-width="8" stroke-linecap="round"/>' +
+      '<path d="M176 137 L203 92 Q208 84 210 90 L185 141 Z" fill="#e2b77a" stroke="#6b4628" stroke-width="4" stroke-linejoin="round"/><path d="M184 128 L202 96" stroke="#f7dcae" stroke-width="3" stroke-linecap="round"/><path d="M196 104 q8 -6 12 2 q-8 4 -12 -2Z" fill="#7cbf55" stroke="#3f6b2c" stroke-width="2"/>';
     return `<svg class="u-heroart" viewBox="0 0 220 220" aria-hidden="true">
-      <ellipse cx="110" cy="203" rx="68" ry="10" fill="#170d3d" opacity=".35"/>
-      <path d="M82 123 Q52 154 63 196 L160 196 Q164 149 138 123" fill="${wizard ? '#7851cb' : hybrid ? '#207d84' : '#e14d60'}" stroke="#40225e" stroke-width="4"/>
-      <path d="M88 136 L78 187 L143 187 L133 136" fill="${wizard ? '#344789' : hybrid ? '#316d88' : '#488bdd'}" stroke="#28265a" stroke-width="4"/>
-      <path d="M90 187 L89 201 M132 187 L136 201" stroke="#332854" stroke-width="14" stroke-linecap="round"/>
+      <ellipse cx="110" cy="203" rx="68" ry="10" fill="#10261a" opacity=".35"/>
+      <path d="M82 123 Q52 154 63 196 L160 196 Q164 149 138 123" fill="${wizard ? '#7851cb' : hybrid ? '#207d84' : '#3f8f4e'}" stroke="${wizard ? '#40225e' : '#1f4a2c'}" stroke-width="4"/>
+      <path d="M88 136 L78 187 L143 187 L133 136" fill="${wizard ? '#344789' : hybrid ? '#316d88' : '#8bc76a'}" stroke="${wizard ? '#28265a' : '#2c5a2c'}" stroke-width="4"/>
+      ${wizard || hybrid ? '' : '<path d="M96 150 q14 8 28 0 M100 166 q10 6 20 0" fill="none" stroke="#5f9a45" stroke-width="3" stroke-linecap="round"/>'}
+      <path d="M90 187 L89 201 M132 187 L136 201" stroke="#3b2c22" stroke-width="14" stroke-linecap="round"/>
       <path d="M84 142 L65 164 M136 143 L158 159" stroke="#ffd6aa" stroke-width="15" stroke-linecap="round"/>
       <circle cx="110" cy="94" r="40" fill="#ffd6aa" stroke="#8b543d" stroke-width="3"/>
-      <path d="M70 94 Q62 53 101 51 Q148 43 150 91 L134 74 L113 81 L104 70 L82 85" fill="#8c542d"/>
+      <path d="M70 94 Q62 53 101 51 Q148 43 150 91 L134 74 L113 81 L104 70 L82 85" fill="#6e4426"/>
       <ellipse cx="94" cy="99" rx="5" ry="7" fill="#332843"/><ellipse cx="124" cy="99" rx="5" ry="7" fill="#332843"/>
       <circle cx="92" cy="97" r="1.8" fill="white"/><circle cx="122" cy="97" r="1.8" fill="white"/>
       <path d="M100 115 Q110 125 121 114" fill="none" stroke="#a15b53" stroke-width="3" stroke-linecap="round"/>
       <circle cx="82" cy="111" r="6" fill="#f69c98" opacity=".65"/><circle cx="136" cy="111" r="6" fill="#f69c98" opacity=".65"/>
-      ${wizard ? '<path d="M66 66 L103 13 L142 61 Z" fill="#7956be" stroke="#41245e" stroke-width="4"/><path d="M57 67 Q108 49 156 68" stroke="#bb95ff" stroke-width="12" stroke-linecap="round"/><path d="M108 31 L111 39 L120 40 L113 46 L115 54 L108 50 L101 54 L103 46 L97 40 L105 39Z" fill="#ffe895"/><path d="M156 164 L183 107" stroke="#714435" stroke-width="7" stroke-linecap="round"/><path d="M184 83 L190 99 L205 105 L190 111 L184 127 L178 111 L163 105 L178 99Z" fill="#ffe69a"/><circle cx="176" cy="72" r="4" fill="#b9f2ff"/><path d="M40 113l4 9 10 3-10 4-4 10-4-10-10-4 10-3Z" fill="#c9b3ff"/>' : '<path d="M156 161 L178 135" stroke="#515477" stroke-width="12" stroke-linecap="round"/><path d="M177 136 L208 87" stroke="#58dfff" stroke-width="15" stroke-linecap="round" opacity=".35"/><path d="M177 136 L208 87" stroke="#bdffff" stroke-width="7" stroke-linecap="round"/><path d="M168 130 L183 141" stroke="#d7daed" stroke-width="7" stroke-linecap="round"/><path d="M97 148h27l-3 22-10 8-11-8Z" fill="#ffce68" stroke="#9c6a3e" stroke-width="3"/>'}
-      ${hybrid ? '<path d="M66 164 L37 104" stroke="#583928" stroke-width="10" stroke-linecap="round"/><path d="M43 116 L38 105" stroke="#ffd46f" stroke-width="12"/><path d="M35 80 L45 96 L36 111 L25 96Z" fill="#7cfff0" stroke="#fff2aa" stroke-width="3"/><circle cx="35" cy="96" r="23" fill="#70fff0" opacity=".15"/><path d="M85 68 Q110 57 137 69" fill="none" stroke="#ffd46f" stroke-width="7"/><path d="M109 57l7 9-7 9-7-9Z" fill="#b9fff5"/>' : ''}
+      ${wizard ? '<path d="M66 66 L103 13 L142 61 Z" fill="#7956be" stroke="#41245e" stroke-width="4"/><path d="M57 67 Q108 49 156 68" stroke="#bb95ff" stroke-width="12" stroke-linecap="round"/><path d="M94 40 q10 -14 22 -4 q-8 14 -22 4Z" fill="#8fd06a" stroke="#3f6b2c" stroke-width="2.5"/><path d="M96 40 L114 37" stroke="#3f6b2c" stroke-width="2"/>' +
+        '<path d="M156 164 L183 107" stroke="#714435" stroke-width="7" stroke-linecap="round"/><path d="M183 107 q-10 -8 -6 -18 M183 107 q10 -6 8 -16" fill="none" stroke="#714435" stroke-width="4" stroke-linecap="round"/><path d="M178 90 q-10 -6 -6 -14 q10 2 6 14Z M190 92 q4 -10 12 -8 q-2 10 -12 8Z" fill="#8fd06a" stroke="#3f6b2c" stroke-width="2"/>' +
+        '<circle cx="184" cy="80" r="9" fill="#f2ff9e" opacity=".35"/><circle cx="184" cy="80" r="4" fill="#f2ff9e"/><circle cx="168" cy="66" r="3" fill="#f2ff9e"/><circle cx="200" cy="66" r="2.5" fill="#f2ff9e"/><circle cx="40" cy="118" r="7" fill="#e9ff7a" opacity=".35"/><circle cx="40" cy="118" r="3" fill="#f2ff9e"/>' : sword + '<path d="M97 148h27l-3 22-10 8-11-8Z" fill="#c8945a" stroke="#6b4628" stroke-width="3"/><path d="M110 152v20" stroke="#6b4628" stroke-width="2"/>'}
+      ${hybrid ? '<path d="M66 164 L37 104" stroke="#583928" stroke-width="10" stroke-linecap="round"/><path d="M43 116 L38 105" stroke="#ffd46f" stroke-width="12"/><path d="M35 80 L45 96 L36 111 L25 96Z" fill="#a8f08a" stroke="#fff2aa" stroke-width="3"/><circle cx="35" cy="96" r="23" fill="#b8ff9a" opacity=".15"/><path d="M85 68 Q110 57 137 69" fill="none" stroke="#ffd46f" stroke-width="7"/><path d="M103 60 q6 -10 14 -2 q-6 8 -14 2Z" fill="#8fd06a" stroke="#3f6b2c" stroke-width="2"/>' : ''}
     </svg>`;
   }
   function buildChoice(root) {
-    D.choice = el('div', 'u-screen u-hide', root);
-    D.choice.hidden = true; D.heroes = [];
+    const s = D.choice = el('div', 'u-screen u-dim u-choice', root);
+    s.setAttribute('role', 'dialog'); s.setAttribute('aria-modal', 'true'); s.setAttribute('aria-labelledby', 'heroTitle');
+    const p = el('div', 'u-panel', s);
+    const title = el('div', 'u-ptitle', p, ol('Kahramanını Seç', 'u-gold-t')); title.id = 'heroTitle';
+    el('div', 'u-choicehint', p, 'Bugün hangi Feza olacaksın?');
+    const row = el('div', 'u-herorow', p);
+    const names = ['Savaşçı Feza', 'Büyücü Feza', 'Büyülü Şövalye Feza'];
+    const hints = ['Tahta kılıcını kuşan, <br>cesurca yaklaş!', 'Değneğini salla, <br>uzaktan yaprak büyüsü!', 'Yakında kılıç, <br>uzakta büyü!'];
+    D.heroes = ['warrior', 'wizard', 'hybrid'].map((id, i) => {
+      const b = el('button', 'u-herocard ' + id, row, heroArt(id) +
+        `<strong>${names[i]}</strong><span class="u-herodesc">${hints[i]}</span><span class="u-herogo">${SVG.play} Seç ve Oyna</span>`);
+      b.dataset.heroClass = id;
+      onPress(b, () => chooseHero(id), { menu: true });
+      return b;
+    });
+    D.choiceBack = el('button', 'u-btn p u-choiceback', p, SVG.close + '<span>Geri</span>');
+    onPress(D.choiceBack, () => closeChoice(), { menu: true });
+  }
+  function chooseHero(id) {
+    if (S.choiceFrom === 'dream' && Number.isInteger(S.dreamChoiceIndex)) travelTo(S.dreamChoiceIndex, { heroClass: id, difficulty: 'normal' });
+    else startGame(false, id);
   }
   function openChoice(from) {
+    if (from !== 'dream') S.dreamChoiceIndex = null;
     S.choiceFrom = from; S.atkHeld = false;
     if (S.clearKeys) S.clearKeys();
     aud('stopVoice'); setPaused(true); setMode('choose'); showScreen(D.choice, true);
@@ -588,6 +628,13 @@ const UI = (() => {
     if (S.mode !== 'choose' || S.busy) return;
     aud('stopVoice');
     showScreen(D.choice, false);
+    if (S.choiceFrom === 'dream') {   // back to the camp map (the stop stays unpicked)
+      const back = S.dreamReturn || {};
+      S.dreamChoiceIndex = null; S.choiceFrom = 'title';
+      setMode(back.mode && back.mode !== 'choose' ? back.mode : 'title'); S.menu = null; setPaused(false);
+      openDreamMap();
+      return;
+    }
     if (S.choiceFrom === 'pause') {
       setMode('play'); S.menu = 'pause'; D.pausePanel.classList.remove('asking'); closeDifficulty(); showScreen(D.pause, true);
     } else { setPaused(false); showTitle(); D.playBtn.focus({ preventScroll: true }); }
@@ -600,7 +647,7 @@ const UI = (() => {
     D.resume = el('button', 'u-btn g wide', m, SVG.play + '<span>Devam Et</span>');
     D.difficultyBtn = el('button', 'u-btn p wide', m, '<span>Zorluk: Normal</span>');
     D.saveBtn = el('button', 'u-btn b wide', m, SVG.save + '<span>Kaydet</span>');
-    D.pauseMap = el('button', 'u-btn p wide u-hide', m, '<span>🗺️ Hayal Haritası</span>');
+    D.pauseMap = el('button', 'u-btn p wide u-hide', m, SVG.campMap + '<span>Kamp Haritası</span>');
     D.restart = el('button', 'u-btn o wide', m, SVG.again + '<span>Baştan Başla</span>');
     const dif = el('div', 'u-difficulty', p);
     el('div', 'u-difficulty-hint', dif, 'Seçimin hemen uygulanır.<br> İlerlemen ve eşyaların korunur.');
@@ -734,117 +781,366 @@ const UI = (() => {
     D.winSub = el('div', 'u-wsub', p, 'Herkes yeniden neşeli! 🎉');
     D.winBoss = el('div', 'u-wboss', p);   // every zone's boss, cheered up (portraits)
     D.winChips = el('div', 'u-chips', p);
-    D.again = el('button', 'u-btn g wide', p, SVG.play + '<span>Tekrar Oyna</span>');
-    D.winMap = el('button', 'u-btn b wide u-hide', p, '<span>🗺️ İstediğin Yere Git</span>');
-    D.winMapHint = el('div', 'u-dream-unlock u-hide', p, 'Hayal haritan açıldı! Bir adaya dokun, yeniden keşfet.');
+    const wb = el('div', 'u-wbtns', p);   // alt alta iki düğme aynı genişlikte (ui.css .u-wbtns)
+    D.again = el('button', 'u-btn g wide', wb, SVG.play + '<span>Tekrar Oyna</span>');
+    D.winMap = el('button', 'u-btn b wide u-hide', wb, SVG.campMap + '<span>Kamp Haritası</span>');
+    D.winMapHint = null;
   }
 
-  // The dream atlas is made from local SVG artwork: it also works offline and from file://.
-  const DREAM_PLACES = [
-    ['tuvalet', 'Köpük Krallığı', 'Kaka, çiş ve pırıl pırıl köpükler', '#67ded6', 14, 29],
-    ['ay', 'Ay Bahçesi', 'Yıldızların arasında zıp zıp!', '#c9b7f6', 38, 25],
-    ['orman', 'Neşeli Orman', 'Ağaçların arasında eski dostlar', '#82ce82', 62, 29],
-    ['kefir', 'Kefir Vadisi', 'Fokur fokur bir yolculuk', '#f3d49b', 86, 25],
-    ['magara', 'Kristal Mağara', 'Parıldayan taşların sırrı', '#9fb6ec', 86, 69],
-    ['yanardag', 'Yanardağ Adası', 'Sıcacık bir kaplumbağa', '#f6a888', 62, 73],
-    ['sehir', 'Surlu Şehir', 'Renkli sokaklar, neşeli komşular', '#dfa5c5', 38, 69],
-    ['kale', 'Dostluk Kalesi', 'Hayalin kalbinde buluşalım', '#e3b4ed', 14, 73]
+  // ───────────────────────── Kamp Haritası: babanın kraft kâğıdına kalemle çizdiği harita ─────────────────────────
+  // Altı durak (ZONES id'leriyle eşleşir), her biri renkli kalemle çizilmiş bir resim: yazıya dayanmaz. Bilgi GAME'den
+  // (zoneInfo(i) → { open, done, balls, ballsMax }; yoksa zoneOpen(i); o da yoksa yalnız 1. durak açık). Yerel SVG: file:// ve
+  // internetsiz çalışır. Yatay ekranda 1000×560'lık, dik ekranda 560×860'lık bir kâğıt; duraklar iki dizilişte de % ile.
+  const INK = '#4b3322';
+  const CAMP_STOPS = [
+    { id: 'kamp', ad: 'Kamp Yeri', boss: 'kunduz', balls: 2, x: 12, y: 66, px: 28, py: 16 },
+    { id: 'gol', ad: 'Kurbağa Gölü', boss: 'kocakurbaga', balls: 2, x: 28.5, y: 30, px: 72, py: 30 },
+    { id: 'mese', ad: 'Yaşlı Meşe', boss: 'uykucuayi', balls: 2, x: 44.5, y: 67, px: 28, py: 44 },
+    { id: 'selale', ad: 'Şelale Tepesi', boss: 'dagkecisi', balls: 1, x: 60, y: 30, px: 72, py: 58 },
+    { id: 'gece', ad: 'Gece Kampı', boss: 'baykus', balls: 1, x: 75, y: 67, px: 28, py: 72.5 },
+    { id: 'bataklik', ad: 'Timsah Bataklığı', boss: 'buyuktimsah', balls: 2, x: 89, y: 30, px: 72, py: 87.5 },
   ];
-  function dreamArt(id, color) {
-    const tree = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 0v39" stroke="#895d49" stroke-width="9"/><path d="M0-52L-27-11H-16L-35 13H35L16-11H27Z" fill="#42a984" stroke="#267c6c" stroke-width="2"/><path d="M-16-14L0-39L14-14" fill="#91d887"/></g>`;
-    const face = (x, y) => `<g transform="translate(${x} ${y})"><circle cx="-7" cy="0" r="2.4" fill="#433455"/><circle cx="7" cy="0" r="2.4" fill="#433455"/><path d="M-6 8Q0 15 6 8" fill="none" stroke="#815159" stroke-width="2" stroke-linecap="round"/></g>`;
-    let art = '';
-    if (id === 'tuvalet') art = `<path d="M67 48h28v45H67Z" fill="#fffaf1" stroke="#8daecc" stroke-width="3"/><rect x="63" y="46" width="36" height="8" rx="4" fill="#e5f5fc"/><path d="M60 83h49Q111 106 92 112v11H76v-13Q59 105 60 83" fill="#fffdf6" stroke="#8daecc" stroke-width="3"/><ellipse cx="84" cy="84" rx="26" ry="7" fill="#b7e8ef"/><path d="M132 65Q116 85 132 94Q148 85 132 65" fill="#ffdf68" stroke="#e4b94d" stroke-width="2"/>${face(132,83)}<path d="M33 98Q24 92 34 84Q25 74 40 70Q47 60 51 68Q64 75 52 82Q67 90 57 98Z" fill="#b78062" stroke="#8d5b45" stroke-width="2"/>${face(44,87)}<g fill="#dbffff" stroke="#93ddd9"><circle cx="29" cy="54" r="9"/><circle cx="114" cy="44" r="7"/><circle cx="150" cy="103" r="6"/></g>`;
-    if (id === 'ay') art = `<circle cx="85" cy="81" r="43" fill="#e9e2fa" stroke="#a29ac8" stroke-width="3"/><g fill="#c5bddd"><ellipse cx="65" cy="61" rx="10" ry="7"/><ellipse cx="99" cy="87" rx="14" ry="10"/><ellipse cx="72" cy="108" rx="8" ry="5"/></g><path d="M111 39v42M112 41q17-9 30 2v21q-15-10-30-2" fill="#fecc7a" stroke="#716699" stroke-width="2"/><path d="M39 90h35v18H39Z" fill="#8be0dc" stroke="#6e6f9d" stroke-width="3"/><circle cx="44" cy="111" r="7" fill="#666582"/><circle cx="70" cy="111" r="7" fill="#666582"/><path d="M50 89v-15h17v15" fill="#ebffff" stroke="#6e6f9d" stroke-width="3"/><circle cx="132" cy="21" r="12" fill="#6cbcb3"/><path d="M122 17q12-4 19 7" fill="none" stroke="#cae98d" stroke-width="4"/>`;
-    if (id === 'orman') art = `${tree(40,77,.75)}${tree(118,67,.95)}${tree(75,61,1)}<path d="M119 112q-15-27 9-38q27-5 28 19q14 4 2 14l-5 7Z" fill="#b496e2" stroke="#7f6aad" stroke-width="2"/><path d="M128 81l-4-12 10 6M145 80l8-10-1 17" fill="#ffe4a3"/>${face(140,96)}<g fill="#f5a4bb"><circle cx="31" cy="113" r="4"/><circle cx="94" cy="124" r="4"/></g>`;
-    if (id === 'kefir') art = `<path d="M70 48h36v14q16 17 16 26v30H54V88q0-10 16-26Z" fill="#fffcec" stroke="#bca98f" stroke-width="3"/><rect x="68" y="41" width="40" height="14" rx="5" fill="#7bccba"/><path d="M58 84h60v26H58Z" fill="#c9eee1"/>${face(88,93)}<g fill="#f6ffff" stroke="#94cfc2"><circle cx="36" cy="77" r="13"/><circle cx="135" cy="68" r="10"/><circle cx="132" cy="112" r="7"/><circle cx="58" cy="32" r="7"/></g><path d="M24 122q7-23 15 0M140 127q7-23 15 0" fill="#9bd5b7"/>`;
-    if (id === 'magara') art = `<path d="M27 115L39 69L75 37L111 43L144 78L154 118Z" fill="#727cac" stroke="#58658c" stroke-width="3"/><path d="M60 119L63 85Q88 60 112 87L121 119Z" fill="#40466f"/><path d="M49 107L38 75L51 61L62 78Z" fill="#9df3ed" stroke="#c5fffb" stroke-width="2"/><path d="M113 115L103 77L119 57L136 83Z" fill="#ceadff" stroke="#ead5ff" stroke-width="2"/><path d="M75 117L67 100L79 85L93 102Z" fill="#ffcd88" stroke="#ffe4b0" stroke-width="2"/><path d="M119 62v37M50 66v28" stroke="#fff" stroke-width="2" opacity=".5"/>`;
-    if (id === 'yanardag') art = `<path d="M28 112L67 50H109L151 112Z" fill="#986f83" stroke="#765768" stroke-width="3"/><ellipse cx="88" cy="50" rx="21" ry="7" fill="#ffd081"/><path d="M73 56q11 26 5 34q18-13 15-32q7 15 17 12l-8-13" fill="#ff9e6b"/><g fill="#f6ecf3" opacity=".9"><circle cx="91" cy="30" r="12"/><circle cx="104" cy="17" r="10"/><circle cx="83" cy="14" r="8"/></g><ellipse cx="52" cy="116" rx="23" ry="14" fill="#7cc2a6"/><path d="M29 114q0-28 42 0" fill="#edc18b" stroke="#a97b63" stroke-width="2"/><circle cx="78" cy="114" r="11" fill="#a4ddad"/>${face(78,112)}`;
-    if (id === 'sehir') art = `<path d="M27 114V82h127v32" fill="#dec3c2" stroke="#ac929e" stroke-width="3"/><path d="M23 75h10v13h10V75h12v13h11V75h12v13h13V75h12v13h12V75h12v13h11V75h19v18H23Z" fill="#efddcc"/><path d="M45 82V55h32v27M100 82V47h32v35" fill="#f5bfb0" stroke="#b997a4" stroke-width="2"/><path d="M39 55l22-21 23 21M94 47l22-24 24 24" fill="#89b4c8" stroke="#607f9e" stroke-width="3"/><path d="M79 116V98q9-20 20 0v18" fill="#9b82ac"/><g fill="#fff2b9"><rect x="55" y="61" width="11" height="13" rx="3"/><rect x="111" y="54" width="11" height="13" rx="3"/></g>`;
-    if (id === 'kale') art = `<path d="M35 118V66h26v25h57V66h27v52Z" fill="#e8d9fa" stroke="#9e83bc" stroke-width="3"/><path d="M30 65l18-30 19 30M112 65l20-30 18 30" fill="#ad89d5" stroke="#7d67a7" stroke-width="3"/><path d="M73 91V54h34v37" fill="#f1dffa" stroke="#9e83bc" stroke-width="3"/><path d="M68 55l22-33 22 33" fill="#cf9edb" stroke="#9269ad" stroke-width="3"/><path d="M81 119V99q9-20 19 0v20" fill="#8d79b2"/><path d="M90 22V8q12-5 23 2l-12 6 12 5H90" fill="#ffe1a0" stroke="#bd94b5" stroke-width="2"/><g fill="#ffebad"><rect x="44" y="74" width="8" height="14" rx="4"/><rect x="127" y="74" width="8" height="14" rx="4"/><rect x="86" y="62" width="9" height="15" rx="4"/></g>`;
-    return `<svg class="u-island-art" viewBox="0 0 180 160" aria-hidden="true"><ellipse cx="90" cy="141" rx="68" ry="12" fill="#100b40" opacity=".22"/><path d="M23 117Q38 103 62 108Q92 99 124 110Q153 105 163 121L139 143Q87 163 39 142Z" fill="#827394"/><path d="M23 117Q38 103 62 108Q92 99 124 110Q153 105 163 121Q135 144 87 140Q36 139 23 117Z" fill="${color}" stroke="#fff7d4" stroke-width="2"/>${art}<path d="M20 40l3 7 8 1-6 5 2 8-7-4-7 4 2-8-6-5 8-1Z" fill="#ffe9ac"/><circle cx="153" cy="45" r="3" fill="#f9e6ff"/></svg>`;
+  const ink = (w = 3) => `stroke="${INK}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
+  const CAMP_ART = {
+    kamp: `<path d="M22 112V86" ${ink(4)}/><path d="M22 38L6 88h32Z" fill="#6aa357" ${ink()}/><path d="M14 74l8-10M18 84l10-12" stroke="#4f8a3c" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M0 116Q30 104 62 114T126 112T160 106V140H0Z" fill="#8fcbe6" ${ink(2.5)}/><path d="M16 126q8-4 16 0M78 128q8-4 16 0M120 122q8-4 16 0" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M128 104q8-8 16 0q-8 8-16 0Zm16 0l7-5v10Z" fill="#f4a03c" ${ink(2)}/><circle cx="132" cy="103" r="1.3" fill="${INK}"/>
+      <path d="M30 108L62 48L94 108Z" fill="#f08a4b" ${ink(3.5)}/><path d="M62 48L52 108H72Z" fill="#b8532a" ${ink(3)}/><path d="M56 38L68 58M68 38L56 58" ${ink(3)}/>
+      <path d="M40 100l7-12M84 100l-5-9M78 92l-4-7" stroke="#c76a35" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M102 108L130 100M104 100L130 108" stroke="#8a5a32" stroke-width="6" stroke-linecap="round"/><path d="M102 108L130 100M104 100L130 108" fill="none" ${ink(1.4)}/>
+      <path d="M116 100C106 92 110 80 116 72C118 80 126 82 124 92C124 97 120 100 116 100Z" fill="#ff8f3a" ${ink(2.5)}/><path d="M116 98C112 94 113 88 116 84C118 88 121 90 120 94Z" fill="#ffd84a"/>`,
+    gol: `<path d="M126 48l14-4M133 46q-6-10 2-12q4 6-2 12q10-6 14 0q-8 6-14 0" fill="#bfe6f5" ${ink(2)}/>
+      <ellipse cx="84" cy="102" rx="72" ry="28" fill="#7cc6e0" ${ink(3)}/><path d="M24 104q10-5 20 0M110 118q10-5 20 0M120 92q8-4 16 0" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M14 108V56M24 110V64M8 110V72" stroke="#5f8f3c" stroke-width="3.2" stroke-linecap="round"/><rect x="11" y="48" width="6" height="16" rx="3" fill="#8a5a32" ${ink(1.6)}/><rect x="21" y="58" width="6" height="14" rx="3" fill="#8a5a32" ${ink(1.6)}/>
+      <path d="M130 100L142 96A14 7 0 1 1 140 104Z" fill="#7cbf55" ${ink(2)}/><path d="M40 116L52 112A14 7 0 1 1 50 120Z" fill="#7cbf55" ${ink(2)}/>
+      <g transform="translate(48 114)"><ellipse cx="-4" cy="-5" rx="3.2" ry="6.5" transform="rotate(-28 -4 -5)" fill="#f7a8c4" ${ink(1.3)}/><ellipse cx="4" cy="-5" rx="3.2" ry="6.5" transform="rotate(28 4 -5)" fill="#f7a8c4" ${ink(1.3)}/><ellipse cx="0" cy="-7" rx="3.2" ry="7" fill="#fbc6da" ${ink(1.3)}/></g>
+      <ellipse cx="84" cy="102" rx="26" ry="9" fill="#5fa846" ${ink(2.5)}/>
+      <ellipse cx="84" cy="88" rx="18" ry="14" fill="#8bd05a" ${ink(3)}/><circle cx="75" cy="75" r="7.5" fill="#8bd05a" ${ink(3)}/><circle cx="93" cy="75" r="7.5" fill="#8bd05a" ${ink(3)}/>
+      <circle cx="75" cy="75" r="4" fill="#fff"/><circle cx="93" cy="75" r="4" fill="#fff"/><circle cx="76" cy="76" r="2.4" fill="${INK}"/><circle cx="94" cy="76" r="2.4" fill="${INK}"/>
+      <path d="M75 90q9 7 18 0" fill="none" ${ink(2.5)}/><circle cx="70" cy="88" r="3" fill="#f39aa0" opacity=".7"/><circle cx="98" cy="88" r="3" fill="#f39aa0" opacity=".7"/><path d="M68 100q-7 2-10-1M100 100q7 2 10-1" fill="none" ${ink(2.5)}/>`,
+    mese: `<path d="M66 126C70 106 70 86 68 66H94C92 86 92 106 98 126Z" fill="#a8743f" ${ink(3.5)}/><path d="M76 112q2-10 0-20M86 104q-2-8 0-16" stroke="#7a4f28" stroke-width="2" fill="none"/><path d="M66 126q-10 0-16 5M98 126q10 0 16 5" fill="none" ${ink(3)}/>
+      <path d="M30 64C18 56 24 36 40 38C42 20 64 14 74 26C84 10 110 14 112 32C130 30 142 48 130 62C136 76 116 84 104 76C96 86 78 86 70 78C58 86 36 80 30 64Z" fill="#86bd5e" ${ink(3.5)}/>
+      <path d="M44 58q8 6 16 0M60 38q6 5 12 0M118 50q6 5 12 0" stroke="#4f8a3c" stroke-width="3" fill="none" stroke-linecap="round"/><g fill="#e9963f"><circle cx="40" cy="46" r="3"/><circle cx="96" cy="26" r="3"/><circle cx="126" cy="62" r="3"/><circle cx="54" cy="72" r="2.6"/></g>
+      <path d="M80 72H124" ${ink(4)}/><path d="M86 72V52H118V72Z" fill="#d9a066" ${ink(3)}/><path d="M82 54L102 36L122 54Z" fill="#d1495b" ${ink(3)}/><rect x="96" y="56" width="12" height="10" rx="2" fill="#ffe08a" ${ink(2)}/>
+      <path d="M110 74V124M120 74V124M110 84h10M110 96h10M110 108h10M110 120h10" stroke="#8a5a32" stroke-width="2.6" stroke-linecap="round"/>
+      <g transform="translate(38 124)"><ellipse rx="5" ry="6.5" fill="#d9a35b" ${ink(2)}/><path d="M-6-3q6-7 12 0Z" fill="#7a5230" ${ink(2)}/></g><g transform="translate(52 128) rotate(20)"><ellipse rx="4.5" ry="6" fill="#d9a35b" ${ink(2)}/><path d="M-5.5-3q5.5-6.5 11 0Z" fill="#7a5230" ${ink(2)}/></g>`,
+    selale: `<path d="M34 62A46 46 0 0 1 126 62" fill="none" stroke="#ef6f6c" stroke-width="5"/><path d="M40 62A40 40 0 0 1 120 62" fill="none" stroke="#ffd166" stroke-width="5"/><path d="M46 62A34 34 0 0 1 114 62" fill="none" stroke="#6cc3e8" stroke-width="5"/>
+      <path d="M6 130L12 62L32 38L62 32L66 130Z" fill="#aaa59a" ${ink(3.5)}/><path d="M20 80l10 8M36 58l8 10M24 106l14 4" stroke="#7f7a70" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M96 130L98 36L122 40L140 60L154 130Z" fill="#bab3a5" ${ink(3.5)}/><path d="M112 70l12 6M128 96l10 4M108 108l10-2" stroke="#7f7a70" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M62 34H98V116H62Z" fill="#8fd0ee" ${ink(3)}/><path d="M70 38V104M80 42V112M90 38V100" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".9"/>
+      <ellipse cx="80" cy="120" rx="36" ry="10" fill="#bfe6f5" ${ink(2.5)}/><g fill="#fff"><circle cx="58" cy="116" r="6"/><circle cx="68" cy="112" r="7"/><circle cx="94" cy="113" r="7"/><circle cx="104" cy="117" r="5"/></g>
+      <path d="M113 30q-12 2-17 12q10-2 17-4M131 30q12 2 17 12q-10-2-17-4" fill="#7a5230" ${ink(2.4)}/><ellipse cx="122" cy="32" rx="9" ry="11" fill="#7a5230" ${ink(2.5)}/>
+      <circle cx="122" cy="17" r="7" fill="#fff" ${ink(2.5)}/><path d="M127 17l7 2-6 3Z" fill="#ffc43d" ${ink(1.5)}/><circle cx="124" cy="15" r="1.4" fill="${INK}"/><path d="M118 43v4M126 43v4" stroke="#ffc43d" stroke-width="3" stroke-linecap="round"/>`,
+    gece: `<path d="M18 76C12 34 50 6 86 8C128 10 152 42 146 78C142 112 116 132 80 132C44 132 22 110 18 76Z" fill="#2f3f78" ${ink(3)}/><circle cx="82" cy="66" r="46" fill="#3d4f8f" opacity=".5"/>
+      <path d="M116 22a16 16 0 1 0 14 26a13 13 0 1 1-14-26Z" fill="#ffe9a0" ${ink(2)}/>
+      <g fill="#fff3b0"><path d="M44 30l2 5 5 2-5 2-2 5-2-5-5-2 5-2Z"/><path d="M84 22l1.5 4 4 1.5-4 1.5-1.5 4-1.5-4-4-1.5 4-1.5Z"/><circle cx="64" cy="44" r="1.6"/><circle cx="104" cy="52" r="1.6"/><circle cx="34" cy="58" r="1.4"/></g>
+      <path d="M20 98Q80 80 144 98L140 114Q80 132 26 114Z" fill="#2c5a3e" ${ink(2.5)}/>
+      <path d="M34 106L58 64L82 106Z" fill="#5a6fb0" ${ink(3)}/><path d="M58 64L50 106H66Z" fill="#ffcf5a" ${ink(2)}/>
+      <circle cx="108" cy="96" r="17" fill="#ffb347" opacity=".35"/><path d="M96 104L120 98M98 98L120 104" stroke="#8a5a32" stroke-width="5" stroke-linecap="round"/><path d="M108 98C100 92 103 82 108 76C110 82 116 84 114 92C114 96 111 98 108 98Z" fill="#ff8f3a" ${ink(2)}/>
+      <g class="u-camp-flies"><g><circle cx="40" cy="84" r="6" fill="#e9ff7a" opacity=".3"/><circle cx="40" cy="84" r="2.6" fill="#f2ff9e"/></g><g><circle cx="128" cy="70" r="6" fill="#e9ff7a" opacity=".3"/><circle cx="128" cy="70" r="2.6" fill="#f2ff9e"/></g><g><circle cx="94" cy="58" r="6" fill="#e9ff7a" opacity=".3"/><circle cx="94" cy="58" r="2.6" fill="#f2ff9e"/></g><g><circle cx="70" cy="40" r="5" fill="#e9ff7a" opacity=".3"/><circle cx="70" cy="40" r="2.2" fill="#f2ff9e"/></g></g>`,
+    bataklik: `<path d="M18 72q20-8 40 0M104 56q20-8 40 0" stroke="#fff" opacity=".7" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <path d="M4 104Q40 88 80 96T156 98L152 130H8Z" fill="#7aa37a" ${ink(3)}/><path d="M20 114q8-4 16 0M100 122q8-4 16 0" fill="none" stroke="#c9e3c0" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M30 30V84" stroke="#6b4a2f" stroke-width="7" stroke-linecap="round"/><path d="M30 80Q18 88 14 106M30 80Q30 92 28 108M30 80Q42 88 46 104" stroke="#6b4a2f" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+      <path d="M8 42Q30 14 56 40Q46 42 48 52Q36 44 30 54Q24 44 14 52Q16 44 8 42Z" fill="#5e8c4a" ${ink(3)}/><path d="M18 50v10M42 50v12" stroke="#8fb96d" stroke-width="2" stroke-linecap="round"/>
+      <path d="M52 104l5-7 5 7 5-7 5 7" fill="#6cb35a" ${ink(2)}/>
+      <path d="M76 100Q78 86 94 84L138 88Q150 90 148 98Q142 102 122 102Z" fill="#6cb35a" ${ink(3)}/>
+      <circle cx="90" cy="82" r="8.5" fill="#6cb35a" ${ink(3)}/><circle cx="105" cy="82" r="8.5" fill="#6cb35a" ${ink(3)}/>
+      <circle cx="90" cy="81" r="4.8" fill="#fff"/><circle cx="105" cy="81" r="4.8" fill="#fff"/><circle cx="91" cy="81" r="2.6" fill="${INK}"/><circle cx="106" cy="81" r="2.6" fill="${INK}"/>
+      <circle cx="141" cy="90" r="1.7" fill="${INK}"/><circle cx="136" cy="89" r="1.7" fill="${INK}"/><path d="M100 97Q120 101 142 95" fill="none" ${ink(2.2)}/><circle cx="116" cy="94" r="3" fill="#f39aa0" opacity=".6"/>
+      <path d="M120 118L132 114A13 6 0 1 1 130 122Z" fill="#7cbf55" ${ink(2)}/><circle cx="124" cy="114" r="3.5" fill="#fbc6da" ${ink(1.3)}/>
+      <path d="M150 104V70M142 106V80" stroke="#5f8f3c" stroke-width="3" stroke-linecap="round"/><rect x="147" y="62" width="6" height="14" rx="3" fill="#8a5a32" ${ink(1.5)}/>`,
+  };
+  function campArt(id) {
+    return `<svg class="u-camp-art" viewBox="0 0 160 140" aria-hidden="true"><ellipse cx="80" cy="128" rx="68" ry="9" fill="#6b4a2a" opacity=".16"/>${CAMP_ART[id] || ''}</svg>`;
   }
+  // Bölüm canavarları (bölüm çubuğu rozeti, tanıtım kartındaki siluet, final paneli). Sevimli, huysuz kaşlı, hiç korkutucu değil.
+  const FOREST_BOSS_ART = {
+    kunduz: `<ellipse cx="20" cy="84" rx="11" ry="21" transform="rotate(-62 20 84)" fill="#6b4226" stroke="#3f2614" stroke-width="2.5"/><path d="M4 80l30 4M8 90l26-8M14 72l8 22M24 72l-2 22" stroke="#8a5a36" stroke-width="1.6"/>
+      <ellipse cx="56" cy="74" rx="28" ry="22" fill="#a0683a" stroke="#4a2c16" stroke-width="3"/><circle cx="56" cy="44" r="25" fill="#ad7444" stroke="#4a2c16" stroke-width="3"/>
+      <circle cx="36" cy="26" r="7" fill="#ad7444" stroke="#4a2c16" stroke-width="2.5"/><circle cx="76" cy="26" r="7" fill="#ad7444" stroke="#4a2c16" stroke-width="2.5"/>
+      <ellipse cx="56" cy="54" rx="14" ry="11" fill="#e2b98a"/><ellipse cx="56" cy="47" rx="5" ry="3.6" fill="#3b2412"/><rect x="51" y="56" width="10" height="9" rx="2" fill="#fffaf0" stroke="#4a2c16" stroke-width="1.6"/><path d="M56 56v9" stroke="#4a2c16" stroke-width="1.2"/>
+      <circle cx="46" cy="38" r="3.6" fill="#2a1a10"/><circle cx="66" cy="38" r="3.6" fill="#2a1a10"/><circle cx="45" cy="37" r="1.2" fill="#fff"/><circle cx="65" cy="37" r="1.2" fill="#fff"/>
+      <path d="M40 31l10 3M72 31l-10 3" stroke="#3b2412" stroke-width="2.6" stroke-linecap="round"/><path d="M78 88l10-6 4 4-10 6Z" fill="#c58a52" stroke="#4a2c16" stroke-width="2"/>`,
+    kocakurbaga: `<ellipse cx="50" cy="66" rx="38" ry="26" fill="#7cc653" stroke="#2f5d22" stroke-width="3"/><circle cx="30" cy="36" r="14" fill="#7cc653" stroke="#2f5d22" stroke-width="3"/><circle cx="70" cy="36" r="14" fill="#7cc653" stroke="#2f5d22" stroke-width="3"/>
+      <circle cx="30" cy="36" r="8.5" fill="#fff"/><circle cx="70" cy="36" r="8.5" fill="#fff"/><circle cx="31" cy="38" r="4.6" fill="#1f2a18"/><circle cx="69" cy="38" r="4.6" fill="#1f2a18"/><circle cx="29" cy="36" r="1.6" fill="#fff"/><circle cx="67" cy="36" r="1.6" fill="#fff"/>
+      <path d="M20 24l14 6M80 24l-14 6" stroke="#2f5d22" stroke-width="3" stroke-linecap="round"/><path d="M24 66q26 18 52 0" fill="none" stroke="#2f5d22" stroke-width="3" stroke-linecap="round"/><ellipse cx="50" cy="76" rx="18" ry="7" fill="#d5f0a8" opacity=".7"/>
+      <circle cx="22" cy="60" r="5" fill="#f59a9a" opacity=".6"/><circle cx="78" cy="60" r="5" fill="#f59a9a" opacity=".6"/><path d="M40 52h2M58 52h2" stroke="#2f5d22" stroke-width="3" stroke-linecap="round"/>`,
+    uykucuayi: `<circle cx="24" cy="26" r="11" fill="#8a5a36" stroke="#3f2614" stroke-width="3"/><circle cx="76" cy="26" r="11" fill="#8a5a36" stroke="#3f2614" stroke-width="3"/><circle cx="24" cy="26" r="5" fill="#e3b48a"/><circle cx="76" cy="26" r="5" fill="#e3b48a"/>
+      <circle cx="50" cy="54" r="34" fill="#94623c" stroke="#3f2614" stroke-width="3"/><ellipse cx="50" cy="66" rx="16" ry="12" fill="#e3b48a"/><ellipse cx="50" cy="60" rx="6" ry="4.4" fill="#2a1a10"/><path d="M44 70q6 5 12 0" fill="none" stroke="#3f2614" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M30 48q6 4 12 0M58 48q6 4 12 0" fill="none" stroke="#2a1a10" stroke-width="3" stroke-linecap="round"/><path d="M28 40l12 2M72 40l-12 2" stroke="#2a1a10" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M18 34Q40 2 80 22L74 30Q46 14 22 40Z" fill="#6c8ed8" stroke="#2c3f74" stroke-width="2.5"/><circle cx="84" cy="20" r="6" fill="#fff" stroke="#2c3f74" stroke-width="2"/>
+      <path d="M80 50h8l-8 8h8M88 38h6l-6 6h6" fill="none" stroke="#6c8ed8" stroke-width="2.4" stroke-linejoin="round"/>`,
+    dagkecisi: `<path d="M34 30C20 22 12 32 16 44C18 36 26 32 34 38M66 30C80 22 88 32 84 44C82 36 74 32 66 38" fill="#b9a08a" stroke="#4f3b2a" stroke-width="3"/>
+      <ellipse cx="22" cy="48" rx="12" ry="6" transform="rotate(-20 22 48)" fill="#efe6d8" stroke="#4f3b2a" stroke-width="2.5"/><ellipse cx="78" cy="48" rx="12" ry="6" transform="rotate(20 78 48)" fill="#efe6d8" stroke="#4f3b2a" stroke-width="2.5"/>
+      <path d="M50 26C70 26 74 44 70 62C68 76 60 84 50 84C40 84 32 76 30 62C26 44 30 26 50 26Z" fill="#f7f1e6" stroke="#4f3b2a" stroke-width="3"/><path d="M42 82Q50 100 58 82" fill="#e8dcc8" stroke="#4f3b2a" stroke-width="2.5"/>
+      <ellipse cx="50" cy="70" rx="10" ry="7" fill="#f3c6c0"/><path d="M46 70h2M52 70h2" stroke="#4f3b2a" stroke-width="2.5" stroke-linecap="round"/>
+      <rect x="37" y="46" width="9" height="7" rx="3.5" fill="#2a1e14"/><rect x="54" y="46" width="9" height="7" rx="3.5" fill="#2a1e14"/><path d="M36 40l10 3M64 40l-10 3" stroke="#4f3b2a" stroke-width="2.6" stroke-linecap="round"/>`,
+    baykus: `<path d="M24 26l8 16M76 26l-8 16" stroke="#5a3d6e" stroke-width="6" stroke-linecap="round"/><ellipse cx="50" cy="58" rx="32" ry="34" fill="#8a6aa8" stroke="#3e2852" stroke-width="3"/><ellipse cx="50" cy="70" rx="18" ry="18" fill="#e8d6f0"/>
+      <path d="M40 66l4 4 4-4M52 66l4 4 4-4M46 76l4 4 4-4" fill="none" stroke="#b49ac8" stroke-width="2"/>
+      <circle cx="36" cy="46" r="12" fill="#ffe08a" stroke="#3e2852" stroke-width="2.5"/><circle cx="64" cy="46" r="12" fill="#ffe08a" stroke="#3e2852" stroke-width="2.5"/><circle cx="36" cy="47" r="6" fill="#2a1a34"/><circle cx="64" cy="47" r="6" fill="#2a1a34"/><circle cx="34" cy="45" r="2" fill="#fff"/><circle cx="62" cy="45" r="2" fill="#fff"/>
+      <path d="M26 34l14 6M74 34l-14 6" stroke="#3e2852" stroke-width="3" stroke-linecap="round"/><path d="M46 56l4 8 4-8Z" fill="#f2a43a" stroke="#3e2852" stroke-width="2"/><path d="M18 60q-6 14 4 26M82 60q6 14-4 26" fill="none" stroke="#6c4f88" stroke-width="5" stroke-linecap="round"/>`,
+    buyuktimsah: `<path d="M14 62Q14 44 34 42L74 42Q92 44 90 60Q88 74 70 76L32 76Q14 74 14 62Z" fill="#6cb35a" stroke="#2c5a22" stroke-width="3"/><path d="M20 62Q50 70 86 60" fill="none" stroke="#2c5a22" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M30 62l4 5 4-5M60 63l4 5 4-5" fill="#fff" stroke="#2c5a22" stroke-width="1.6"/><circle cx="76" cy="52" r="2" fill="#2c5a22"/><circle cx="84" cy="52" r="2" fill="#2c5a22"/>
+      <circle cx="32" cy="34" r="11" fill="#6cb35a" stroke="#2c5a22" stroke-width="3"/><circle cx="56" cy="34" r="11" fill="#6cb35a" stroke="#2c5a22" stroke-width="3"/>
+      <circle cx="32" cy="33" r="6.5" fill="#fff"/><circle cx="56" cy="33" r="6.5" fill="#fff"/><circle cx="33" cy="34" r="3.4" fill="#1b2a14"/><circle cx="57" cy="34" r="3.4" fill="#1b2a14"/>
+      <path d="M22 24l14 4M66 24l-14 4" stroke="#2c5a22" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="54" r="4" fill="#f59a9a" opacity=".55"/><path d="M40 80l-4 10h12l-4-10M66 80l-4 10h12l-4-10" fill="#5aa24a" stroke="#2c5a22" stroke-width="2"/>`,
+  };
+  const forestBossSvg = (t, cls = 'u-dimg') => `<svg class="${cls}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">${FOREST_BOSS_ART[t] || ''}</svg>`;
+  const BALL_SVG = `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="#f49b64" stroke="${INK}" stroke-width="2.5"/><path d="M6 15Q20 27 34 15M14 6Q23 20 14 34" fill="none" stroke="#fff4ca" stroke-width="3"/></svg>`;
+  const BALL_EMPTY = `<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15" fill="#fff6" stroke="${INK}" stroke-width="2.5" stroke-dasharray="5 4"/></svg>`;
+  const CAMP_LOCK = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M12 19v-6a8 8 0 0 1 16 0v6" fill="none" stroke="${INK}" stroke-width="4"/><rect x="8" y="18" width="24" height="18" rx="4" fill="#e0ab4c" stroke="${INK}" stroke-width="3"/><circle cx="20" cy="26" r="3" fill="${INK}"/><path d="M20 27v5" stroke="${INK}" stroke-width="3" stroke-linecap="round"/></svg>`;
+  const CAMP_STAR = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3l5.2 10.6 11.6 1.7-8.4 8.2 2 11.6L20 29.6 9.6 35.1l2-11.6-8.4-8.2 11.6-1.7Z" fill="#ffd23f" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/><path d="M14 17l3-1" stroke="#fff6c2" stroke-width="2.4" stroke-linecap="round"/></svg>`;
+  // "Buradasın": Feza ile Bilbo bir harita iğnesinin üstünde
+  const CAMP_HERE = `<svg viewBox="0 0 96 78" aria-hidden="true"><path d="M10 6h76a7 7 0 0 1 7 7v40a7 7 0 0 1-7 7H58l-10 14-10-14H10a7 7 0 0 1-7-7V13a7 7 0 0 1 7-7Z" fill="#fff8e6" stroke="${INK}" stroke-width="3"/>
+    <g transform="translate(32 34)"><path d="M-14 22q14-14 28 0" fill="#8bc76a" stroke="${INK}" stroke-width="2"/><circle r="15" fill="#ffd3ac" stroke="${INK}" stroke-width="2"/><path d="M-15-1q-4-19 14-20q19 0 16 19L7-11-4-7-9-12Z" fill="#6e4426" stroke="${INK}" stroke-width="1.6"/><circle cx="-5" cy="1" r="2" fill="${INK}"/><circle cx="6" cy="1" r="2" fill="${INK}"/><path d="M-4 8q5 4 9 0" fill="none" stroke="#a96965" stroke-width="2" stroke-linecap="round"/><circle cx="-10" cy="6" r="2.6" fill="#f69c98" opacity=".6"/><circle cx="11" cy="6" r="2.6" fill="#f69c98" opacity=".6"/></g>
+    <g transform="translate(66 38)"><ellipse cx="-12" cy="0" rx="5" ry="12" fill="#5e3a1e" stroke="${INK}" stroke-width="1.6" transform="rotate(14 -12 0)"/><ellipse cx="12" cy="0" rx="5" ry="12" fill="#5e3a1e" stroke="${INK}" stroke-width="1.6" transform="rotate(-14 12 0)"/><ellipse rx="12" ry="13" fill="#8a5530" stroke="${INK}" stroke-width="2"/><ellipse cy="6" rx="8" ry="6" fill="#c08a5c"/><ellipse cy="3" rx="3" ry="2.2" fill="${INK}"/><circle cx="-5" cy="-3" r="1.8" fill="${INK}"/><circle cx="5" cy="-3" r="1.8" fill="${INK}"/><path d="M-3 9q3 3 6 0" fill="none" stroke="${INK}" stroke-width="1.5" stroke-linecap="round"/></g></svg>`;
+  // Harita düğmesi (başlık, HUD, mola, bölüm sonu): katlanmış küçük kamp haritası
+  SVG.campMap = `<svg class="u-svg u-mapico" viewBox="0 0 48 48" aria-hidden="true"><path d="M5 12l12-5 14 5 12-5v29l-12 5-14-5-12 5Z" fill="#e2c08e" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/><path d="M17 7v29M31 12v29" stroke="#b8935e" stroke-width="2"/><path d="M9 32q6-6 10-2t10-4q5-3 10-10" fill="none" stroke="#c2552d" stroke-width="2.4" stroke-dasharray="3 3" stroke-linecap="round"/><path d="M8 18l5-5 4 5Z" fill="#6aa357" stroke="${INK}" stroke-width="1.4"/><path d="M35 13l2.5 5 5 .5-4 3.5 1 5-4.5-2.5-4.5 2.5 1-5-4-3.5 5-.5Z" fill="#ffd23f" stroke="${INK}" stroke-width="1.4"/></svg>`;
+
+  // Kâğıdın üstündeki çizimler ve patika: yatay (1000×560) ve dik (560×860) iki dizilişin her biri için ayrı SVG.
+  function routeD(pts) {   // yumuşak eğri (Catmull-Rom → kübik Bézier); her parça ayrı (yürünen kısım boyanır)
+    const segs = [];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(pts.length - 1, i + 2)];
+      const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+      segs.push(`M${p1[0].toFixed(0)} ${p1[1].toFixed(0)}C${c1[0].toFixed(0)} ${c1[1].toFixed(0)} ${c2[0].toFixed(0)} ${c2[1].toFixed(0)} ${p2[0].toFixed(0)} ${p2[1].toFixed(0)}`);
+    }
+    return segs;
+  }
+  const PAW = `<g fill="${INK}"><ellipse cx="0" cy="3" rx="5" ry="4.2"/><circle cx="-5.5" cy="-3.5" r="2"/><circle cx="-1.8" cy="-6.2" r="2"/><circle cx="2.2" cy="-6.2" r="2"/><circle cx="5.8" cy="-3.5" r="2"/></g>`;
+  const doodleTree = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 0v-14" stroke="${INK}" stroke-width="3" stroke-linecap="round"/><path d="M0-44L-14-12H14Z" fill="#7fae5e" fill-opacity=".55" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><path d="M-6-22l6-6M0-14l8-8" stroke="${INK}" stroke-width="1.4" opacity=".5"/></g>`;
+  const doodleHill = (x, y, w, h) => `<path d="M${x} ${y}Q${x + w / 2} ${y - h} ${x + w} ${y}" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round" opacity=".6"/><path d="M${x + w * .3} ${y - h * .35}l8 6M${x + w * .55} ${y - h * .4}l8 6" stroke="${INK}" stroke-width="1.6" opacity=".4"/>`;
+  const doodleMount = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})" opacity=".75"><path d="M-40 0L-12-46L4-22L18-40L46 0" fill="#c9b49a" fill-opacity=".5" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/><path d="M-22-30l10-16 7 12M12-32l6-8 7 9" fill="#fff" fill-opacity=".8" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/></g>`;
+  const doodleCompass = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})" opacity=".85"><circle r="30" fill="none" stroke="${INK}" stroke-width="2"/><circle r="24" fill="none" stroke="${INK}" stroke-width="1" stroke-dasharray="3 4"/><path d="M0-40L7-7L0 0Z" fill="#c2552d" stroke="${INK}" stroke-width="1.6"/><path d="M0-40L-7-7L0 0Z" fill="#e07a52" stroke="${INK}" stroke-width="1.6"/><path d="M0 40L7 7L0 0ZM0 40L-7 7L0 0Z" fill="#f3e3c6" stroke="${INK}" stroke-width="1.6"/><path d="M-40 0L-7-6L0 0L-7 6ZM40 0L7-6L0 0L7 6Z" fill="#f3e3c6" stroke="${INK}" stroke-width="1.6"/><text y="-46" text-anchor="middle" font-size="16" font-weight="700" fill="${INK}" class="u-camp-hand">K</text></g>`;
+  // Babanın imzası: kel kafa, kır sakal, kalp
+  const doodleDad = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})" opacity=".9"><circle r="18" fill="#f1c9a0" fill-opacity=".7" stroke="${INK}" stroke-width="2.2"/><path d="M-17 2Q-16 26 0 28Q16 26 17 2Q8 10 0 8Q-8 10-17 2Z" fill="#9b9690" fill-opacity=".8" stroke="${INK}" stroke-width="2"/><circle cx="-6" cy="-3" r="2" fill="${INK}"/><circle cx="6" cy="-3" r="2" fill="${INK}"/><path d="M-10-9l6-1M10-9l-6-1" stroke="${INK}" stroke-width="2" stroke-linecap="round"/><path d="M-4 9q4 3 8 0" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round"/><path d="M-12-16q4-4 8-3" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+    <path d="M30 4c-4-6-12-2-8 4l8 8 8-8c4-6-4-10-8-4Z" fill="#e0635a" stroke="${INK}" stroke-width="1.8"/><text x="48" y="12" font-size="22" fill="${INK}" class="u-camp-hand">Baba</text></g>`;
+  const doodleRiver = (d) => `<path d="${d}" fill="none" stroke="#6fb6d6" stroke-width="9" stroke-linecap="round" opacity=".45"/><path d="${d}" fill="none" stroke="${INK}" stroke-width="1.6" stroke-dasharray="14 10" opacity=".45"/>`;
+  const doodleSun = (x, y) => `<g transform="translate(${x} ${y})" opacity=".8"><circle r="16" fill="#ffd166" fill-opacity=".7" stroke="${INK}" stroke-width="2"/><path d="M0-24v-8M0 24v8M-24 0h-8M24 0h8M-17-17l-6-6M17 17l6 6M17-17l6-6M-17 17l-6 6" stroke="${INK}" stroke-width="2" stroke-linecap="round"/></g>`;
+  function campDecor(portrait) {
+    const W = portrait ? 560 : 1000, H = portrait ? 860 : 560;
+    const pts = CAMP_STOPS.map(s => portrait ? [s.px / 100 * W, s.py / 100 * H] : [s.x / 100 * W, s.y / 100 * H]);
+    const segs = routeD(pts);
+    let paws = '';
+    for (let i = 0; i < pts.length - 1; i++) {   // Bilbo'nun pati izleri: her iki durağın tam ortasında üç küçük iz
+      const [ax, ay] = pts[i], [bx, by] = pts[i + 1], a = Math.atan2(by - ay, bx - ax) * 180 / Math.PI + 90;
+      for (let k = 0; k < 3; k++) {
+        const t = 0.4 + k * 0.1, x = ax + (bx - ax) * t + (k % 2 ? 8 : -8) * Math.cos(a * Math.PI / 180), y = ay + (by - ay) * t + (k % 2 ? 8 : -8) * Math.sin(a * Math.PI / 180);
+        paws += `<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)}) rotate(${a.toFixed(0)}) scale(.75)" opacity=".28">${PAW}</g>`;
+      }
+    }
+    const doodles = portrait
+      ? doodleSun(490, 64) + doodleTree(330, 140, .85) + doodleTree(370, 128, 1.05) + doodleTree(410, 142, .75) + doodleMount(430, 410, .8) +
+        doodleCompass(70, 792, .75) + doodleDad(160, 820, .8)
+      : doodleSun(60, 64) + doodleTree(150, 140, .9) + doodleTree(186, 128, 1.1) + doodleMount(450, 120, 1) + doodleTree(700, 104, .8) + doodleTree(730, 116, 1) +
+        doodleHill(250, 520, 150, 46) + doodleTree(560, 520, .9) + doodleTree(596, 528, .7) + doodleCompass(935, 470, .9) + doodleDad(290, 470, .9) +
+        doodleRiver('M330 0Q350 60 380 90T420 200Q400 280 520 300T640 420Q660 500 700 560');
+    return `<svg class="u-camp-decor ${portrait ? 'port' : 'land'}" viewBox="0 0 ${W} ${H}" aria-hidden="true">${doodles}${paws}
+      ${segs.map((d, i) => `<path class="u-camp-seg" data-i="${i}" d="${d}" fill="none" stroke="${INK}" stroke-width="10" stroke-linecap="round" opacity=".08"/>`).join('')}
+      ${segs.map((d, i) => `<path class="u-camp-walk" data-i="${i}" d="${d}" fill="none" stroke-width="4" stroke-dasharray="12 10" stroke-linecap="round"/>`).join('')}</svg>`;
+  }
+
   function accessiblePress(b, fn, menu = true) {
     onPress(b, fn, { menu });
     b.addEventListener('keydown', e => { if (!e.repeat && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.stopPropagation(); fn(); } });
   }
-  function mapUnlocked() { return !!(M.GAME && M.GAME.mapUnlocked && safe('mapUnlocked', () => M.GAME.mapUnlocked())); }
+  // Kamp haritası: ZONES altı kamp durağını bildiği an (ya da GAME.mapUnlocked() true dediğinde) her yerden açılır
+  function mapUnlocked() { return !!(M.GAME && (stopZone(0) >= 0 || (M.GAME.mapUnlocked && safe('mapUnlocked', () => M.GAME.mapUnlocked())))); }
   function syncDreamUnlock() {
     const unlocked = mapUnlocked();
-    const forest = !!(M.GAME && M.GAME.forest);
-    [D.dreamBtn, D.pauseMap, D.winMap, D.winMapHint].forEach(b => { if (b) b.classList.toggle('u-hide', !unlocked || forest); });
-    if (D.titleMap) D.titleMap.classList.toggle('u-hide', !unlocked);
+    [D.dreamBtn, D.titleMap, D.pauseMap, D.winMap].forEach(b => { if (b) b.classList.toggle('u-hide', !unlocked); });
+    if (D.winMapHint) D.winMapHint.classList.add('u-hide');
+  }
+  // ZONES'ta bu durağın sırası (BOLGE altı bölgeyi kurana dek -1 olabilir: o zaman durak gidilemez, yalnız resmi görünür)
+  function stopZone(i) {
+    const Z = M.ZONES, st = CAMP_STOPS[i];
+    if (!Z || !st || !Z.findIndex) return -1;
+    return Z.findIndex(z => z && z.id === st.id);
+  }
+  function stopOfZone(zi) { for (let i = 0; i < CAMP_STOPS.length; i++) if (stopZone(i) === zi) return i; return -1; }
+  function campInfo(i) {
+    const st = CAMP_STOPS[i], g = M.GAME, zi = stopZone(i);
+    let r = null;
+    if (g && zi >= 0 && typeof g.zoneInfo === 'function') r = safe('zoneInfo', () => g.zoneInfo(zi));
+    if (!r || typeof r !== 'object') {
+      const open = g && zi >= 0 && typeof g.zoneOpen === 'function' ? !!safe('zoneOpen', () => g.zoneOpen(zi)) : i === 0;
+      const all = g && g.forestParty && typeof g.forestParty.collected === 'function' ? safe('collected', () => g.forestParty.collected()) | 0 : 0;
+      r = { open, done: false, balls: i === 0 ? Math.min(st.balls, all) : 0 };
+    }
+    const max = r.ballsMax > 0 ? r.ballsMax | 0 : st.balls;
+    return { zi, open: !!r.open, done: !!r.done, balls: clamp(r.balls | 0, 0, max), max };
+  }
+  function currentStop() {
+    const g = M.GAME;
+    if (S.mode === 'play' && g && g.P) { const k = stopOfZone(g.P.zone | 0); if (k >= 0) return k; }
+    let k = 0;
+    for (let i = 0; i < CAMP_STOPS.length; i++) { const f = campInfo(i); if (f.open) k = i; if (f.open && !f.done) return i; }
+    return k;
+  }
+  const ballRow = (have, max) => Array.from({ length: max }, (_, j) => j < have ? BALL_SVG : BALL_EMPTY).join('');
+  function refreshCampMap() {
+    const cur = currentStop();
+    D.dreamPlaces.forEach((b, i) => {
+      const f = campInfo(i), st = CAMP_STOPS[i];
+      b.classList.toggle('locked', !f.open); b.classList.toggle('open', f.open); b.classList.toggle('done', f.done);
+      b.classList.toggle('current', i === cur);
+      b.setAttribute('aria-disabled', f.open ? 'false' : 'true');
+      const balls = f.balls + '/' + f.max;
+      if (b._balls !== balls) { b._balls = balls; b.querySelector('.u-camp-balls').innerHTML = ballRow(f.balls, f.max); }
+      b.setAttribute('aria-label', FEZA_LANG.t(`${i + 1}. ${st.ad}${f.open ? '' : ', kilitli'}${f.done ? ', bitti' : ''}, toplar ${f.balls} / ${f.max}`));
+    });
+    // yürünen patika: açık iki durak arasındaki parça renkli kalemle boyanır
+    D.dreamScreen.querySelectorAll('.u-camp-walk').forEach(p => { const i = +p.dataset.i; p.classList.toggle('walked', campInfo(i + 1).open); });
   }
   function buildDreamMap(root) {
-    D.dreamScreen = el('div', 'u-screen u-dream-screen', root);
-    D.dreamScreen.setAttribute('role', 'dialog'); D.dreamScreen.setAttribute('aria-modal', 'true'); D.dreamScreen.setAttribute('aria-labelledby', 'dreamTitle');
-    const panel = el('div', 'u-dream-panel', D.dreamScreen);
-    el('span', 'u-dream-kicker', panel, 'FEZA VE BİLBO’NUN');
-    const heading = el('h2', 'u-dream-title', panel, 'Hayal Haritası'); heading.id = 'dreamTitle';
-    el('p', 'u-dream-hint', panel, 'Bir adaya dokun. Hayalin seni oraya götürsün!');
-    const board = D.dreamBoard = el('div', 'u-dream-board', panel);
-    const sky = el('div', 'u-dream-starfield', board);
-    sky.setAttribute('aria-hidden', 'true');
-    for (let i = 0; i < 32; i++) {
-      const star = el('i', 'u-dream-star' + (i % 5 === 0 ? ' bright' : ''), sky, i % 5 === 0 ? '✦' : '');
-      star.style.left = ((i * 47 + 7) % 97 + 1) + '%'; star.style.top = ((i * 31 + 11) % 93 + 2) + '%';
-      star.style.setProperty('--star-delay', (-i * .37) + 's'); star.style.setProperty('--star-time', (3.4 + i % 6 * .55) + 's');
-    }
-    el('div', 'u-dream-ornaments', board, '<svg viewBox="0 0 1000 560" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="#d7d5ff" stroke-width="1" opacity=".32"><path d="M45 74L82 40L114 64L151 43M701 52L734 31L758 53L797 28M433 498L464 474L488 513L518 488M30 383L51 354L73 379L94 350"/></g><g fill="#efe3bc" opacity=".55"><circle cx="45" cy="74" r="2.5"/><circle cx="82" cy="40" r="3"/><circle cx="114" cy="64" r="2"/><circle cx="151" cy="43" r="2.5"/><circle cx="701" cy="52" r="2"/><circle cx="734" cy="31" r="3"/><circle cx="758" cy="53" r="2"/><circle cx="797" cy="28" r="2.5"/><circle cx="433" cy="498" r="2"/><circle cx="464" cy="474" r="2.5"/><circle cx="488" cy="513" r="2"/><circle cx="518" cy="488" r="3"/></g><g fill="none" stroke="#b9e9df" stroke-width="1.2" opacity=".25"><path d="M90 296q24-12 48 0t48 0M732 294q24-12 48 0t48 0M358 374q20-10 40 0t40 0M180 472q20-10 40 0t40 0"/><path d="M90 308q24-12 48 0t48 0M732 306q24-12 48 0t48 0"/></g><g fill="#dcc6e8" opacity=".35"><path d="M578 287q-17-10-23 4q19 4 23-4q15-11 21 2q-18 8-21-2"/><path d="M205 47q-15-8-19 4q16 3 19-4q14-9 18 3q-16 5-18-3"/></g></svg>');
-    el('div', 'u-dream-compass', board, '<span>✦</span><small>HAYAL</small>');
-    el('div', 'u-dream-route', board, '<svg viewBox="0 0 1000 560" preserveAspectRatio="none" aria-hidden="true"><path d="M140 162Q250 58 380 140T620 162Q750 40 860 140Q985 263 860 386Q745 494 620 409T380 386Q256 506 140 409" fill="none" stroke="#d1bbef" stroke-width="13" stroke-opacity=".13"/><path d="M140 162Q250 58 380 140T620 162Q750 40 860 140Q985 263 860 386Q745 494 620 409T380 386Q256 506 140 409" fill="none" stroke="#ffebb0" stroke-width="3" stroke-dasharray="5 13" stroke-linecap="round"/></svg>');
-    D.dreamPlaces = DREAM_PLACES.map(([id, name, detail, color, x, y], i) => {
-      const b = el('button', 'u-dream-island', board, dreamArt(id, color) + `<span class="u-island-sparkles" aria-hidden="true"><i>✧</i><i>✦</i><i>✧</i></span><span class="u-island-name">${esc(name)}</span><span class="u-island-number">${i + 1}</span><span class="u-island-current">Buradasın</span>`);
-      b.style.setProperty('--spark-delay', (-i * .7) + 's');
-      b.style.setProperty('--ix', x + '%'); b.style.setProperty('--iy', y + '%'); b.style.setProperty('--island-color', color);
-      b.dataset.zone = id; b.setAttribute('aria-label', FEZA_LANG.t(name + ': ' + detail)); b.title = FEZA_LANG.t(detail);
-      accessiblePress(b, () => travelTo(i));
+    const s = D.dreamScreen = el('div', 'u-screen u-camp-screen', root);
+    s.setAttribute('role', 'dialog'); s.setAttribute('aria-modal', 'true'); s.setAttribute('aria-labelledby', 'campTitle');
+    const sheet = el('div', 'u-camp-sheet', s);
+    const paper = D.campPaper = el('div', 'u-camp-paper', sheet);
+    // yırtık kâğıt kenarı: bir kez üretilen tırtıklı çokgen (her açılışta aynı)
+    const pts = [], jag = (k, n) => ((Math.sin(k * 12.9898 + n * 78.233) * 43758.5453) % 1 + 1) % 1;
+    for (let i = 0; i <= 40; i++) pts.push(`${(i / 40 * 100).toFixed(2)}% ${(jag(i, 1) * 0.9).toFixed(2)}%`);
+    for (let i = 0; i <= 26; i++) pts.push(`${(100 - jag(i, 2) * 0.7).toFixed(2)}% ${(i / 26 * 100).toFixed(2)}%`);
+    for (let i = 40; i >= 0; i--) pts.push(`${(i / 40 * 100).toFixed(2)}% ${(100 - jag(i, 3) * 0.9).toFixed(2)}%`);
+    for (let i = 26; i >= 0; i--) pts.push(`${(jag(i, 4) * 0.7).toFixed(2)}% ${(i / 26 * 100).toFixed(2)}%`);
+    paper.style.clipPath = `polygon(${pts.join(',')})`;
+    const title = el('h2', 'u-camp-title u-camp-hand', paper, 'Babanın Kamp Haritası'); title.id = 'campTitle';
+    const board = D.dreamBoard = el('div', 'u-camp-board', paper);
+    board.insertAdjacentHTML('beforeend', campDecor(false) + campDecor(true));
+    D.dreamPlaces = CAMP_STOPS.map((st, i) => {
+      const b = el('button', 'u-camp-stop', board, `<span class="u-camp-glow"></span><span class="u-camp-pic">${campArt(st.id)}</span>` +
+        `<span class="u-camp-num u-camp-hand">${i + 1}</span><span class="u-camp-lock">${CAMP_LOCK}</span><span class="u-camp-star">${CAMP_STAR}</span>` +
+        `<span class="u-camp-balls"></span><span class="u-camp-name u-camp-hand">${esc(st.ad)}</span><span class="u-camp-here">${CAMP_HERE}</span>`);
+      b.style.setProperty('--x', st.x + '%'); b.style.setProperty('--y', st.y + '%');
+      b.style.setProperty('--px', st.px + '%'); b.style.setProperty('--py', st.py + '%');
+      b.style.setProperty('--bob', (-i * 0.53).toFixed(2) + 's');
+      b.dataset.zone = st.id;
+      accessiblePress(b, () => pickStop(i));
       return b;
     });
-    D.dreamClose = el('button', 'u-dream-close', panel, SVG.close + '<span>Geri Dön</span>');
+    el('i', 'u-camp-tape a', sheet); el('i', 'u-camp-tape b', sheet);
+    D.dreamClose = el('button', 'u-camp-close', sheet, SVG.close);
+    D.dreamClose.setAttribute('aria-label', FEZA_LANG.t('Haritayı kapat'));
     accessiblePress(D.dreamClose, closeDreamMap);
-    D.dreamScreen.addEventListener('keydown', e => {
-      if (e.code === 'Escape') { e.preventDefault(); e.stopPropagation(); closeDreamMap(); }
-      if (e.code === 'Tab') {
-        const choices = [...D.dreamPlaces, D.dreamClose], at = choices.indexOf(document.activeElement);
-        e.preventDefault(); e.stopPropagation(); choices[(at + (e.shiftKey ? choices.length - 1 : 1)) % choices.length].focus();
+    s.addEventListener('pointerdown', e => { if (e.target === s && S.menu === 'dream') closeDreamMap(); });
+    s.addEventListener('keydown', e => {
+      if (e.code === 'Escape') { e.preventDefault(); e.stopPropagation(); closeDreamMap(); return; }
+      const choices = [...D.dreamPlaces, D.dreamClose], at = choices.indexOf(document.activeElement);
+      if (e.code === 'Tab' || e.code === 'ArrowRight' || e.code === 'ArrowLeft' || e.code === 'ArrowDown' || e.code === 'ArrowUp') {
+        const back = e.shiftKey || e.code === 'ArrowLeft' || e.code === 'ArrowUp';
+        e.preventDefault(); e.stopPropagation(); choices[(Math.max(0, at) + (back ? choices.length - 1 : 1)) % choices.length].focus();
       }
     });
   }
+  function pickStop(i) {
+    const f = campInfo(i), b = D.dreamPlaces[i];
+    if (!f.open || f.zi < 0) { nope(b, true); aud('stopVoice'); aud('say', 'orman_harita_kilitli', { prio: 2, interrupt: true }); return; }
+    const g = M.GAME;
+    if (S.dreamReturn && S.dreamReturn.mode === 'play' && S.dreamReturn.menu !== 'zoneDone' && g && g.P && (g.P.zone | 0) === f.zi && g.state === 'play') { closeDreamMap(); return; }   // şu anki yer: haritayı kapat, oyuna dön
+    bump(b, 1.08, true);
+    travelTo(f.zi);
+  }
   function openDreamMap() {
     if (!mapUnlocked() || S.busy || S.menu === 'dream') return;
+    if (S.mode === 'choose' && S.choiceFrom === 'dream') { closeChoice(); return; }
     if (S.mode === 'play' && !S.menu && !gameAllowsMenu()) return;
-    S.dreamReturn = { menu: S.menu, paused: S.paused, focus: document.activeElement };
-    if (S.menu) showScreen(S.menu === 'bag' ? D.bagS : S.menu === 'merchant' ? D.shop : D.pause, false);
+    S.dreamReturn = { menu: S.menu, paused: S.paused, focus: document.activeElement, mode: S.mode, choiceFrom: S.choiceFrom };
+    if (S.menu) showScreen(menuScreen(S.menu), false);
+    if (S.mode === 'choose') showScreen(D.choice, false);
     S.menu = 'dream'; setPaused(true);
-    const current = M.GAME && M.GAME.P && M.GAME.P.zone;
-    D.dreamPlaces.forEach((b, i) => { b.classList.toggle('current', S.mode === 'play' && i === current); });
+    refreshCampMap();
     showScreen(D.dreamScreen, true); D.dreamClose.focus({ preventScroll: true });
+    aud('stopVoice'); aud('say', 'orman_harita', { prio: 2 });
   }
+  function menuScreen(m) { return m === 'bag' ? D.bagS : m === 'merchant' ? D.shop : m === 'zoneDone' ? D.zdone : D.pause; }
   function closeDreamMap() {
     if (S.menu !== 'dream') return;
     showScreen(D.dreamScreen, false);
-    const back = S.dreamReturn || {}; S.menu = back.menu || null; setPaused(!!back.paused);
-    if (S.menu) showScreen(S.menu === 'bag' ? D.bagS : S.menu === 'merchant' ? D.shop : D.pause, true);
+    const back = S.dreamReturn || {}; S.dreamChoiceIndex = null;
+    if (back.mode === 'choose') { S.choiceFrom = back.choiceFrom || 'title'; showScreen(D.choice, true); }
+    S.menu = back.menu || null; setPaused(!!back.paused);
+    if (S.menu) showScreen(menuScreen(S.menu), true);
     if (back.focus && back.focus.focus) back.focus.focus({ preventScroll: true });
     S.dreamReturn = null;
   }
-  async function travelTo(index) {
+  async function travelTo(index, options) {
     const g = M.GAME;
     if (!g || !g.travelTo || !mapUnlocked() || S.busy) return;
+    // Bölüm sonu panelinden açılan harita: kapı zaten bekliyor (GAME 'transition'), seçilen durak kapının hedefi olur
+    if (S.zdPortal && g.state === 'transition') {
+      S.zdTarget = index; showScreen(D.dreamScreen, false); showScreen(D.zdone, false);
+      S.menu = null; S.dreamReturn = null; setPaused(false);
+      return;
+    }
+    // Başlıktan, kayıt yokken: önce kahraman kartları (Oyna ile aynı), seçilen durak akılda kalır
+    if (!options && (g.state === 'title' || S.mode === 'title') && !(g.hasSave && safe('hasSave', () => g.hasSave()))) {
+      S.dreamChoiceIndex = index; S.menu = null; S.dreamReturn = null;
+      showScreen(D.dreamScreen, false); openChoice('dream');
+      return;
+    }
     S.busy = true;
     try {
       await fade(1, 0.4, 'load');
       aud('stopVoice'); ensureTex(index);
-      clearBanners(); clearCards(); hideBoss(); S.cine = null;
-      const ok = await g.travelTo(index);
+      clearBanners(); clearCards(); hideBoss(); hideZoneIntro(); S.cine = null;
+      const opts = Object.assign({ heroClass: (options && options.heroClass) || (g.P && g.P.heroClass) || 'warrior' }, options);
+      const ok = await g.travelTo(index, opts);
       if (ok === false) { fade(0, 0.4, null); return; }
-      showScreen(D.dreamScreen, false); showScreen(D.win, false); showScreen(D.pause, false); showScreen(D.shop, false); showScreen(D.bagS, false);
+      [D.dreamScreen, D.choice, D.win, D.pause, D.shop, D.bagS, D.zdone].forEach(x => { if (x) showScreen(x, false); });
+      S.dreamChoiceIndex = null; S.choiceFrom = 'title'; S.adventure = true;
       S.menu = null; S.dreamReturn = null; setPaused(false); setMode('play');
       D.conf.innerHTML = FEZA_LANG.html('');
       refreshAllSkills(); portraitSoon(0); renderNow(); await frames(2); fade(0, 0.6, null);
-    } catch (e) { warn('dream travel', e); fade(0, 0.4, null); }
+    } catch (e) { warn('camp travel', e); fade(0, 0.4, null); }
     finally { S.busy = false; }
+  }
+
+  // ── Bölüm tanıtım kartı: her bölgeye girişte yazısız, resimli kısa kart (durak resmi + canavarın silueti + aranacak toplar) ──
+  function buildZoneIntro(root) {
+    D.zintro = el('div', 'u-zintro', root);
+    D.zintro.setAttribute('role', 'img');
+  }
+  let zintroT = 0;
+  function showZoneIntro(zi) {
+    const k = stopOfZone(zi); if (k < 0 || !D.zintro) return false;
+    const st = CAMP_STOPS[k], f = campInfo(k);
+    D.zintro.innerHTML = FEZA_LANG.html(`<div class="u-zi-card"><span class="u-zi-num u-camp-hand">${k + 1}</span>
+      <div class="u-zi-pic">${campArt(st.id)}</div>
+      <div class="u-zi-side"><div class="u-zi-boss">${forestBossSvg(st.boss, 'u-zi-sil')}<span class="u-zi-q">?</span></div>
+      <div class="u-zi-balls">${ballRow(f.balls, f.max)}</div></div></div>`);
+    D.zintro.setAttribute('aria-label', FEZA_LANG.t(`${k + 1}. durak: ${st.ad}. Bu bölümde ${f.max} top saklı.`));
+    D.zintro.classList.remove('on'); void D.zintro.offsetWidth; D.zintro.classList.add('on');
+    clearTimeout(zintroT); zintroT = setTimeout(hideZoneIntro, 4600);
+    aud('say', 'orman_' + st.id + '_giris', { prio: 3 });
+    return true;
+  }
+  function hideZoneIntro() { clearTimeout(zintroT); if (D.zintro) D.zintro.classList.remove('on'); }
+
+  // ── Bölüm sonu paneli (bölüm bitince; GAME 'zoneDone' ya da UI.showZoneDone(i)): yıldız + toplar + harita / devam ──
+  function buildZoneDone(root) {
+    const s = D.zdone = el('div', 'u-screen u-dim u-zdone', root);
+    const p = el('div', 'u-zd-card', s);
+    D.zdPic = el('div', 'u-zd-pic', p);
+    D.zdBalls = el('div', 'u-zd-balls', p);
+    const row = el('div', 'u-zd-row', p);
+    D.zdMap = el('button', 'u-btn p u-zd-map', row, SVG.campMap + '<span>Harita</span>');
+    D.zdGo = el('button', 'u-btn g u-zd-go', row, SVG.play);
+    D.zdGo.setAttribute('aria-label', FEZA_LANG.t('Devam et'));
+    accessiblePress(D.zdMap, openDreamMap);
+    accessiblePress(D.zdGo, closeZoneDone);
+  }
+  function showZoneDone(zi) {
+    const k = stopOfZone(zi | 0); if (k < 0 || !D.zdone || S.busy) return;
+    if (S.menu && S.menu !== 'zoneDone') closeMenu();
+    const st = CAMP_STOPS[k], f = campInfo(k);
+    D.zdPic.innerHTML = FEZA_LANG.html(campArt(st.id) + `<span class="u-zd-star">${CAMP_STAR}</span><span class="u-zd-friend">${forestBossSvg(st.boss, 'u-dimg b-' + st.boss)}</span>`);
+    D.zdBalls.innerHTML = FEZA_LANG.html(ballRow(f.balls, f.max));
+    S.menu = 'zoneDone'; S.zdPortal = true; setPaused(true); showScreen(D.zdone, true);
+    D.zdGo.focus({ preventScroll: true });
+  }
+  function closeZoneDone() {
+    if (S.menu !== 'zoneDone') return;
+    showScreen(D.zdone, false); S.menu = null; setPaused(false);
   }
   function throwBone() {
     const g = M.GAME; if (!g || !playing() || !g.bone) return;
@@ -1028,7 +1324,7 @@ const UI = (() => {
           e.preventDefault(); choices[(at + (e.shiftKey ? choices.length - 1 : 1)) % choices.length].focus();
         } else if (!e.repeat && (c === 'Enter' || c === 'Space')) {
           e.preventDefault(); if (document.activeElement === D.choiceBack) closeChoice();
-          else startGame(false, document.activeElement.dataset.heroClass || 'warrior');
+          else chooseHero(document.activeElement.dataset.heroClass || 'warrior');
         }
         return;
       }
@@ -1544,7 +1840,7 @@ const UI = (() => {
     // skills
     const forest = !!g.forest;
     if (last.forestMode !== forest) { last.forestMode = forest; D.boneBtn.classList.toggle('u-hide', forest); D.forestBalls.classList.toggle('u-hide', !forest); syncDreamUnlock(); }
-    if (forest) { const have = g.forestParty ? g.forestParty.collected() : 0; if (have !== last.forestBalls) { last.forestBalls = have; D.forestBallCount.textContent = have + ' / 10'; } }
+    if (forest && S.frame % 6 === 0) ballsTick(g);
     const boneCd = Math.max(0, Number(g.boneCooldown) || 0), boneMax = Math.max(1, Number(g.boneCooldownMax) || 1);
     D.boneBtn.classList.toggle('cool', boneCd > 0);
     D.boneBtn.querySelector('.u-cd').style.setProperty('--p', clamp(boneCd / boneMax, 0, 1).toFixed(3));
@@ -1572,12 +1868,26 @@ const UI = (() => {
       D.bossTrail.style.transform = `scaleX(${S.bossTrail.toFixed(4)})`;
     }
   }
+  // Top sayacı: bu bölümde bulunacak toplar (resim: dolu = bulundu) ve küçük "toplam / 10"
+  function ballsTick(g) {
+    const all = g.forestParty && typeof g.forestParty.collected === 'function' ? safe('collected', () => g.forestParty.collected()) | 0 : 0;
+    const k = stopOfZone(g.P ? g.P.zone | 0 : 0), f = k >= 0 ? campInfo(k) : { balls: Math.min(all, 10), max: 10 };
+    const key = all + ':' + k + ':' + f.balls + '/' + f.max;
+    if (key === last.forestBalls) return;
+    const grew = typeof last.forestBalls === 'string' && f.balls > (last.fbHave | 0) && k === last.fbStop;
+    last.forestBalls = key; last.fbHave = f.balls; last.fbStop = k;
+    D.forestBallZone.innerHTML = FEZA_LANG.html(f.max <= 4 ? ballRow(f.balls, f.max) : BALL_SVG + `<b>${f.balls} / ${f.max}</b>`);
+    D.forestBallCount.textContent = FEZA_LANG.t(all + ' / 10');
+    D.forestBalls.classList.toggle('full', f.balls >= f.max);
+    D.forestBalls.setAttribute('aria-label', FEZA_LANG.t(`Bu bölümde ${f.balls} / ${f.max} top, toplam ${all} / 10`));
+    if (grew) { const b = D.forestBallZone.children[f.balls - 1]; if (b && b.animate) b.animate([{ transform: 'scale(.3) rotate(-90deg)' }, { transform: 'scale(1.5)' }, { transform: 'scale(1)' }], { duration: 520, easing: 'cubic-bezier(.2,1.5,.4,1)' }); }
+  }
   // Attack button lightsaber: glows in the equipped saber's colour (the rainbow saber cycles), retracts while Feza
   // sleeps and re-ignites (blade grows out of the hilt) when he wakes up or picks a different saber.
   function bladeTick(P) {
     const wizard = P.heroClass === 'wizard', hybrid = P.heroClass === 'hybrid';
     if (last.heroClass !== P.heroClass) {
-      last.heroClass = P.heroClass; D.atk.innerHTML = FEZA_LANG.html(wizard ? '<span class="u-wandico">🪄</span>' : hybrid ? SVG.sword + '<span class="u-offhandico">🪄</span>' : SVG.sword);
+      last.heroClass = P.heroClass; D.atk.innerHTML = FEZA_LANG.html(wizard ? '<span class="u-wandico">' + SVG.wand + '</span>' : hybrid ? SVG.sword + '<span class="u-offhandico">' + SVG.wand + '</span>' : SVG.sword);
       D.atkBlade = D.atk.querySelector('.u-blade');
       D.atk.setAttribute('aria-label', FEZA_LANG.t(wizard ? 'Büyü at' : hybrid ? 'Yakında kılıçla vur, uzakta büyü at' : 'Kılıçla vur'));
     }
@@ -1735,6 +2045,13 @@ const UI = (() => {
     lavkaplumbaga: { ad: 'Koca Lav Kaplumbağası', svg: SVG.lavkaplumbaga, lines: ['kaplumbaga_'], disc: ['#fff8f0', '#ffd6b0', '#ff9f6a'], halo: 'rgba(255,130,60,0.85)' },
     sovalye: { ad: 'Huysuz Şövalye', svg: SVG.sovalye, lines: ['sovalye_'], disc: ['#fffbea', '#ffe39a', '#3d64d8'], halo: 'rgba(90,130,255,0.9)' },   // royal blue + gold
     ejderha: { ad: 'Huysuz Ejderha', svg: SVG.dragon, lines: ['ejderha_', 'ejder'], disc: ['#fff6fc', '#ffc9ec', '#f59ad6'], halo: 'rgba(255,90,140,0.85)' },
+    // Orman'ın altı bölüm canavarı (kalemle çizilmiş sevimli yüzler; HAYVAN'ın modeli varsa portre ondan üretilir)
+    kunduz: { ad: 'Huysuz Kunduz', svg: forestBossSvg('kunduz'), lines: ['orman_kamp_boss', 'kunduz_'], disc: ['#fffaf0', '#f1d6b4', '#c99668'], halo: 'rgba(230,160,90,0.85)' },
+    kocakurbaga: { ad: 'Koca Kurbağa', svg: forestBossSvg('kocakurbaga'), lines: ['orman_gol_boss', 'kurbaga_'], disc: ['#f6fff0', '#d5f2bf', '#8fcf72'], halo: 'rgba(120,220,110,0.85)' },
+    uykucuayi: { ad: 'Uykucu Ayı', svg: forestBossSvg('uykucuayi'), lines: ['orman_mese_boss', 'ayi_'], disc: ['#f6f8ff', '#d6e0ff', '#8fa6e8'], halo: 'rgba(140,160,255,0.85)' },
+    dagkecisi: { ad: 'Huysuz Dağ Keçisi', svg: forestBossSvg('dagkecisi'), lines: ['orman_selale_boss', 'keci_'], disc: ['#f2fbff', '#cfe9f7', '#8cc1de'], halo: 'rgba(120,200,240,0.85)' },
+    baykus: { ad: 'Huysuz Baykuş', svg: forestBossSvg('baykus'), lines: ['orman_gece_boss'], disc: ['#fbf6ff', '#e3d4f6', '#a98bd0'], halo: 'rgba(180,140,240,0.85)' },
+    buyuktimsah: { ad: 'Koca Huysuz Timsah', svg: forestBossSvg('buyuktimsah'), lines: ['orman_bataklik_boss', 'buyuktimsah_'], disc: ['#f6fff6', '#cfeccf', '#7fbf86'], halo: 'rgba(110,200,120,0.85)' },
   };
   const BOSS_ORDER = ['kraljole', 'kefirdev', 'kostebekusta', 'lavkaplumbaga', 'sovalye', 'ejderha'];   // when ZONES has no boss fields yet
   const bossUi = t => BOSS_UI[t] || { ad: 'Kocaman Huysuz', svg: SVG.bstar, lines: [], disc: BOSS_UI.ejderha.disc, halo: BOSS_UI.ejderha.halo };
@@ -2190,6 +2507,7 @@ const UI = (() => {
     if (!S.menu) return;
     if (S.menu === 'dream-travel') { finishDreamTravel(); return; }
     if (S.menu === 'dream') { closeDreamMap(); return; }
+    if (S.menu === 'zoneDone') { closeZoneDone(); return; }
     if (S.menu === 'merchant') aud('stopVoice');
     if (S.menu === 'bag') newItems.clear();
     else { closeAsk(); closeDifficulty(); }
@@ -2232,7 +2550,8 @@ const UI = (() => {
     const g = M.GAME;
     if (S.busy || !g || (S.mode !== 'title' && S.mode !== 'choose')) return;
     S.adventure = true;
-    heroClass = 'warrior';
+    if (!cont && !heroClass) { openChoice('title'); return; }   // Oyna: önce kahraman kartları
+    heroClass = heroClass === 'hybrid' || heroClass === 'wizard' ? heroClass : 'warrior';
     S.busy = true;
     clearBanners(); clearCards(); hideBoss(); S.cine = null;
     const A = M.AUD;
@@ -2249,7 +2568,7 @@ const UI = (() => {
         fade(0, 0.6, null);
       } else {
         showScreen(D.choice, false); setPaused(false);
-        newGameWithIntro(g, { forest: S.adventure, heroClass: 'warrior', plus: false });
+        newGameWithIntro(g, { forest: S.adventure, heroClass, plus: false });
         setMode('play'); refreshAllSkills(); portraitSoon(0);
         // Baştan Başla while Feza napped: the nap's dim layer takes the touches — lift it, or he could not walk at all
         if (D.fade.style.pointerEvents === 'auto' || parseFloat(D.fade.style.opacity) > 0) fade(0, 0.35, null);
@@ -2269,10 +2588,8 @@ const UI = (() => {
   }
   function restartAll() {
     if (!M.GAME || S.busy) return;
-    showScreen(D.pause, false); S.menu = null; S.adventure = !!M.GAME.forest;
-    aud('stopVoice'); setPaused(false);
-    newGameWithIntro(M.GAME, { forest: true, heroClass: 'warrior', plus: false });
-    setMode('play'); refreshAllSkills(); portraitSoon(0); startHint();
+    showScreen(D.pause, false); S.menu = null; S.adventure = true;
+    openChoice('pause');   // Baştan Başla: kahramanı yeniden seç (Geri → mola)
   }
   // Mola › Kaydet: the only way progress is kept. The button itself says "Kaydedildi!" for a moment (the menu stays open).
   function saveNow() {
@@ -2347,13 +2664,13 @@ const UI = (() => {
     const P = g.P;
     const chips = [`<span class="u-chip">❤️ ${Math.round(P.maxHp)}</span>`];
     if (P.heroClass === 'hybrid') {
-      chips.push(`<span class="u-chip">${SVG.saber} ${Math.round(P.meleeDmg)}</span>`, `<span class="u-chip">🪄 ${Math.round(P.magicDmg)}</span>`);
-    } else chips.push(`<span class="u-chip">${P.heroClass === 'wizard' ? '🪄' : SVG.saber} ${Math.round(P.dmg)}</span>`);
+      chips.push(`<span class="u-chip">${SVG.saber} ${Math.round(P.meleeDmg)}</span>`, `<span class="u-chip">${SVG.wandEm} ${Math.round(P.magicDmg)}</span>`);
+    } else chips.push(`<span class="u-chip">${P.heroClass === 'wizard' ? SVG.wandEm : SVG.saber} ${Math.round(P.dmg)}</span>`);
     if (P.armor > 0) chips.push(`<span class="u-chip">🛡️ %${Math.round(P.armor)}</span>`);
     D.bagChips.innerHTML = FEZA_LANG.html(chips.join(''));
     for (const sl of SLOTS) {
       const box = D.slots[sl], cur = P.equip[sl];
-      if (sl === 'weapon') box.label.innerHTML = FEZA_LANG.html(P.heroClass === 'wizard' ? '🪄 Büyü Değnekleri' : P.heroClass === 'hybrid' ? `${SVG.saber} Kılıçlar ve 🪄 Değnekler` : `${SVG.saber} Orman Silahları`);
+      if (sl === 'weapon') box.label.innerHTML = FEZA_LANG.html(P.heroClass === 'wizard' ? `${SVG.wandEm} Orman Değnekleri` : P.heroClass === 'hybrid' ? `${SVG.saber} Kılıçlar ve ${SVG.wandEm} Değnekler` : `${SVG.saber} Orman Silahları`);
       const worn = sl === 'weapon' && P.heroClass === 'hybrid' ? [cur, P.equip.offhand].filter(Boolean) : [cur].filter(Boolean);
       box.hdName.innerHTML = FEZA_LANG.html(worn.length ? '· ' + worn.map(it => esc(it.ad || '')).join(' + ') : '');
       box.tiles.innerHTML = FEZA_LANG.html('');
@@ -2500,10 +2817,15 @@ const UI = (() => {
       const ng = g.P && g.P.ng ? ` · Macera ${g.P.ng + 1}` : '';
       const zi = clamp(d.index | 0, 0, 98), nZ = Math.max(M.ZONES ? M.ZONES.filter(z => !z.expansion).length : zoneCount(), zi + 1);
       const forest = !!(Z && Z.expansion);
+      if (showZoneIntro(d.index | 0)) return;   // altı kamp durağı: yazısız resimli tanıtım kartı (+ seslendirme)
       banner({ kind: 'zone', title: d.name || (Z && Z.ad) || 'Yeni Yer', small: forest ? 'Özel Orman Macerası' : `${zi + 1}. Bölge${ng}`, pips: forest ? null : { n: nZ, i: zi }, dur: 3.2, theme: (Z && Z.theme) || '' });
     });
     on('portal', async () => {
-      while (S.busy) await new Promise(r => setTimeout(r, 100));   // never drop it: GAME waits in 'transition' for us
+      // never drop it: GAME waits in 'transition' for us. The chapter-end panel (and the map opened from it) holds the door
+      // until ▶ (or a map stop, which becomes the door's destination: S.zdTarget).
+      while (S.busy || S.menu === 'zoneDone' || (S.menu === 'dream' && S.zdPortal)) await new Promise(r => setTimeout(r, 100));
+      const target = Number.isInteger(S.zdTarget) ? S.zdTarget : (g.P.zone | 0) + 1;
+      S.zdTarget = null; S.zdPortal = false;
       S.busy = true;
       try {
         const zone = M.ZONES && M.ZONES[g.P.zone | 0], nextZone = M.ZONES && M.ZONES[(g.P.zone | 0) + 1];
@@ -2513,9 +2835,9 @@ const UI = (() => {
         }
         await fade(1, 0.8, 'load');
         clearBanners(); clearCards(); hideBoss(); S.cine = null; stopHint();
-        ensureTex((g.P.zone | 0) + 1);
+        ensureTex(target);
         aud('stopVoice');   // the old zone's boss 'bitti' / 'kapi' lines must not talk about a door in the new zone
-        safe('loadZone', () => g.loadZone((g.P.zone | 0) + 1));
+        safe('loadZone', () => g.loadZone(target));
         renderNow(); await frames(2);
         fade(0, 0.7, null);
       } finally { S.busy = false; }
@@ -2578,6 +2900,8 @@ const UI = (() => {
       else if (d.stage === 'drunk') { c.drink = 2; c.dT = 0; }
     });
     on('toast', d => toast(d.text || ''));
+    on('zoneDone', d => showZoneDone(d.index != null ? d.index : g.P.zone));
+    on('kamp', d => { D.root.classList.toggle('kamp-on', !!d.on); if (d.on) { hideZoneIntro(); clearBanners(); stopHint(); } });
     on('checkpoint', () => toast('✨ Neşe taşı parladı!', true));
     on('difficulty', () => syncDifficulty());
     on('merchant', () => openMerchant());
@@ -3172,6 +3496,7 @@ const UI = (() => {
   return {
     boot, ready: readyP, fade, banner, toast, itemCard, openBag, openPause, closeMenu, showVictory, showTitle, startGame,
     refreshPortrait, subtitle, setPref, openDreamMap, closeDreamMap, travelTo, showDreamTravel,
+    openChoice, chooseHero, showZoneIntro, showZoneDone, campInfo,
     get mode() { return S.mode; }, get menu() { return S.menu; }, get paused() { return S.paused; },
     _S: S, _D: D, _TC: TITLE_CAM, _DC: DRG_CAM, _BF: BOSS_FIT, _BS: BOSS_SHAPE, _FIT: FIT, _FL: FL,
     _dragon() { DRG.tried = false; DRG.url = DRG.cv = null; return dragonPortrait(); },   // tests: render the dragon portrait again

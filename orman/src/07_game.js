@@ -209,16 +209,71 @@ const GAME = (() => {
   let forestSeen = new Set(), forestNoticeAt = -99, forestStoryAt = 0;
   const forestZone = () => zones() ? zones().findIndex(z => z.expansion) : -1;
   const forestMode = () => !!zdef().expansion;
-  function forestSaved() { try { const s = JSON.parse(localStorage.getItem(FOREST_SAVE_KEY) || 'null'); return s && s.v === 1 && s.zid === 'uzunorman' ? s : null; } catch (err) { return null; } }
+  // A save of this adventure: today's six chapters, or the old single long forest ('uzunorman', migrated on load).
+  function forestSaved() { try { const s = JSON.parse(localStorage.getItem(FOREST_SAVE_KEY) || 'null'); return s && s.v === 1 && (s.zid === 'uzunorman' || (zones() || []).some(z => z.id === s.zid)) ? s : null; } catch (err) { return null; } }
   const MAP_KEY = 'orman_bilboSakliToplar.map.v1';
   let mapOpen = false;
   try { mapOpen = localStorage.getItem(MAP_KEY) === 'acik'; } catch(e) {}
-  function mapUnlocked() { return false; }
-  function travelTo(index) {
-    const Z=zones(); if(!mapUnlocked() || !Z || !Number.isInteger(index) || index<0 || index>=Z.length || Z[index].expansion || GAME.state==='transition' || P.dead)return false;
-    SAVE_KEY = MAIN_SAVE_KEY;
-    if(GAME.state==='title') { const saved=readSave(); if(saved)applySave(saved); else resetPlayer(); }
-    SAVE_KEY = MAIN_SAVE_KEY; GAME.paused=false; aud('stopVoice'); C.keyX=C.keyZ=0; loadZone(index); return true;
+  // ── Six chapters: progress, balls, Father's camp map ──
+  // Opened chapters are kept by themselves (the map is a record of the trip, not a save): PROG_KEY = { v:1, acik: n open, bitti: [ids] }.
+  // The adventure itself (level, bag, balls, chapter) is still saved only by Kaydet.
+  const PROG_KEY = 'orman_bilboSakliToplar.bolumler.v1';
+  let ballsGot = new Set();          // collected ball ids over the whole trip ('orman-top-01' …)
+  let kampCtl = null, kampEnd = -1, kampDoneFn = null, zoneClosed = -1;
+  function progRead() {
+    try { const o = JSON.parse(localStorage.getItem(PROG_KEY) || 'null'); if (o && o.v === 1) return { v: 1, acik: clamp(o.acik | 0, 1, (zones() || []).length || 6), bitti: Array.isArray(o.bitti) ? o.bitti.filter(x => typeof x === 'string') : [] }; } catch (err) { /* private mode */ }
+    return { v: 1, acik: 1, bitti: [] };
+  }
+  function progDone(i) {   // chapter i finished: it is done, the next one opens
+    const Z = zones(); if (!Z || !Z[i]) return;
+    const g = progRead();
+    g.acik = Math.max(g.acik, Math.min(Z.length, i + 2));
+    if (!g.bitti.includes(Z[i].id)) g.bitti.push(Z[i].id);
+    try { localStorage.setItem(PROG_KEY, JSON.stringify(g)); } catch (err) { warnOnce('progress', err); }
+  }
+  function progOpen(upto) {   // an older save already further on: its chapters count as open
+    const g = progRead(), n = Math.min((zones() || []).length, (upto | 0) + 1);
+    if (n > g.acik) { g.acik = n; try { localStorage.setItem(PROG_KEY, JSON.stringify(g)); } catch (err) { /* ignore */ } }
+  }
+  const zoneBallIds = i => {   // the global ids of chapter i's balls (same numbering as LEVEL's forestAdventureData)
+    const Z = zones() || []; let first = 0;
+    for (let k = 0; k < i && k < Z.length; k++) first += Z[k].balls || 0;
+    const out = []; for (let j = 0; j < ((Z[i] && Z[i].balls) || 0); j++) out.push('orman-top-' + String(first + j + 1).padStart(2, '0'));
+    return out;
+  };
+  function zoneInfo(i) {
+    const Z = zones(); if (!Z || !Number.isInteger(i) || !Z[i]) return null;
+    const g = progRead(), ids = zoneBallIds(i);
+    return { index: i, id: Z[i].id, ad: Z[i].ad, open: i < g.acik, done: g.bitti.includes(Z[i].id), balls: ids.filter(x => ballsGot.has(x)).length, ballsMax: ids.length };
+  }
+  function zonesOpen() { const n = progRead().acik, out = []; for (let i = 0; i < n; i++) out.push(i); return out; }
+  function zoneBallsLeft(i = P.zone) { return zoneBallIds(i).filter(x => !ballsGot.has(x)).length; }
+  function ballsInfo() { return { have: ballsGot.size, need: 10, zoneHave: zoneBallIds(P.zone).length - zoneBallsLeft(), zoneNeed: zoneBallIds(P.zone).length }; }
+  function mapUnlocked() { return true; }
+  function travelTo(index, o = {}) {
+    const Z = zones();
+    if (!Z || !Number.isInteger(index) || index < 0 || index >= Z.length || index >= progRead().acik || GAME.state === 'transition' || GAME.state === 'kamp') return false;
+    SAVE_KEY = FOREST_SAVE_KEY;
+    if (GAME.state === 'title') {
+      const saved = readSave();
+      if (!saved) { newGame({ plus: false, zone: index, heroClass: o.heroClass, difficulty: o.difficulty }); return true; }
+      applySave(saved); restoreBalls(saved);
+    } else {
+      if (boss && boss.gift && !boss.gift.looted) giftLoot(boss);
+      pocketLoot(Infinity);
+    }
+    if (P.dead) { P.hp = P.maxHp; C.lastHurt = gt - 99; }
+    GAME.paused = false; aud('stopVoice'); C.keyX = C.keyZ = 0;
+    loadZone(index);
+    return true;
+  }
+  // The balls a save carries: v2 lists them (forest.balls); the old single forest kept them in its party snapshot.
+  function restoreBalls(s) {
+    ballsGot = new Set();
+    const f = s && s.forest;
+    if (!f) return;
+    if (Array.isArray(f.balls)) for (const id of f.balls) if (typeof id === 'string' && /^orman-top-\d\d$/.test(id)) ballsGot.add(id);
+    if (f.party && Array.isArray(f.party.balls)) for (const b of f.party.balls) if (b && b.state === 'collected' && typeof b.id === 'string' && /^orman-top-\d\d$/.test(b.id)) ballsGot.add(b.id);
   }
   const LEGACY_HARDCORE_KEY = 'orman_bilboSakliToplar.legacyHardcore.v1';
   const LEGACY_IGNORED_KEY = 'orman_bilboSakliToplar.legacyIgnored.v1';
@@ -377,6 +432,7 @@ const GAME = (() => {
     }
     return d;
   }
+  const edefOK = t => !!(typeof EDEF !== 'undefined' && EDEF && EDEF[t]) || !!DEF0[t];
   const rarCol = r => (typeof ITEMS !== 'undefined' && ITEMS.RARITY && ITEMS.RARITY[r] && ITEMS.RARITY[r].color) || RAR_COL[r] || '#fff';
 
   // ── Events ──
@@ -697,7 +753,7 @@ const GAME = (() => {
   }
 
   // ── Stats ──
-  const heroClassOf = value => 'warrior';
+  const heroClassOf = value => (['warrior', 'wizard', 'hybrid'].includes(value) ? value : 'warrior');
   const isWand = item => !!(item && typeof ITEMS !== 'undefined' && ITEMS.isWand && ITEMS.isWand(item));
   function equipSlot(item, heroClass = P.heroClass) { return heroClass === 'hybrid' && item.slot === 'weapon' && isWand(item) ? 'offhand' : item.slot; }
   function recalcStats() {
@@ -776,6 +832,7 @@ const GAME = (() => {
   // ── Zone loading ──
   function removeObj(o) { if (o && o.parent) o.parent.remove(o); }
   function clearWorld() {
+    kampCtl = null; kampDoneFn = null; kampEnd = -1;
     if (forestParty) forestParty.dispose(); forestParty = GAME.forestParty = null; forestDirective = null; forestDogOverride = false; forestSeen.clear(); forestNoticeAt = gt + 8; forestStoryAt = gt + 10;
     if (boss) clearEncounter(boss);
     for (const e of enemies) dropEnemy(e);
@@ -911,8 +968,9 @@ const GAME = (() => {
   function loadZone(i, o = {}) {
     if (!inited) init();
     const Z = zones();
-    i = forestZone();   // never open a chapter from the source campaign
+    i = clamp(Number.isInteger(i) ? i : 0, 0, Z.length - 1);   // (the six chapters; a next zone past the last one stays at the last)
     const title = !!o.title;
+    zoneClosed = -1;
     clearWorld();
     if (L && hasLevel() && LEVEL.dispose) { try { LEVEL.dispose(L); } catch (err) { warnOnce('LEVEL.dispose', err); } }
     L = GAME.L = null;
@@ -943,14 +1001,24 @@ const GAME = (() => {
         damage: (e, n) => damage(e, n, { kind: 'forestHelper', silent: true }),
         free: circleFree, los, move: moveXZ, route: (x, z, tx, tz) => routeTo(tx, tz, { x, z }),
         fx: burst, audio: sfx, event: (name, data) => {
+          // (the party counts this chapter's balls; the HUD shows the whole trip's: have of 10, plus this chapter's)
+          if (name === 'forestBall' && data) {
+            if (data.id && !data.restored) ballsGot.add(data.id);
+            data = Object.assign({}, data, ballsInfo(), { need: 10 });
+          }
           emit(name, data);
           if (name === 'forestFound' && gt >= forestNoticeAt) { forestNoticeAt = gt + 22; say('orman_topbulundu', 1); }
-        }, onBall: data => { sfx('coin'); burst('sparkle', data.x, .4, data.z, { count: 8, color: '#ffd969' }); emit('forestCollection', data); }
+        }, onBall: data => { sfx('coin'); burst('sparkle', data.x, .4, data.z, { count: 8, color: '#ffd969' }); emit('forestCollection', Object.assign({}, data, ballsInfo())); ballCheck(); }
       });
+      // balls found earlier on the trip (this chapter replayed, or a save) stay found: their holes are dug, nothing to find there
+      if (forestParty && !title && forestParty.restore) {
+        const mine = (L.buriedBalls || []).map(b => b.id);
+        try { forestParty.restore({ v: 1, balls: mine.map(id => ({ id, state: ballsGot.has(id) ? 'collected' : 'hidden', dig: 0 })) }); } catch (err) { warnOnce('forestParty.restore', err); }
+      }
     }
     warmZone(i, title);   // the UI's loading fade still covers the screen
     GAME.state = title ? 'title' : 'play';
-    emit('zone', { index: i, name: zdef(i).ad, title });
+    emit('zone', { index: i, id: zdef(i).id, name: zdef(i).ad, title });
     if (!title) enterZoneStory(i);
     return L;
   }
@@ -961,13 +1029,13 @@ const GAME = (() => {
   function warmZone(i, title) {
     if (typeof renderer === 'undefined' || !renderer || !L) return;
     const t0 = performance.now();
-    const Z = zdef(i), types = new Set(Object.keys(Z.enemies || {})), elites = new Set(Z.elites || []);
+    const Z = zdef(i), types = new Set(Object.keys(typeof zoneEnemies === 'function' ? zoneEnemies(Z) : Z.enemies || {})), elites = new Set(typeof zoneElites === 'function' ? zoneElites(Z) : Z.elites || []);
     const vars = {};   // type → the variants this zone shows (spawn.variant from LEVEL, ZONES[i].variants)
     const addVar = (t, v) => { if (v) (vars[t] || (vars[t] = new Set())).add(v); };
     for (const s of L.spawns || []) { types.add(s.type); if (s.elite) elites.add(s.type); addVar(s.type, s.variant); }
     if (Z.variants) for (const t in Z.variants) for (const v of Z.variants[t] || []) addVar(t, v);
-    const bt = Z.boss || L.bossType || null;
-    if (bt || L.boss) { const b = bt || 'ejderha'; types.add(b); types.add(bossKit(b).add); }
+    const bt = L.bossType || (typeof zoneBoss === 'function' ? zoneBoss(Z) : Z.boss) || null;
+    if (bt || L.boss) { const b = bt || 'ejderha'; types.add(b); if (bossKit(b).add && edefOK(bossKit(b).add)) types.add(bossKit(b).add); }
     const tmp = new THREE.Group(); tmp.name = 'gameWarm';
     const hasE = typeof EMODEL !== 'undefined' && EMODEL && EMODEL.build;
     const propName = { tac: 'jellyCrown', havuc: 'havuc', serintas: 'serinTas', avla: 'hole' }[bt ? bossKit(bt).bonus : ''];   // (Round 6 bonus props)
@@ -1083,7 +1151,7 @@ const GAME = (() => {
     L._bossRoom = undefined;
     sleepers = (L.spawns || []).filter(s => !isBossType(s.type)).map(s => Object.assign({}, s));   // (boss types never wander in the level)
     const bs = (L.spawns || []).find(s => isBossType(s.type));
-    const bz = zdef().boss || L.bossType || (bs && bs.type) || null;
+    const bz = L.bossType || (typeof zoneBoss === 'function' ? zoneBoss(zdef()) : zdef().boss) || (bs && bs.type) || null;
     const rm = bossRoom();
     const at = L.boss || bs || (bz && rm ? { x: rm.x, z: rm.z } : null);
     // a save made after the dragon cheered up (see snapshot): no dragon, the crystal is waiting, Feza wakes at the arena
@@ -1130,11 +1198,15 @@ const GAME = (() => {
     for (let i = 1; i < path.length; i++) pathCum.push(pathCum[i - 1] + Math.hypot(path[i].x - path[i - 1].x, path[i].z - path[i - 1].z));
     for (const cp of L.cpObjs || []) cp._s = pathProject(cp.x, cp.z, 12);
   }
+  function musicOf(Z) {   // the chapter's own music (SES: orman_<id>), else the long forest's
+    const th = typeof AUD !== 'undefined' && AUD && AUD._test && AUD._test.THEMES;
+    for (const m of [Z && Z.music, 'uzunorman']) if (m && (!th || th[m])) return m;
+    return null;
+  }
   function enterZoneStory(i) {
     const Z = zdef(i);
     igniteSaber(0.45);   // vvzzum: the lightsaber lights up as the zone fades in
-    if (Z.music) aud('music', Z.music);
-    if (i > 0 && Z.line) later(0.8, () => say(Z.line, 2));
+    aud('music', musicOf(Z));   // (the chapter's name line orman_<id>_giris: ARAYUZ's chapter card says it)
     skillAt = gt + 1.2;   // a new skill's line held back from the last boss: right after this zone's name
   }
 
@@ -1173,7 +1245,9 @@ const GAME = (() => {
   }
   // Boss tuning: DIFF.boss[type], or the dragon's numbers (its hp cap = EDEF hp × DIFF.bossHp, floor = bossHpMin of that).
   function bossCfg(type) {
-    if (type === 'buyuktimsah') return { per: 440, lo: 18, hi: 85, dmg: 12 };   // long gentle finale, sized once to Feza's gear
+    const fk = BOSS_KIT[type] && BOSS_KIT[type].cfg; if (fk) return fk;   // (HAYVAN's chapter bosses carry their own numbers)
+    if (type === 'buyuktimsah') return finalZone() ? { per: 380, lo: 18, hi: 85, dmg: 12 }   // long gentle finale (after five chapter bosses), sized once to Feza's gear
+      : { per: 150 + 38 * P.zone, lo: 10 + 1.5 * P.zone, hi: 40 + 8 * P.zone, dmg: 7 + P.zone };   // (standing in for a chapter boss HAYVAN has not delivered)
     const c = DIFF.boss[type];
     if (c) return c;
     const d = edef(type), per = DIFF.bossHpPerDmg, hi = (d.hp || 1600) * DIFF.bossHp / per;
@@ -4557,6 +4631,15 @@ const GAME = (() => {
   }
 
   const BOSS_AI = { buyuktimsah: crocodileBossStep, kopukusta: dreamBossStep, aytavsan: dreamBossStep, kraljole: kraljoleStep, kefirdev: kefirdevStep, kostebekusta: kostebekustaStep, lavkaplumbaga: lavkaplumbagaStep, sovalye: sovalyeStep, ejderha: dragonStep };
+  // Saklı Toplar Ormanı's chapter bosses (kunduz, kocakurbaga, uykucuayi, dagkecisi, baykus): HAYVAN's moves, kits and numbers
+  // (05_forest_animals.js). Without them a chapter falls back to the crocodile (ZONES bossYedek, see 06's zoneBoss).
+  // (try first: a half-loaded 05_forest_animals leaves FOREST_ANIMALS uninitialised, and even typeof throws on that)
+  try { if (typeof FOREST_ANIMALS !== 'undefined' && FOREST_ANIMALS && typeof FOREST_ANIMALS.bossAI === 'function') {
+      if (FOREST_ANIMALS.bossKits) Object.assign(BOSS_KIT, FOREST_ANIMALS.bossKits);
+      Object.assign(BOSS_AI, FOREST_ANIMALS.bossAI({ bossPhase, bossIdle, bossEnd, bossRoar, bossSummon, bossCall, pickPhase, telegraphLine,
+        fx, burst, sfx, shake, hurtPlayer, spawnProjectile, laneLen, bossWalk, bossRoom, remove, muzzle, isFloor, P, T, SHOT_COL,
+        summonAdds, nextWave, edef, enemies, get gt() { return gt; } }) || {});
+  } } catch (err) { console.warn('[GAME] FOREST_ANIMALS.bossAI', err); }
 
   // ── Damage ──
   function damage(e, amount, o = {}) {
@@ -5384,9 +5467,16 @@ const GAME = (() => {
     return cur === undefined && gt < npcTalkUntil;
   }
   const PORTAL = { wait: 2.5, arm: 2.5, stay: 6.5, pocket: 24, hold: 8 };
-  function enterPortal() {
+  function enterPortal(afterKamp) {
     if (GAME.state !== 'play') return;
-    if (L && L.portalObj && !L.portalObj.active) return;   // shut until the zone's boss cheers up: it does nothing
+    if (L && L.portalObj && !L.portalObj.active && afterKamp !== true) return;   // shut until the zone's boss cheers up: it does nothing (after the camp scene: it was open, the scene may have hidden it)
+    if (forestMode() && afterKamp !== true) {   // the chapter's camp moment first, then through the door
+      pocketLoot(PORTAL.pocket); aud('stopVoice');
+      const i = P.zone, id = zdef().id;
+      if (zoneClosed !== i) { zoneClosed = i; progDone(i); }
+      startKamp(() => { emit('zoneDone', { index: i, id }); enterPortal(true); });
+      return;
+    }
     pocketLoot(PORTAL.pocket);   // the boss's coins, hearts and treasure still lying around go with him (never lost)
     aud('stopVoice');            // nothing from this zone ('kapi'…) may play in the next one
     GAME.state = 'transition'; C.transT = 0;
@@ -5834,11 +5924,11 @@ const GAME = (() => {
     mortars.length = 0;
     // shots already flying pop with their little end burst (they must not hurt Feza during the cheer)
     for (let i = projectiles.length - 1; i >= 0; i--) if (projectiles[i].owner === 'enemy') killProjectile(i, true);
-    aud('music', zdef().music || 'kale');
+    aud('music', musicOf(zdef()) || 'kale');
     // the kefir giant: giftStep wakes its portal on the gift's own clock (a nap pauses the hand-over), as its 'kefirdev_yol'
     // line reaches "Yol mağaradan geçiyor!" (a late backstop, never needed in the tests)
     if (b.gift) later(b.gift.beat + 14, () => { const po = L && L.portalObj; if (!po || !po.active) openPortal(); });
-    else if (!b.final) later(1.5, openPortal);    // its line says the magic door opened: it opens while the boss waves goodbye
+    else if (!b.final) later(1.5, forestPortalGate);    // its line says the magic door opened: it opens while the boss waves goodbye (once the chapter's balls are found)
   }
   // ── Round 4: the kefir giant's gift. Stages on the cheered-up boss (it stays, overjoyed, before it waves): it holds out a
   // glass of kefir (05: st.give 0..1 drives the hand-over — the glass pops into its hand, the arm reaches out to Feza, the
@@ -6079,9 +6169,60 @@ const GAME = (() => {
     if (b.final) later(0.6, forestMode() ? finishForest : spawnCrystal);
   }
   function finishForest() {
-    if (!forestMode() || GAME.state === 'end') return;
+    if (!forestMode() || GAME.state === 'end' || GAME.state === 'kamp') return;
     if (speaking() || storyTalking(true)) { later(.3, finishForest); return; }
-    victory();
+    if (zoneBallsLeft() > 0) { bringBalls(); later(2.4, finishForest); return; }
+    progDone(P.zone);
+    startKamp(() => victory());   // the final camp party, then the ending
+  }
+  // ── A chapter's door opens when its boss cheered up AND its balls are found. A ball Feza walked past is never a dead end:
+  // once the boss is happy, Bilbo sniffs out the rest and they roll to Feza (no searching back through the chapter). ──
+  function forestPortalGate() {
+    if (!L || GAME.state !== 'play' && GAME.state !== 'dead') return;
+    if (forestMode() && zoneBallsLeft() > 0) { bringBalls(); later(2.4, forestPortalGate); return; }
+    if (forestMode() && zoneClosed !== P.zone) { zoneClosed = P.zone; progDone(P.zone); }
+    openPortal();
+  }
+  function ballCheck() {   // the last ball of a chapter whose boss is already happy: the door wakes
+    const po = L && L.portalObj;
+    if (forestMode() && boss && boss.dead && !boss.final && po && !po.active && zoneBallsLeft() === 0) later(.8, forestPortalGate);
+  }
+  function bringBalls() {
+    const fp = forestParty, left = zoneBallIds(P.zone).filter(x => !ballsGot.has(x));
+    if (!left.length) return;
+    if (!ZF.topGetirdi) { ZF.topGetirdi = true; aud('stopVoice'); say(hasLine('orman_top_getirdi') ? 'orman_top_getirdi' : 'orman_topbulundu', 3); }
+    sfx('bilboBark', { x: bilboPos.x, z: bilboPos.z, vol: 1 });
+    left.forEach((id, n) => later(.5 + n * .45, () => {
+      const b = fp && fp.balls ? fp.balls.find(q => q.id === id) : null, x = b ? b.x : P.pos.x, z = b ? b.z : P.pos.z;
+      if (b) { try { b.state = 'collected'; if (b.obj) b.obj.visible = false; if (b.mark) { b.mark.visible = true; b.mark.scale.set(1.3, 1, 1.16); } } catch (err) { warnOnce('bringBalls', err); } }
+      ballsGot.add(id);
+      burst('sparkle', x, .5, z, { count: 14, color: '#ffd969' }); burst('sparkle', P.pos.x, 1.2, P.pos.z, { count: 12, color: '#ffb347' });
+      sfx('coin'); C.cheerT = Math.max(C.cheerT, .8);
+      const d = Object.assign({ id, x: P.pos.x, z: P.pos.z, brought: true }, ballsInfo(), { need: 10 });
+      emit('forestBall', d); emit('forestCollection', d);
+    }));
+  }
+  // ── Kamp anı (KAMP's scene, FOREST_PARTY.kampAni): played between a chapter's door and the next chapter, and before the ending ──
+  function startKamp(next) {
+    const zid = zdef().id, fn = typeof FOREST_PARTY !== 'undefined' && FOREST_PARTY && typeof FOREST_PARTY.kampAni === 'function' ? FOREST_PARTY.kampAni : null;
+    if (!fn || Q.has('kampyok')) { next(); return; }
+    let done = false;
+    const finish = () => {
+      if (done) return; done = true;
+      kampCtl = null; kampDoneFn = null; kampEnd = -1;
+      if (GAME.state === 'kamp') GAME.state = 'play';
+      if (L && L.portalObj && P.zone < (zones() || []).length - 1) { const po = L.portalObj; placeHero(po.x, po.z + 1.6, 0); }
+      else placeHero(P.pos.x, P.pos.z, P.face);
+      emit('kamp', { on: false, id: zid });
+      next();
+    };
+    GAME.state = 'kamp'; kampDoneFn = finish; kampEnd = gt + 40;
+    C.targetE = null; C.targetObj = null; C.hasT = false; C.drag = false; C.swing = null; C.vel = 0; C.keyX = C.keyZ = 0;
+    if (forestParty) forestParty.cancelDig();
+    emit('kamp', { on: true, id: zid });
+    try {
+      kampCtl = fn(zid, finish, { level: L, hero: H, P, bilbo: Bilbo, bilboPos, party: forestParty, portal: L && L.portalObj, scene, time: () => gt }) || null;
+    } catch (err) { warnOnce('FOREST_PARTY.kampAni', err); finish(); }
   }
   function openPortal() {
     const po = L && L.portalObj;
@@ -6132,6 +6273,7 @@ const GAME = (() => {
   function victory() {
     if (GAME.state === 'end') return;
     if (!forestMode()) { mapOpen = true; try {localStorage.setItem(MAP_KEY,'acik');}catch(e){} }
+    else progDone(P.zone);
     GAME.state = 'end'; C.cheerT = 1e9;
     try { if (window.FEZA_BILBO_TAMAM) window.FEZA_BILBO_TAMAM('orman'); } catch (e) { /* macera bitti bilgisi: ev ekranı için */ }
     C.targetE = null; C.targetObj = null; C.hasT = false; C.drag = false; C.swing = null; C.vel = 0;
@@ -6347,7 +6489,8 @@ const GAME = (() => {
       if (boss && boss.gift && !boss.gift.looted) { gold += (boss.giftGold || 0) + (boss.giftExtraGold || 0); if (boss.giftItem) bag.push(plainItem(boss.giftItem)); }
     }
     return {
-      forest: forestMode() ? { party: forestParty && forestParty.snapshot(), seed: L && L.seed, districts: [...forestSeen], checkpoint: Object.assign({}, P.checkpoint), position: { x: P.pos.x, z: P.pos.z } } : null,
+      // (v 2: six chapters; balls = every ball found on the trip; seed / party / spot only matter when Devam Et reopens this chapter)
+      forest: forestMode() ? { v: 2, zid: zdef().id, balls: [...ballsGot], party: forestParty && forestParty.snapshot(), seed: L && L.seed, districts: [...forestSeen], checkpoint: Object.assign({}, P.checkpoint), position: { x: P.pos.x, z: P.pos.z } } : null,
       v: 1, sv: SAVE_V, forestBalance: 1, t: Date.now(), difficulty: hard ? 'hard' : 'normal', heroClass: P.heroClass, zone, zid: zdef(zone).id, lvl: P.lvl, xp: P.xp, gold, potions: P.potions, ng: P.ng,
       bag, roundPower: cleanRoundPower(P.roundPower), shopStock: cleanShop(P), shopWard: P.shopWard && P.shopWard.zone === zdef(zone).id ? Object.assign({}, P.shopWard) : null,
       equip: { weapon: P.bag.indexOf(P.equip.weapon), offhand: P.bag.indexOf(P.equip.offhand), hat: P.bag.indexOf(P.equip.hat), cape: P.bag.indexOf(P.equip.cape) },
@@ -6425,10 +6568,12 @@ const GAME = (() => {
     for (const slot of ['weapon', 'offhand', 'hat', 'cape']) if (equip[slot] >= 0) equip[slot] = re[equip[slot]];
     const L1 = clamp(Math.floor(lvl), 1, 99);
     const ZL = zones();
-    const zn = saveZone(s, Math.max(0, Math.floor(zone)), ZL);
+    // the old single long forest ('uzunorman'): its trip starts again at chapter 1, keeping the balls it found (restoreBalls)
+    const oldForest = s.zid === 'uzunorman';
+    const zn = oldForest ? 0 : saveZone(s, Math.max(0, Math.floor(zone)), ZL);
     const flags = s.flags && typeof s.flags === 'object' ? Object.assign({}, s.flags) : {};
     // the crystal-waiting flag names a zone index too (the castle): it moves with the zones
-    if (typeof flags.bossDone === 'number' && flags.bossDone >= 0) flags.bossDone = saveZone(s, Math.floor(flags.bossDone), ZL, true);
+    if (typeof flags.bossDone === 'number' && flags.bossDone >= 0) flags.bossDone = oldForest ? -1 : saveZone(s, Math.floor(flags.bossDone), ZL, true);
     return Object.assign({}, s, {
       sv: SAVE_V, difficulty: s.difficulty === 'hard' || (s.difficulty === undefined && s.hardcore === true) ? 'hard' : 'normal', heroClass, lvl: L1, xp: clamp(Math.floor(xp), 0, xpFor(L1) - 1), gold: Math.max(0, Math.floor(gold)), potions: s.forestBalance === 1 ? clamp(Math.floor(potions), 0, P.maxPotions) : P.maxPotions, forestBalance: 1,
       ng: clamp(Math.floor(ng), 0, 99), zone: zn, zid: ZL && ZL[zn] ? ZL[zn].id : s.zid, bag: slim, equip,
@@ -6512,7 +6657,10 @@ const GAME = (() => {
       recalcStats(); P.hp = P.maxHp; P.roundPower = captureRoundPower();
     } else { P.heroClass = heroClassOf(o.heroClass); buildSkills(); resetPlayer(); }
     C.playT = 0; C.lastHurt = gt - 99;
-    if (adventure) loadZone(forestZone()); else if (!plus && useTitleLevel()) startHere(); else loadZone(0);
+    ballsGot = new Set();   // a new trip: Bilbo's ten balls are hidden again (opened chapters stay open on the map)
+    const z0 = Number.isInteger(o.zone) ? clamp(o.zone, 0, zones().length - 1) : 0;
+    if (z0 > 0 && !plus) catchUp(z0);
+    if (adventure) loadZone(z0); else if (!plus && useTitleLevel()) startHere(); else loadZone(0);
     yolWant = false;
     if (plus) say('tekrar', 3);
     else if (adventure) {
@@ -6529,6 +6677,16 @@ const GAME = (() => {
       yolWant = !F.yolculuk && hasLine('yolculuk');
     }
   }
+  // Straight to a later chapter from the map without a save: Feza gets that chapter's usual level (ZONES[i].lvl), so it stays fair.
+  function catchUp(i) {
+    const want = clamp((zdef(i).lvl | 0) || 1, 1, 30);
+    if (P.lvl >= want) return;
+    P.lvl = want; P.xp = 0; P.xpNext = xpFor(P.lvl);
+    for (const sk of GAME.skills) sk.unlocked = P.lvl >= (sk.def.lvl || 1);
+    F.intro0 = true;
+    recalcStats(); P.hp = P.maxHp;
+    checkUnlocks(false);
+  }
   function continueGame() {
     if (!inited) init();
     const s = readSave();
@@ -6538,8 +6696,10 @@ const GAME = (() => {
       GAME.clearSave(); newGame({ plus: false }); return;
     }
     C.playT = 0; C.lastHurt = gt - 99; yolWant = false;
-    if (s.zone === 0 && useTitleLevel()) startHere(); else loadZone(s.zone || 0, { seed: s.forest && s.forest.seed });
-    if (forestParty && s.forest) {
+    restoreBalls(s); progOpen(s.zone || 0);
+    const same = !!(s.forest && s.forest.v === 2 && s.forest.zid === zdef(s.zone || 0).id);   // (an old single-forest save: a fresh chapter 1)
+    loadZone(s.zone || 0, { seed: same ? s.forest.seed : undefined });
+    if (forestParty && s.forest && same) {
       forestSeen = new Set(Array.isArray(s.forest.districts) ? s.forest.districts.filter(i => Number.isInteger(i) && i >= 0 && i < 6) : []);
       forestParty.restore(s.forest.party);
       const cp = s.forest.checkpoint, at = s.forest.position;
@@ -6704,6 +6864,10 @@ const GAME = (() => {
     else {
       C.hurtT = Math.max(0, C.hurtT - dt * 3); C.vel = damp(C.vel, 0, 10, dt); C.swing = null;
       if (st === 'dead') { C.deadT += dt; if (C.deadT >= T.respawn) respawn(); }
+      if (st === 'kamp') {   // KAMP's scene drives Feza, Bilbo and the companions; a stuck scene still ends (kampEnd)
+        if (kampCtl && typeof kampCtl.update === 'function') { try { kampCtl.update(dt); } catch (err) { warnOnce('kampAni.update', err); if (kampDoneFn) kampDoneFn(); } }
+        if (kampDoneFn && kampEnd > 0 && gt > kampEnd) kampDoneFn();
+      }
       if (st === 'transition' && H) { C.transT += dt; H.root.scale.setScalar(baseScale * Math.max(0.05, 1 - C.transT / 0.7)); P.face += dt * 12; }
     }
     if (L) {
@@ -6764,10 +6928,12 @@ const GAME = (() => {
     updateMarkers(dt);
     fbStep(dt);
     updateBars(dt);
-    updateHero(dt);
-    forestDirective = forestParty && GAME.state === 'play' ? forestParty.update(dt) : null;
-    if (forestParty && GAME.state === 'dead') forestParty.cancelDig();
-    updateBilbo(dt);
+    if (GAME.state !== 'kamp') {
+      updateHero(dt);
+      forestDirective = forestParty && GAME.state === 'play' ? forestParty.update(dt) : null;
+      if (forestParty && GAME.state === 'dead') forestParty.cancelDig();
+      updateBilbo(dt);
+    }
     forestStory();
     moustacheStep(dt);
   }
@@ -6775,11 +6941,10 @@ const GAME = (() => {
     if (!forestParty || !L || GAME.state !== 'play' || P.dead || finale || gt < forestStoryAt) return;
     forestStoryAt = gt + .5;
     if (speaking() || (boss && boss.aggro)) return;
-    const keys = ['orman_piknik', 'orman_dere', 'orman_sazlik', 'orman_mese', 'orman_egrelti', 'orman_golet'];
-    const stops = L.forestDistricts || [];
+    const stops = L.forestDistricts || [];   // (each chapter's own little stops, LEVEL's ZSTORY)
     for (let i = 0; i < stops.length; i++) {
       if (forestSeen.has(i) || dist2(P.pos.x, P.pos.z, stops[i].x, stops[i].z) > 100) continue;
-      forestSeen.add(i); say(keys[i], 1); forestStoryAt = gt + 12; break;
+      forestSeen.add(i); if (stops[i].key && hasLine(stops[i].key)) say(stops[i].key, 1); forestStoryAt = gt + 12; break;
     }
   }
   function titleUpdate(dt) {
@@ -6831,7 +6996,11 @@ const GAME = (() => {
     P, H: null, enemies, L: null, state: 'title', paused: false, skills: [], boss: null, time: 0,
     get difficulty() { return hard ? 'hard' : 'normal'; }, setDifficulty,
     merchantInfo, merchantNear, merchantWard, visitMerchant, buyMerchant,
-    mapUnlocked, travelTo, bone,
+    mapUnlocked, travelTo, bone, zoneInfo, zonesOpen, ballsInfo,
+    get ballsGot() { return [...ballsGot]; },
+    // test hooks (?sessiz runs): cheer the chapter boss up at once, find this chapter's balls, finish the camp moment
+    _test: { bossDown: () => { if (boss && !boss.dead) damage(boss, boss.hp + 1e6, { kind: 'test' }); return !!boss; }, bringBalls, kampBitir: () => { if (kampDoneFn) kampDoneFn(); },
+      get state() { return { zone: P.zone, id: zdef().id, state: GAME.state, balls: ballsInfo(), portal: !!(L && L.portalObj && L.portalObj.active), kamp: !!kampDoneFn }; } },
     get boneCooldown(){return Math.max(0,boneAt-gt);}, get boneCooldownMax(){return BONE_CD;},
     init, newGame, continueGame, hasSave: () => !!readSave(), save, clearSave,
     loadZone, update, titleUpdate, input, equipSlot, equip: item => equip(item), unequip, drinkPotion, addItem, cast,

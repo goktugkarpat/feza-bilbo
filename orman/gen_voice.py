@@ -5,6 +5,12 @@
 Needs:  python3 -m pip install edge-tts   (internet while recording)   and ffmpeg
 Run:    python3 gen_voice.py            only new/changed lines are recorded; the rest come from .ses_onbellek/
         python3 gen_voice.py --hepsi    record everything again
+        python3 gen_voice.py --degistir also let BOLUMLER-SES.md change the text of an existing line
+
+New lines: BOLUMLER-SES.md (one per line: `id | metin`) is merged into the LINES block of src/02_audio.js first
+(new ids are appended; an existing id's text only changes with --degistir).
+Old recordings stay byte-identical: when .ses_onbellek/ is empty (fresh copy), the existing sesler.js is unpacked into
+it first, so only really new or changed lines are sent to the voice service.
 
 Lines are read from index.html if it contains the /*SESLER*/{...}/*SESLER-SON*/ block, else from src/02_audio.js.
 Output: sesler.js  →  window.VOICE_MP3 = {key: base64 mp3}  and  window.VOICE_DUR = {key: seconds}  (keys in LINES order).
@@ -37,6 +43,7 @@ PRONOUNCE = [
     (r"\bayin", "ayiin"),                      # was heard as "a in"
     (r"\btellal", "tel lal"),
     (r"\bTellal", "Tel lal"),
+    (r"(?i)\bmarshmallow", "marşmelov"),
 ]
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -80,6 +87,55 @@ def load_lines():
             print(f"lines from {rel}")
             return json.loads(m.group(1))
     sys.exit("LINES block (/*SESLER*/ ... /*SESLER-SON*/) not found in index.html or src/02_audio.js")
+
+
+SES_MD = os.path.join(ROOT, "BOLUMLER-SES.md")
+LINES_JS = os.path.join(ROOT, "src", "02_audio.js")
+
+
+def merge_md():
+    """Append `id | metin` lines of BOLUMLER-SES.md to the /*SESLER*/ block of src/02_audio.js (text kept as written)."""
+    if not os.path.exists(SES_MD) or not os.path.exists(LINES_JS):
+        return
+    src = open(LINES_JS, encoding="utf-8").read()
+    m = re.search(r"/\*SESLER\*/(.*?)/\*SESLER-SON\*/", src, re.S)
+    if not m:
+        return
+    lines = json.loads(m.group(1))
+    want = {}
+    for raw in open(SES_MD, encoding="utf-8"):
+        mm = re.match(r"^\s*[-*]?\s*`?([a-z][a-z0-9_]*)`?\s*\|\s*(.+?)\s*$", raw)
+        if mm and not mm.group(2).startswith("---"):
+            want[mm.group(1)] = mm.group(2).strip("`").strip()
+    added, changed, skipped = [], [], []
+    for k, t in want.items():
+        if k not in lines:
+            lines[k] = t; added.append(k)
+        elif lines[k] != t:
+            if "--degistir" in sys.argv:
+                lines[k] = t; changed.append(k)
+            else:
+                skipped.append(k)
+    if skipped:
+        print("BOLUMLER-SES.md has other text for existing ids (kept old; use --degistir):", ", ".join(skipped))
+    if not added and not changed:
+        return
+    block = "{\n" + ",\n".join(f"  {json.dumps(k, ensure_ascii=False)}: {json.dumps(t, ensure_ascii=False)}" for k, t in lines.items()) + "\n}"
+    open(LINES_JS, "w", encoding="utf-8", newline="\n").write(src[:m.start(1)] + block + src[m.end(1):])
+    print(f"BOLUMLER-SES.md: {len(added)} new, {len(changed)} changed lines merged into src/02_audio.js")
+
+
+def seed_cache(lines):
+    """Fresh copy without .ses_onbellek/: reuse the recordings already in sesler.js (same bytes, nothing re-recorded)."""
+    if "--hepsi" in sys.argv or not os.path.exists(OUT):
+        return
+    txt = open(OUT, encoding="utf-8").read()
+    n = 0
+    for k, b64 in re.findall(r'^ "([^"]+)": "([A-Za-z0-9+/=]+)"', txt, re.M):
+        if k in lines and not os.path.exists(cache_path(lines[k])):
+            open(cache_path(lines[k]), "wb").write(base64.b64decode(b64)); n += 1
+    if n:
+        print(f"seeded {n} recordings from the existing sesler.js")
 
 
 def cache_path(text):
@@ -141,6 +197,8 @@ async def record(key, text, sem):
 
 async def main():
     os.makedirs(CACHE, exist_ok=True)
+    seed_cache(load_lines())   # before merging: a changed text must not inherit the old recording
+    merge_md()
     lines = load_lines()
     if "--hepsi" in sys.argv:
         for t in lines.values():

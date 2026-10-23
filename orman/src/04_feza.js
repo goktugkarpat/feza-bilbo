@@ -828,8 +828,15 @@ const { FEZA, ITEMS } = (function () {
     deretasi: { col:'#75bbd1', wood:'#756e56', trim:'#dfeddf', L:.69, kind:'river' },
     aridostu: { col:'#efc665', wood:'#a76d3e', trim:'#fff2be', L:.73, kind:'bee' },
     timsahdostlugu: { col:'#78bd82', wood:'#568c62', trim:'#f0d883', L:.78, kind:'croc' },
+    kristalyaprak: { col:'#86e3c6', wood:'#6c7a5e', trim:'#e6fff4', L:.70, kind:'crystal' },   // Büyülü Şövalye'nin başlangıç kılıcı
   };
   for (const [id,d] of Object.entries(FOREST_WEAPON)) SABER[id] = { ...SABER.tahta, ...d, trail:d.col };
+  // Orman değnekleri (büyücü ve büyülü şövalye): ahşap gövde, ucunda parlayan ateşböceği / yaprak ışığı
+  Object.assign(WAND, {
+    atesbocegi: { wood: '#7a5233', col: '#dcff7a', L: 0.5, band: '#c9a16b', tipI: 2.4 },
+    mesedali: { wood: '#5b4030', col: '#9be07a', L: 0.55, band: '#b8ca9b' },
+    timsahdegnek: { wood: '#4f7a52', col: '#9df0a0', L: 0.62, band: '#f0d883', tipI: 2.2 },
+  });
   const FOREST_HAT = {
     gezginsapka:{ col:'#b4a373', trim:'#637950', kind:'explorer' },
     palamutbere:{ col:'#ae8051', trim:'#e7c786', kind:'acorn' },
@@ -888,6 +895,69 @@ const { FEZA, ITEMS } = (function () {
     h.add(new THREE.Mesh(geo,vcM('forestHat',{roughness:.87,metalness:0,normalMap:tex('fabric')?tex('fabric').normalMap:null,normalScale:V2(.35,.35)})));
     if(['explorer','acorn','mushroom'].includes(d.kind)) g.fzHatIn={h,c:[0,.025,0],r:[.28,.17,.295],y0:-.05,fade:.08};
     return g;
+  }
+  // ── Kahraman sınıfları (hala/huysuz ile aynı mantık): Savaşçı = kılıç; Büyücü = değnek + orman büyücü şapkası;
+  // Büyülü Şövalye = kılıç + sol elde değnek + ağaç kabuğu zırhı ve yapraklı miğfer. Sınıf şapkası yalnız eşya şapkası yokken görünür.
+  const CLASS_AT = { hips: [0, 0.47, 0], chest: [0, 0.6, 0], head: [0, 0.84, 0], armL: [0.175, 0.76, -0.005], armR: [-0.175, 0.76, -0.005] };
+  const clTorsoR = y => y >= 0.44 ? profR(SHIRT_P, y) : profR(SHORTS_P, y);
+  const clTorsoZ = (x, y) => (y >= 0.44 ? 0.8 : 0.82) * Math.sqrt(Math.max(0, sq(clTorsoR(y)) - x * x));
+  function clPlate(y0, y1, wf, lift, side, nu = 16, nv = 14, bend = 0) {
+    return paramGeo((u, v, o) => {
+      const y = lerp(y0, y1, v), w = wf(v), x = (u * 2 - 1) * w;
+      o.set(x, y, side * (clTorsoZ(x * 0.97, y) + lift + bend * (1 - sq(u * 2 - 1))));
+    }, nu, nv, v3(0, (y0 + y1) / 2, -side * 0.4), false);
+  }
+  const clKit = (key, f) => geoC('sinif:' + key, () => kitGeo(f));
+  function classParts(id) {
+    const out = { bones: {}, hat: null, glow: [] };
+    const add = (bone, geo, m) => { const mesh = new THREE.Mesh(geo, m); const b = CLASS_AT[bone]; mesh.position.set(-b[0], -b[1], -b[2]); (out.bones[bone] || (out.bones[bone] = [])).push(mesh); return mesh; };
+    const cloth = key => vcM('sinifK:' + key, { roughness: 0.88, side: THREE.DoubleSide });
+    if (id === 'wizard') {
+      // moss-green pointed hat, a bent tip with a little glowing firefly, a band of leaves and tiny gold stars
+      const g = new THREE.Group(), h = new THREE.Group(); h.position.y = 0.18; g.add(h);
+      const geo = clKit('wizHat', k => {
+        k.add(G.sphere(24), '#557a45', [0, 0.02, 0], 0, [0.29, 0.16, 0.305]);
+        k.add(brimRing(0.2, 0.42, 44, (a, f) => [0.025 * Math.sin(a * 2) * f - 0.02 * f, 0]), '#4b6d3d', [0, -0.08, 0]);
+        k.add(G.cone(24), '#5c8449', [0, 0.27, -0.01], [-0.08, 0, 0], [0.235, 0.42, 0.24]);
+        k.add(G.cone(16), '#668f50', [0.03, 0.52, -0.06], [-0.55, 0, -0.35], [0.085, 0.2, 0.085]);
+        k.add(G.torus(TAU, 0.1, 40), '#a8743e', [0, 0.06, 0], [Math.PI / 2, 0, 0], [0.272, 0.285, 0.3]);
+        for (let i = 0; i < 9; i++) { const a = i / 9 * TAU; forestLeaf(k, Math.sin(a) * 0.272, 0.07, Math.cos(a) * 0.285, 0.035, 0.07, i % 2 ? '#9fcf6a' : '#d9a54a', -Math.sin(a) * 0.5); }
+        for (let i = 0; i < 6; i++) { const a = i * 1.9 + 0.4, y = 0.16 + (i % 3) * 0.09, rr = 0.2 - (y - 0.12) * 0.42; k.add(starGeo(0.022, 0.004), '#ffd76a', [Math.sin(a) * rr, y, Math.cos(a) * rr + 0.004], [0, a, 0], 1); }
+      });
+      h.add(new THREE.Mesh(geo, vcM('sinifHat', { roughness: 0.86, normalMap: tex('fabric') ? tex('fabric').normalMap : null, normalScale: V2(0.35, 0.35) })));
+      const bug = new THREE.Mesh(G.sphere(12), mat('sinifFirefly', () => glowMat('#e6ff8a', 2.4))); bug.position.set(0.105, 0.66, -0.14); bug.scale.setScalar(0.03); bug.userData.noShadow = true; h.add(bug);
+      out.glow.push(bug);
+      g.fzHatIn = { h, c: [0, 0.025, 0], r: [0.28, 0.17, 0.295], y0: -0.05, fade: 0.08 };
+      out.hat = g;
+    } else if (id === 'hybrid') {
+      // bark armour with leaf-green straps, a golden star, rounded shoulder pads and a leafy helmet
+      const CB = new THREE.Color(0xa37c4f), CD = new THREE.Color(0x7c5a37), LEAF = new THREE.Color(0x7cc061);
+      const barkCol = (x, y) => (Math.abs(y - 0.72) < 0.014 || Math.abs(y - 0.52) < 0.014) ? LEAF : CB.clone().lerp(CD, 0.35 + 0.35 * Math.sin(x * 120 + Math.sin(y * 60) * 2));
+      add('chest', clKit('knightArmor', k => {
+        const wf = v => 0.16 - 0.025 * sq(v * 2 - 1);
+        k.add(clPlate(0.46, 0.79, wf, 0.024, 1, 16, 14, 0.012), barkCol);
+        k.add(clPlate(0.46, 0.79, wf, 0.024, -1, 16, 14, 0.008), barkCol);
+        const z = clTorsoZ(0, 0.64) + 0.04;
+        k.add(starGeo(0.045, 0.003), 0xffd23f, [0, 0.64, z], [-0.1, 0, 0], 1);
+        for (const s of [-1, 1]) for (let i = 0; i < 3; i++) k.add(G.rbox(1), 0x5d8a3e, [s * 0.165, 0.5 + i * 0.1, 0], 0, [0.012, 0.03, 0.04]);
+      }), cloth('bark'));
+      for (const [b, s] of [['armL', 1], ['armR', -1]]) add(b, clKit('pad' + s, k => {
+        k.add(G.hemi(20), CB, [s * 0.19, 0.765, -0.005], [0, 0, -s * 0.35], [0.09, 0.075, 0.095]);
+        k.add(G.torus(TAU, 0.12, 24), LEAF, [s * 0.19, 0.765, -0.005], [Math.PI / 2, 0, -s * 0.35], [0.09, 0.095, 0.09]);
+      }), cloth('bark'));
+      const helm = clKit('leafHelm', k => {
+        k.add(G.hemi(28), (x, y, z) => CB.clone().lerp(CD, 0.3 + 0.3 * Math.sin(Math.atan2(x, z) * 18)), [0, 0.07, 0], 0, [0.315, 0.3, 0.325]);
+        k.add(G.cyl(1, 1, 32, true), CD, [0, 0.085, 0], 0, [0.318, 0.06, 0.328]);
+        k.add(G.cyl(1, 1, 32, true), LEAF, [0, 0.24, 0], 0, [0.25, 0.025, 0.26]);
+        k.add(G.rbox(1), CD, [0, 0.03, 0.315], [-0.15, 0, 0], [0.035, 0.12, 0.018]);
+        for (let i = 0; i < 5; i++) forestLeaf(k, (i - 2) * 0.035, 0.43 + 0.025 * (2 - Math.abs(i - 2)), -0.05 - Math.abs(i - 2) * 0.015, 0.04, 0.12, i & 1 ? '#9fd67a' : '#5fa84a', (i - 2) * 0.32);
+      });
+      const hm = new THREE.Mesh(helm, mat('sinifHelm', () => rimify(vcMat({ roughness: 0.9, side: THREE.DoubleSide }), 0xffe6c0, 0.12)));
+      const g = new THREE.Group(); g.add(hm); hm.position.set(0, 0, -0.005);
+      g.fzHatIn = { h: new THREE.Object3D(), c: [0, 0.02, 0], r: [0.305, 0.3, 0.315], y0: 0.06, fade: 0.07 };
+      out.hat = g;
+    }
+    return out;
   }
   function forestCapeTexture(id) {
     const d=FOREST_CLOTH[id],cv=canvasEl(256,256),c=cv.getContext('2d'),ev=canvasEl(256,256),e=ev.getContext('2d');
@@ -2127,6 +2197,8 @@ const { FEZA, ITEMS } = (function () {
     const hair = new THREE.Mesh(body.hair, hairMat);
     hair.castShadow = true; hair.frustumCulled = false; hair.customDepthMaterial = hairMat.userData.depth; hairG.add(hair);
     const hatSlot = new THREE.Group(); hatSlot.position.copy(HC); hairG.add(hatSlot);
+    const kHat = new THREE.Group(); kHat.position.copy(HC); hairG.add(kHat);   // hero-class hat (only while no hat item is worn)
+    const CL = { id: 'warrior', list: [], hatE: null, cache: {}, t: 0, shown: false };
     const wSlot = new THREE.Group(); wSlot.position.set(0, -0.18, 0.012); wSlot.rotation.order = 'ZXY'; B.foreR.add(wSlot);
     const offSlot = new THREE.Group(); offSlot.position.set(0, -0.18, 0.012); offSlot.rotation.order = 'ZXY'; B.foreL.add(offSlot);
     const capeSlot = new THREE.Group(); capeSlot.position.set(0, 0.205, -0.01); B.chest.add(capeSlot);
@@ -2219,7 +2291,54 @@ const { FEZA, ITEMS } = (function () {
       else if (name === 'scratch') { p[C.aLX] += (-2.3 - p[C.aLX]) * E; p[C.aLY] += (0.5 - p[C.aLY]) * E; p[C.aLZ] += (0.35 - p[C.aLZ]) * E; p[C.fL] += (-2.1 + 0.18 * Math.sin(u * 60) - p[C.fL]) * E; p[C.kRZ] -= 0.14 * E; p[C.kRX] += 0.04 * E; face.squint = 0.4 * E; face.lookY = 0.7 * E; face.lookX = -0.4 * E; face.look = E; }
     }
 
+    function kampPose(P, n, t, face, w) {
+      Q.set(P);
+      const sit = n === 'sit' || n === 'sitStick' || n === 'sitEat';
+      if (sit) {
+        Q.set(BASE); Q[C.bY] = -.025; Q[C.tLX] = Q[C.tRX] = -Math.PI / 2; Q[C.tLZ] = .08; Q[C.tRZ] = -.08; Q[C.sL] = Q[C.sR] = Math.PI / 2;
+        Q[C.cRX] = .03 + Math.sin(t * 1.8) * .01; Q[C.aLX] = Q[C.aRX] = -.55; Q[C.aLZ] = .1; Q[C.aRZ] = -.1; Q[C.fL] = Q[C.fR] = -.75; Q[C.kRX] = -.05;
+        face.happy = .35; face.grin = .5;
+        if (n === 'sitStick') { Q[C.aRX] = -1.15; Q[C.aRY] = .15; Q[C.aRZ] = -.12; Q[C.fR] = -.25; Q[C.kRX] = .08; face.look = 1; face.lookY = -.5; face.happy = .2; }
+        if (n === 'sitEat') { const bite = Math.max(0, Math.sin(t * 2.6)); Q[C.aRX] = -.85 - .45 * bite; Q[C.aRY] = .35; Q[C.aRZ] = -.25; Q[C.fR] = -1.45 - .75 * bite; face.o = bite > .6 ? .8 : 0; face.grin = bite > .6 ? 0 : .8; face.happy = bite > .6 ? 0 : .8; face.blush = .5; }
+      } else if (n === 'dance') {
+        const b = Math.abs(Math.sin(t * 6.2)), s = Math.sin(t * 3.1);
+        Q[C.bY] = .06 * b; Q[C.hRZ] = .12 * s; Q[C.bRY] += .38 * Math.sin(t * 1.55); Q[C.cRZ] = -.08 * s; Q[C.kRZ] = .16 * s; Q[C.kRX] = -.25;
+        Q[C.aLX] = -1.5 - 1.1 * Math.max(0, s); Q[C.aRX] = -1.5 - 1.1 * Math.max(0, -s); Q[C.aLZ] = .55; Q[C.aRZ] = -.55; Q[C.fL] = -.45; Q[C.fR] = -.45; Q[C.aLY] = Q[C.aRY] = 0;
+        Q[C.tLX] = -.3 * Math.max(0, s); Q[C.sL] = .15 + .55 * Math.max(0, s); Q[C.tRX] = -.3 * Math.max(0, -s); Q[C.sR] = .15 + .55 * Math.max(0, -s);
+        Q[C.wX] = 3.0; face.happy = 1; face.grin = 1; face.blush = .6;
+      } else if (n === 'hop') {
+        const j = Math.abs(Math.sin(t * 7)); Q[C.bY] = .12 * j; Q[C.sL] = Q[C.sR] = .2 + .5 * (1 - j); Q[C.aLX] = -2.6; Q[C.aRX] = -2.6; Q[C.aLZ] = .4; Q[C.aRZ] = -.4; Q[C.fL] = Q[C.fR] = -.3;
+        face.happy = 1; face.grin = 1; face.blush = .7;
+      } else if (n === 'sing') {
+        const s = Math.sin(t * 2.2);
+        Q[C.bRZ] = .05 * s; Q[C.hRZ] = .06 * s; Q[C.kRZ] = .12 * s; Q[C.kRX] = -.38; Q[C.aLX] = -.8; Q[C.aRX] = -.8; Q[C.aLZ] = .75 + .1 * s; Q[C.aRZ] = -.75 + .1 * s; Q[C.fL] = Q[C.fR] = -.25; Q[C.aRY] = 0;
+        face.o = Math.sin(t * 7) > -.2 ? .9 : .3; face.happy = .7; face.blush = .5; face.browR = .5;
+      } else if (n === 'fish' || n === 'fishPull') {
+        const pull = n === 'fishPull' ? 1 : 0;
+        Q[C.aLX] = -.95 - .9 * pull; Q[C.aRX] = -1.0 - .9 * pull; Q[C.aLY] = -.35; Q[C.aRY] = .35; Q[C.aLZ] = 0.02; Q[C.aRZ] = -0.02; Q[C.fL] = -.65 + .3 * pull; Q[C.fR] = -.6 + .3 * pull;
+        Q[C.bRX] = .06 - .2 * pull; Q[C.kRX] = -.18 - .2 * pull; Q[C.tLX] = -.15 * pull; Q[C.sL] = .2 * pull;
+        face.look = 1; face.lookY = -.35 + .5 * pull; face.lookX = 0; face.o = pull * .9; face.browR = pull;
+      } else if (n === 'ride') {
+        const s = Math.sin(t * 4.6);
+        Q[C.aLX] = -2.95; Q[C.aRX] = -2.95; Q[C.aLZ] = .18; Q[C.aRZ] = -.18; Q[C.aLY] = Q[C.aRY] = 0; Q[C.fL] = Q[C.fR] = -.12; Q[C.bY] = 0;
+        Q[C.tLX] = -.35 + .32 * s; Q[C.tRX] = -.35 - .32 * s; Q[C.sL] = .35 + .25 * Math.max(0, -s); Q[C.sR] = .35 + .25 * Math.max(0, s); Q[C.kRX] = -.15; Q[C.cRX] = -.06;
+        face.happy = 1; face.grin = 1; face.blush = .7;
+      } else if (n === 'clap') {
+        const c = Math.abs(Math.sin(t * 6));
+        Q[C.aLX] = -1.25; Q[C.aRX] = -1.25; Q[C.aLY] = -.55 + .3 * c; Q[C.aRY] = .55 - .3 * c; Q[C.aLZ] = .05; Q[C.aRZ] = -.05; Q[C.fL] = -.55; Q[C.fR] = -.55; Q[C.bY] = .02 * c;
+        face.happy = 1; face.grin = 1; face.blush = .5;
+      } else if (n === 'wave') {
+        Q[C.aLX] = -2.45; Q[C.aLZ] = .55; Q[C.fL] = -.55 + .45 * Math.sin(t * 9); Q[C.kRZ] = .1; face.happy = 1; face.grin = 1;
+      } else if (n === 'lookUp') {
+        Q[C.kRX] = -.85; Q[C.cRX] = -.14; Q[C.aLX] = .1; Q[C.aRX] = .05; Q[C.aLZ] = .3; Q[C.aRZ] = -.3; Q[C.fL] = Q[C.fR] = -.25;
+        face.look = 1; face.lookY = .9; face.lookX = .15 * Math.sin(t * .7); face.o = .55; face.blush = .4;
+      }
+      lerpInto(P, Q, w, w);
+    }
     function update(dt, st) {
+      // Camp scenes (FOREST_PARTY.kampAni) drive Feza themselves: H.kamp is their state object and only their calls animate.
+      if (H.kamp && st !== H.kamp) return;
+      if ((CL.t -= dt || 0) <= 0) { CL.t = 0.4; const hc = gameHeroClass(); if (hc && hc !== CL.id) H.setHeroClass(hc); classHatVis(false); }
       st = st || {};
       dt = Math.min(Math.max(dt || 0, 0), 0.1);
       snap = dt < 1e-6; udt = dt;   // update(0, st) = settled pose for st (all blends jump to their targets)
@@ -2322,6 +2441,15 @@ const { FEZA, ITEMS } = (function () {
         P[C.aLX] = lerp(P[C.aLX], -1.55, w); P[C.aLY] = lerp(P[C.aLY], -0.12, w); P[C.fL] = lerp(P[C.fL], -0.08, w);
         P[C.aRX] = lerp(P[C.aRX], -0.15, w); P[C.aRY] = lerp(P[C.aRY], 0, w); P[C.fR] = lerp(P[C.fR], -0.35, w);
       }
+      // camp-scene poses (st.kp: dance, sing, fish, fishPull, ride, sit, sitStick, sitEat, clap, wave, lookUp, hop)
+      // (a new pose cross-fades from the previous one: the old one fades out underneath while the new one fades in)
+      if ((st.kp || null) !== (S.kpName || null)) { if (S.kpName && (S.wKp || 0) > 0.05) { S.kpPrev = S.kpName; S.wKpPrev = S.wKp; } S.kpName = st.kp || null; S.wKp = 0; }
+      S.wKp = dmp(S.wKp || 0, S.kpName ? 1 : 0, 6.5); S.wKpPrev = dmp(S.wKpPrev || 0, 0, 6.5);
+      if (!dead) {
+        const kt = st.kpT === undefined ? t : st.kpT;
+        if (S.kpPrev && S.wKpPrev > 0.002) kampPose(P, S.kpPrev, kt, face, sstep(0, 1, S.wKpPrev)); else S.kpPrev = null;
+        if (S.kpName && S.wKp > 0.002) kampPose(P, S.kpName, kt, face, sstep(0, 1, S.wKp));
+      }
       if (S.fixed) S.fixed(P, face);
       const reading = !!st.sitRead && !dead;
       if (reading) {
@@ -2342,7 +2470,8 @@ const { FEZA, ITEMS } = (function () {
         readingBook.rotation.x = -.08 + Math.sin(t*1.8)*.008;
       }
       if(readingBook) readingBook.visible = reading;
-      wSlot.visible = offSlot.visible = capeSlot.visible = !reading;
+      wSlot.visible = offSlot.visible = !reading && !(st.kpHide && !dead);
+      capeSlot.visible = !reading;
       applyPose(P);
 
       // ── face ──
@@ -2468,6 +2597,13 @@ const { FEZA, ITEMS } = (function () {
       HU.fzHatM.value.copy(m).invert();
       hv.set(1, (inn.y0 - inn.c[1]) / inn.r[1], inn.fade / inn.r[1], 0);
     }
+    function classHatVis(force) {
+      const show = !!CL.hatE && !S.eq.hat;
+      if (!force && show === CL.shown) return;
+      CL.shown = show; kHat.visible = show;
+      hatUniforms(S.eq.hat || (show ? CL.hatE : null));
+    }
+    function gameHeroClass() { try { return typeof GAME !== 'undefined' && GAME && GAME.P ? GAME.P.heroClass : null; } catch (e) { return null; } }
     function wearHat(e) {   // visual only (portraits of other hats)
       for (const c of hatSlot.children.slice()) hatSlot.remove(c);
       if (e) hatSlot.add(e.obj);
@@ -2500,9 +2636,29 @@ const { FEZA, ITEMS } = (function () {
         if (!S.eq.weapon) H.bladeOn = false;
         swap('hat', eq.hat || null, hatSlot);
         swap('cape', eq.cape || null, capeSlot);
-        hatUniforms(S.eq.hat);
+        classHatVis(true);
         S.capeU = S.eq.cape ? S.eq.cape.capeU : null;
       },
+      // Sınıf görünüşü: 'warrior' | 'wizard' | 'hybrid' (update() reads GAME.P.heroClass by itself too)
+      setHeroClass(id) {
+        id = id === 'wizard' || id === 'hybrid' ? id : 'warrior';
+        if (CL.id === id) return;
+        for (const m of CL.list) if (m.parent) m.parent.remove(m);
+        CL.list.length = 0; kHat.clear(); CL.hatE = null; CL.id = id;
+        let c = CL.cache[id];
+        if (!c) {
+          const p = classParts(id), meshes = [];
+          for (const bn in p.bones) for (const m of p.bones[bn]) { m.userData.bone = bn; meshes.push(m); }
+          const all = [...meshes]; if (p.hat) all.push(p.hat);
+          for (const o of all) o.traverse(q => { if (q.isMesh) { q.frustumCulled = false; if (!q.renderOrder || q.renderOrder < HERO_ORDER) q.renderOrder = HERO_ORDER; q.castShadow = !q.userData.noShadow; q.receiveShadow = false; } });
+          for (const o of all) { addXrayItem(o, 'sinif:' + id + ':' + (o.userData.bone || 'hat')); setTwins(o, false); }
+          c = CL.cache[id] = { meshes, hat: p.hat };
+        }
+        for (const m of c.meshes) { B[m.userData.bone].add(m); CL.list.push(m); setTwins(m, S.xray); }
+        if (c.hat) { kHat.add(c.hat); CL.hatE = { obj: c.hat }; setTwins(c.hat, S.xray); }
+        classHatVis(true);
+      },
+      get heroClass() { return CL.id; },
       setXray(on) {
         S.xray = !!on;
         if (S.xray) for (const k of ['weapon', 'offhand', 'hat', 'cape']) { const e = S.eq[k]; if (e) addXrayItem(e.obj, e.xkey); }
@@ -2752,7 +2908,13 @@ const { FEZA, ITEMS } = (function () {
       {id:'filizkilic',ad:'Filiz Kılıcı',minLvl:0}, {id:'palamutkilic',ad:'Palamut Bekçisinin Kılıcı',minLvl:1},
       {id:'sazpalasi',ad:'Sazlık Palası',minLvl:2}, {id:'egreltiyatagani',ad:'Eğrelti Yatağanı',minLvl:3},
       {id:'deretasi',ad:'Dere Taşı Kılıcı',minLvl:4}, {id:'aridostu',ad:'Arı Dostunun Kılıcı',minLvl:6},
-      {id:'timsahdostlugu',ad:'Timsahın Dostluk Kılıcı',minLvl:0,boss:true,classLock:'warrior'}],
+      {id:'timsahdostlugu',ad:'Timsahın Dostluk Kılıcı',minLvl:0,boss:true,classLock:null},
+      {id:'kristalyaprak',ad:'Yaprak Kristali Kılıcı',minLvl:0,classLock:'hybrid'},
+      {id:'atesbocegi',ad:'Ateşböceği Değneği',minLvl:0,heroClass:'wizard'}, {id:'mesedali',ad:'Meşe Dalı Asa',minLvl:1,heroClass:'wizard'},
+      {id:'findik',ad:'Fındık Dalı Değneği',minLvl:2,heroClass:'wizard'}, {id:'ay',ad:'Ay Işığı Değneği',minLvl:3,heroClass:'wizard'},
+      {id:'kor',ad:'Kamp Ateşi Değneği',minLvl:5,heroClass:'wizard'}, {id:'yildizdegnek',ad:'Yıldızlı Gece Değneği',minLvl:6,heroClass:'wizard'},
+      {id:'gokdegnek',ad:'Gökkuşağı Şelalesi Değneği',minLvl:0,heroClass:'wizard',legendary:true},
+      {id:'timsahdegnek',ad:'Timsahın Dostluk Değneği',minLvl:0,boss:true,heroClass:'wizard',classLock:'wizard'}],
     hat: [
       {id:'gezginsapka',ad:'Patika Gezgini Şapkası',minLvl:0}, {id:'palamutbere',ad:'Palamut Beresi',minLvl:1},
       {id:'egreltitac',ad:'Eğrelti Tacı',minLvl:2}, {id:'mantarbere',ad:'Benekli Mantar Beresi',minLvl:3},
@@ -2782,7 +2944,7 @@ const { FEZA, ITEMS } = (function () {
     return !!base && (!base.classLock || base.classLock === heroClass) && (item.slot !== 'weapon' || heroClass === 'hybrid' || (base.heroClass || 'warrior') === (heroClass === 'wizard' ? 'wizard' : 'warrior'));
   }
   function bossReward(type, heroClass = 'warrior', ilvl = 1) {
-    return type === 'buyuktimsah' ? make('weapon','timsahdostlugu',3,ilvl) : null;
+    return type === 'buyuktimsah' ? make('weapon', heroClass === 'wizard' ? 'timsahdegnek' : 'timsahdostlugu', 3, ilvl) : null;
   }
   function roll(ilvl = 1, bias = 0, rnd = Math.random, heroClass = 'warrior') {
     ilvl = Math.max(1, ilvl | 0);
@@ -2924,7 +3086,9 @@ const { FEZA, ITEMS } = (function () {
     },
     isWand: item => !!item && item.slot === 'weapon' && !!WAND[baseId(item)],
     bladeColor,   // ITEMS.bladeColor(item | baseId) → '#rrggbb' (rainbow blade: its current colour)
-    starter: () => ({ weapon: make('weapon','filizkilic',0,1), hat:null, cape:null }),
+    starter: (heroClass = 'warrior') => heroClass === 'wizard' ? { weapon: make('weapon','atesbocegi',0,1), hat:null, cape:null }
+      : heroClass === 'hybrid' ? { weapon: make('weapon','kristalyaprak',0,1), offhand: make('weapon','atesbocegi',0,1), hat:null, cape:null }
+      : { weapon: make('weapon','filizkilic',0,1), hat:null, cape:null },
     // Stars show only how strong a piece is (its power), never its rarity (that is the colour/glow): a stronger item
     // never shows fewer stars (parent: a stronger castle drop with fewer stars than a shiny forest one confused Feza).
     stars: it => { const p = it ? it.power || 0 : 0; return p >= 34 ? 5 : p >= 24 ? 4 : p >= 16 ? 3 : p >= 10 ? 2 : 1; },

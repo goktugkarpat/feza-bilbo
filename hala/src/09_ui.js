@@ -739,8 +739,9 @@ const UI = (() => {
     el('div', 'u-wsub', p, 'Herkes yeniden neşeli! 🎉');
     D.winBoss = el('div', 'u-wboss', p);   // every zone's boss, cheered up (portraits)
     D.winChips = el('div', 'u-chips', p);
-    D.again = el('button', 'u-btn g wide', p, SVG.play + '<span>Tekrar Oyna</span>');
-    D.winMap = el('button', 'u-btn b wide u-hide', p, '<span>🗺️ İstediğin Yere Git</span>');
+    const wb = el('div', 'u-wbtns', p);   // alt alta iki düğme aynı genişlikte (ui.css .u-wbtns)
+    D.again = el('button', 'u-btn g wide', wb, SVG.play + '<span>Tekrar Oyna</span>');
+    D.winMap = el('button', 'u-btn b wide u-hide', wb, '<span>🗺️ İstediğin Yere Git</span>');
     D.winMapHint = el('div', 'u-dream-unlock u-hide', p, 'Bir adaya dokun. Hayalin seni oraya götürsün!');
   }
 

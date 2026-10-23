@@ -9,8 +9,10 @@ Feza ile Bilbo'nun sıcak, 3D oyun odası (gün batımı ışığı, pencere, ki
 Bilbo'nun yatağı ve mama kabı, duvarda Feza ile Bilbo'nun resimleri). Feza el sallar; Bilbo kuyruk sallar, etrafı koklar.
 Arka duvarda **üç büyülü kapı** var; her kapının içinde o maceranın küçük, canlı dünyası görünür:
 
-- **Saklı Toplar Ormanı** (soldaki yeşil kapı): Feza, Bilbo, babası ve Kartal kamptan yola çıkar; dereler, sazlıklar,
-  meşe koruları ve huysuz orman hayvanları. Bilbo timsahların sakladığı 10 topu koklayıp kazar; sonda Koca Huysuz Timsah.
+- **Saklı Toplar Ormanı** (soldaki yeşil kapı): Feza, Bilbo, babası ve Kartal kamptan yola çıkar. Altı bölüm: Kamp Yeri ve Dere,
+  Kurbağa Gölü, Yaşlı Meşe Korusu, Şelale ve Kartal Tepesi, Ateşböcekli Gece Kampı, Timsah Bataklığı. Her bölümün sonunda komik bir
+  bölüm canavarı (Kunduz, Koca Kurbağa, Uykucu Ayı, Dağ Keçisi, Baykuş, Koca Timsah) ve babayla bir kamp anı; Babanın Kamp Haritası'ndan
+  bölümler arasında geçilir. Bilbo saklı 10 topu koklayıp kazar. Feza savaşçı, büyücü ya da ikisi birden olabilir.
   Kapıda: önde kocaman, el sallayan babası; tepede uçan Kartal; arkada çadır, dere, Bilbo'nun topu ve Koca Timsah.
 - **Feza ve Bilbo Huysuzlara Karşı** (ortadaki büyük mor kapı, en büyük macera): sekiz hayal dünyası – Köpüklü Tuvalet Rüyası,
   Zıp Zıp Ay, Huysuz Orman, Kefir Vadisi, Köstebek ve Salyangoz Mağarası, Lav Yanardağı, Surlu Şehir ve Ejderhanın Kalesi.

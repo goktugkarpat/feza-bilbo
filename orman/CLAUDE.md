@@ -1,8 +1,8 @@
 # Bilbo ve Saklı Toplar Ormanı
 
-Feza, Bilbo, Baba ve Kartal ile geçen bağımsız, çocuklara uygun orman macerası. Ana kahraman Feza; diğerleri otomatik yardımcıdır. Tam 10 top, sekiz hayvan türü, büyük timsah boss ve tek uzun orman bölümü vardır.
+Feza, Bilbo, Baba ve Kartal ile geçen bağımsız, çocuklara uygun orman macerası. Ana kahraman Feza; diğerleri otomatik yardımcıdır. Altı bölüm (Kamp Yeri, Kurbağa Gölü, Yaşlı Meşe, Şelale, Gece Kampı, Timsah Bataklığı), her birinin sonunda bölüm canavarı ve babayla bir kamp anı; tam 10 top; üç kahraman sınıfı (savaşçı, büyücü, karma). Bölüm sözleşmesi `BOLUMLER.md`, yeni seslendirme satırları `BOLUMLER-SES.md` (`python3 gen_voice.py`).
 
-- Parent AGENTS.md applies. All runtime files are classic local scripts, including the vendored three.js. file:// and offline play must work.
+- Kök ../CLAUDE.md geçerli. All runtime files are classic local scripts, including the vendored three.js. file:// and offline play must work.
 - Test only with ?sessiz and muted browsers. Turkish narrator Emel is prerecorded; this adventure is Turkish-only; do not substitute browser TTS.
 - Contracts are in src/SPEC.md. Keep cached/batched models, chunked world visibility and current frame pacing.
 - Independent saves and preferences must not overwrite the other adventures (keys are prefixed).

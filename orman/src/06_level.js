@@ -1,33 +1,44 @@
 /* ── Bölgeler ve seviye: seviye üretimi, görseller, çarpışma, yol bulma ──
-   ZONES: altı bölgenin tanımı (sıra = kayıttaki bölge numarası). Her bölgenin sonunda büyük bir bölüm sonu canavarı arenası var.
-   Bölge 1 = Kefir Vadisi (Feza'nın isteği): süt ve kefir nehirleri, yoğurt tepeleri, peynirler, bisküvi köprüler.
-   Bölge 4 = Surlu Şehir (Feza'nın isteği): ejderhanın kalesinin önündeki surlu şehir; nehir ve kanallar, taş köprüler,
-   renkli ahşap çatılı evler, pazar tezgâhları, surlar ve kuleler, en sonda Turnuva Meydanı ve Kale Kapısı.
+   ZONES: Saklı Toplar Ormanı'nın altı bölümü (sıra = kayıttaki bölge numarası; id'ler sabit, bkz. ../BOLUMLER.md).
+   Hepsi aynı orman motoruyla kurulur (theme 'forest', expansion); her bölümün kendi görünüşü `look` (ışık, sis, zemin
+   renkleri, ağaç türleri) ve kendi dekoru (buildForestAdventure içinde Z.id'ye göre) vardır. Her bölümün sonunda
+   bölüm canavarının arenası ve (son bölüm hariç) sihirli kapı vardır. Bölüm canavarı / hayvan türü henüz yoksa
+   (HAYVAN dosyaları), `bossYedek` / ENEMY_YEDEK ile var olan bir türe düşülür.
    LEVEL.generate() saf veri üretir, LEVEL.build() sahneyi kurar (bkz. src/SPEC.md). */
 const ZONES = [
-  { id: 'tuvalet', ad: 'Köpüklü Tuvalet Rüyası', theme: 'bathroom', line: 'tuvalet', music: 'tuvalet', size: 90, rooms: 6, side: 2,
-    enemies: { kakacik: 4, cisdamlasi: 3, sabunkopugu: 2 }, elites: ['kakacik', 'sabunkopugu'], hpMult: 0.78, dmgMult: 0.65, xpMult: 0.85, gold: 1, ilvl: 1, boss: 'kopukusta' },
-  { id: 'ay', ad: 'Zıp Zıp Ay', theme: 'moon', line: 'ay', music: 'ay', size: 96, rooms: 6, side: 2,
-    enemies: { ayponpon: 4, yildizcik: 3, kratercik: 2 }, elites: ['ayponpon', 'yildizcik'], hpMult: 0.9, dmgMult: 0.8, xpMult: 0.95, gold: 1.15, ilvl: 1, boss: 'aytavsan' },
-  { id: 'orman', ad: 'Huysuz Orman', theme: 'forest', line: 'orman', music: 'orman', size: 100, rooms: 6, side: 2,
-    enemies: { jole: 4, mantar: 2, yarasa: 2, goblin: 3 }, elites: ['jole', 'goblin'], hpMult: 1, dmgMult: 1, xpMult: 1, gold: 1, ilvl: 1, boss: 'kraljole' },
-  { id: 'kefir', ad: 'Kefir Vadisi', theme: 'dairy', line: 'kefir', music: 'kefir', size: 100, rooms: 6, side: 2,
-    enemies: { yogurt: 4, kaymak: 3, kopuk: 3, peynir: 1, jole: 2 }, variants: { jole: ['muhallebi'] }, elites: ['yogurt', 'kaymak'],
-    hpMult: 1.4, dmgMult: 1.2, xpMult: 1.35, gold: 1.5, ilvl: 2, boss: 'kefirdev' },
-  { id: 'magara', ad: 'Köstebek ve Salyangoz Mağarası', theme: 'cave', line: 'magara', music: 'magara', size: 100, rooms: 6, side: 2,
-    enemies: { kostebek: 4, salyangoz: 3, yarasa: 2, golem: 1 }, elites: ['kostebek', 'salyangoz'], hpMult: 1.8, dmgMult: 1.4, xpMult: 1.7, gold: 2, ilvl: 4, boss: 'kostebekusta' },
-  { id: 'yanardag', ad: 'Lav Yanardağı', theme: 'volcano', line: 'yanardag', music: 'yanardag', size: 100, rooms: 6, side: 2,
-    enemies: { jole: 3, kaplumbaga: 4, ateskusu: 3, atescik: 2, golem: 1 }, variants: { jole: ['lava'], golem: ['magma'] }, elites: ['kaplumbaga', 'ateskusu'],
-    hpMult: 2.3, dmgMult: 1.65, xpMult: 2.1, gold: 2.5, ilvl: 6, boss: 'lavkaplumbaga' },
-  { id: 'sehir', ad: 'Surlu Şehir', theme: 'town', line: 'sehir', music: 'sehir', size: 100, rooms: 6, side: 2,
-    enemies: { nobetci: 4, simitci: 3, supurgeci: 3, tellal: 1 }, elites: ['nobetci', 'simitci'],
-    hpMult: 2.55, dmgMult: 1.8, xpMult: 2.3, gold: 2.8, ilvl: 7, boss: 'sovalye' },
-  { id: 'kale', ad: 'Ejderhanın Kalesi', theme: 'castle', line: 'kale', music: 'kale', size: 104, rooms: 6, side: 2,
-    enemies: { asker: 4, atescik: 3, hayalet: 2, golem: 1 }, elites: ['asker', 'atescik'], hpMult: 3.0, dmgMult: 2.0, xpMult: 2.7, gold: 3.2, ilvl: 8, boss: 'ejderha', final: true },
-  { id: 'uzunorman', ad: 'Bilbo ve Saklı Toplar Ormanı', theme: 'forest', line: 'uzunorman', music: 'uzunorman', size: 520, rooms: 24, side: 4, expansion: true, final: true,
-    enemies: { ormantimsah: 10, ormantilki: 2, ormandomuz: 2, ormanayi: 1, ormankaplumbaga: 2, ormankurbaga: 2, ormansincap: 2, ormanrakun: 2 }, elites: ['ormantimsah', 'ormanayi'],
-    hpMult: 1, dmgMult: 1, xpMult: 1, gold: 1, ilvl: 1, boss: 'buyuktimsah' },
+  { id: 'kamp', ad: 'Kamp Yeri ve Dere', theme: 'forest', line: 'orman_kamp_giris', music: 'orman_kamp', rooms: 5, side: 0, expansion: true, balls: 2,
+    enemies: { ormankurbaga: 3, ormanrakun: 3, ormansincap: 2, ormankaplumbaga: 1, kunduzyavrusu: 3, rakuncete: 3 }, elites: ['ormanrakun'], pack: [2, 4],
+    hpMult: .72, dmgMult: .6, xpMult: 1, gold: 1, ilvl: 1, boss: 'kunduz', bossYedek: 'buyuktimsah', lvl: 1 },
+  { id: 'gol', ad: 'Kurbağa Gölü ve Sazlık', theme: 'forest', line: 'orman_gol_giris', music: 'orman_gol', rooms: 6, side: 1, expansion: true, balls: 2, roomK: 1.38, lake: { d: 5.2, sx: 4.4, sz: 3.6 },
+    enemies: { ormankurbaga: 4, ordek: 4, sukaplumbagasi: 3, nilufer: 3 }, elites: ['ormankurbaga'], pack: [2, 4],
+    hpMult: .82, dmgMult: .7, xpMult: 1.05, gold: 1.1, ilvl: 1, boss: 'kocakurbaga', bossYedek: 'buyuktimsah', lvl: 3 },
+  { id: 'mese', ad: 'Yaşlı Meşe Korusu', theme: 'forest', line: 'orman_mese_giris', music: 'orman_mese', rooms: 6, side: 1, expansion: true, balls: 2,
+    enemies: { ormansincap: 4, domuzyavrusu: 3, ormandomuz: 1, ormantilki: 3, kirpi: 1, palamutasker: 3 }, elites: ['ormantilki', 'ormandomuz'], pack: [3, 4],
+    hpMult: .9, dmgMult: .78, xpMult: 1.1, gold: 1.2, ilvl: 2, boss: 'uykucuayi', bossYedek: 'buyuktimsah', lvl: 5 },
+  { id: 'selale', ad: 'Şelale ve Kartal Tepesi', theme: 'forest', line: 'orman_selale_giris', music: 'orman_selale', rooms: 5, side: 1, expansion: true, balls: 1,
+    enemies: { keciyavrusu: 5, kayaliktilki: 4, ormansincap: 1 }, elites: ['kayaliktilki'], pack: [3, 4],
+    hpMult: .98, dmgMult: .85, xpMult: 1.15, gold: 1.3, ilvl: 3, boss: 'dagkecisi', bossYedek: 'buyuktimsah', lvl: 7 },
+  { id: 'gece', ad: 'Ateşböcekli Gece Kampı', theme: 'forest', line: 'orman_gece_giris', music: 'orman_gece', rooms: 5, side: 0, expansion: true, balls: 1,
+    enemies: { baykusyavrusu: 4, kirpi: 3, ormanyarasa: 3, atesbocegi: 3 }, elites: ['kirpi'], pack: [3, 4],
+    hpMult: 1.05, dmgMult: .9, xpMult: 1.2, gold: 1.4, ilvl: 3, boss: 'baykus', bossYedek: 'buyuktimsah', lvl: 9 },
+  { id: 'bataklik', ad: 'Timsah Bataklığı', theme: 'forest', line: 'orman_bataklik_giris', music: 'orman_bataklik', rooms: 6, side: 1, expansion: true, balls: 2, final: true, roomK: 1.22, lake: { d: 4.4, sx: 3.0, sz: 2.4 },
+    enemies: { ormantimsah: 7, ormankurbaga: 3, ormankaplumbaga: 1, balcik: 3 }, elites: ['ormantimsah'], pack: [3, 4],
+    hpMult: 1.1, dmgMult: .95, xpMult: 1.25, gold: 1.5, ilvl: 4, boss: 'buyuktimsah', lvl: 11 },
 ];
+// HAYVAN'ın yeni türleri henüz yoksa yerine geçen mevcut orman hayvanları (tür gelince kendiliğinden kullanılır).
+const ENEMY_YEDEK = { ordek: 'ormankurbaga', sukaplumbagasi: 'ormankaplumbaga', domuzyavrusu: 'ormandomuz', keciyavrusu: 'ormandomuz',
+  kayaliktilki: 'ormantilki', baykusyavrusu: 'ormanrakun', kirpi: 'ormankaplumbaga', ormanyarasa: 'ormansincap', kunduzyavrusu: 'ormanrakun',
+  rakuncete: 'ormanrakun', nilufer: 'ormankurbaga', palamutasker: 'ormansincap', atesbocegi: 'ormanyarasa', balcik: 'ormankurbaga' };
+const enemyVar = t => typeof EDEF !== 'undefined' && !!EDEF && !!EDEF[t];
+// Bir bölümün gerçekte kullanılacak bölüm canavarı (HAYVAN'ın türü yüklüyse o, değilse yedeği).
+function zoneBoss(Z) { return !Z ? null : !Z.boss || enemyVar(Z.boss) || !Z.bossYedek ? Z.boss || null : Z.bossYedek; }
+// Bir bölümün düşman ağırlıkları, eksik türler yedeklerine katılarak.
+function zoneEnemies(Z) {
+  const out = {};
+  for (const t in Z.enemies || {}) { const u = enemyVar(t) || !ENEMY_YEDEK[t] ? t : ENEMY_YEDEK[t]; out[u] = (out[u] || 0) + Z.enemies[t]; }
+  return out;
+}
+const zoneElites = Z => (Z.elites || []).map(t => enemyVar(t) || !ENEMY_YEDEK[t] ? t : ENEMY_YEDEK[t]);
 
 const LEVEL = (function () {
   'use strict';
@@ -155,19 +166,19 @@ const LEVEL = (function () {
     return { rooms, links };
   }
 
-  // A single woodland expedition: twenty-four distinct clearings on a long, readable trail.
-  // Side loops rejoin the following clearing, so exploring never skips a whole district.
-  function layoutLongForest(Z) {
-    const rooms = [], links = [];
-    for (let k = 0; k < Z.rooms; k++) {
-      const last = k === Z.rooms - 1, r = last ? 12.8 : k === 0 ? 8.6 : 6.8 + (k % 4) * .38;
-      const x = Math.sin(k * 1.08) * 12 + Math.sin(k * .31) * 3;
-      rooms.push({ x, z: -k * 21, r, kind: k === 0 ? 'start' : last ? 'boss' : 'main', hs: harmonics(last ? .035 : .075), forestDistrict: Math.min(5, Math.floor(k / 4)) });
-      if (k) links.push({ a: k - 1, b: k, w: k % 4 === 0 ? 2.45 : 2.15, bend: Math.sin(k * 1.9) * 1.8, main: true });
+  // One chapter of the woodland expedition: Z.rooms clearings on a readable trail (start … boss arena), ~21 m apart.
+  // Z.side 1: a small discovery loop off the middle clearing that rejoins the next one, so exploring never skips a district.
+  function layoutForestZone(Z, zi) {
+    const rooms = [], links = [], N = Z.rooms, ph = zi * 1.7;
+    for (let k = 0; k < N; k++) {
+      const last = k === N - 1, r = last ? 12.4 : k === 0 ? 8.6 : (6.8 + ((k + zi) % 3) * .4) * (Z.roomK || 1);
+      const sp = 21 * (Z.roomK ? .5 + .5 * Z.roomK : 1), x = Math.sin(k * 1.08 + ph) * 11 + Math.sin(k * .31 + zi) * 3, z = -k * sp - (last ? 3 : 0);
+      rooms.push({ x, z, r, kind: k === 0 ? 'start' : last ? 'boss' : 'main', hs: harmonics(last ? .035 : .075), forestDistrict: zi });
+      if (k) links.push({ a: k - 1, b: k, w: last ? 2.45 : 2.15, bend: Math.sin(k * 1.9 + zi) * 1.8, main: true });
     }
-    for (const k of [3, 8, 13, 18]) {
-      const A = rooms[k], B = rooms[k + 1], sd = A.x >= 0 ? 1 : -1, ri = rooms.length;
-      rooms.push({ x: A.x + sd * 23, z: A.z - 7.5, r: 5.3, kind: 'side', host: k, hs: harmonics(.08), forestDistrict: A.forestDistrict });
+    if (Z.side && N >= 5) {
+      const k = Math.max(1, Math.floor((N - 1) / 2) - (N > 5 ? 0 : 1)), A = rooms[k], sd = A.x >= 0 ? 1 : -1, ri = rooms.length;
+      rooms.push({ x: A.x + sd * 23, z: A.z - 7.5, r: 5.3, kind: 'side', host: k, hs: harmonics(.08), forestDistrict: zi });
       links.push({ a: k, b: ri, w: 1.95, bend: sd * 1.3, main: false, discovery: true });
       links.push({ a: ri, b: k + 1, w: 1.8, bend: sd * 1.5, main: false, discovery: true });
     }
@@ -303,7 +314,7 @@ const LEVEL = (function () {
     seed = (seed >>> 0) || 1;
     RNG.seed(seed);
     const Z = ZONES[zi], theme = Z.theme, castle = theme === 'castle', nseed = RNG.int(1, 1e9);
-    const lay = Z.expansion ? layoutLongForest(Z) : castle ? layoutCastle(Z) : layoutBlobs(Z, zi);
+    const lay = Z.expansion ? layoutForestZone(Z, zi) : castle ? layoutCastle(Z) : layoutBlobs(Z, zi);
     const rooms = lay.rooms, links = lay.links;
 
     // bounds → shift everything into positive grid space
@@ -387,6 +398,31 @@ const LEVEL = (function () {
         if (!edge && t <= 6) for (let a = 0; a < t; a++) grid[q[a]] = 1;
       }
     }
+    // Saklı Toplar Ormanı (Z.lake): a real lake / swamp pool cut out of the clearing beside the trail — its shore is walkable, the
+    // water is not; it never comes within 2.7 m of any trail (main or side), so nothing is ever cut off.
+    if (Z.expansion && Z.lake) {
+      const LK = Z.lake, P = [];
+      for (const l of links) if (l.curve) for (let k = 0; k < l.curve.length; k += 2) P.push(l.curve[k]);
+      const trailD = (x, z) => { let d = 1e9; for (const q of P) { const dd = hyp(q[0] - x, q[1] - z); if (dd < d) d = dd; } return d; };
+      for (let k = 1; k < Z.rooms - 1; k++) {
+        const rm = rooms[k], a = rooms[k - 1], b = rooms[k + 1], dx = b.x - a.x, dz = b.z - a.z, dl = hyp(dx, dz) || 1;
+        for (const side of k % 2 ? [1, -1] : [-1, 1]) {
+          const px = -dz / dl * side, pz = dx / dl * side, sx = LK.sx * (k % 2 ? 1 : .85), sz = LK.sz * (k % 2 ? 1 : .85);
+          const cx = rm.x + px * (LK.d + sx * .3), cz = rm.z + pz * (LK.d + sz * .3);
+          const cells = [];
+          let ok = true;
+          for (let j = Math.floor(cz - sz) - 1; j <= cz + sz + 1 && ok; j++) for (let i = Math.floor(cx - sx) - 1; i <= cx + sx + 1; i++) {
+            if (!inb(i, j) || ((i + .5 - cx) / sx) ** 2 + ((j + .5 - cz) / sz) ** 2 >= 1) continue;
+            if (trailD(i + .5, j + .5) < 2.7) { ok = false; break; }
+            cells.push(idx(i, j));
+          }
+          if (!ok || cells.filter(c => grid[c]).length < 12) continue;
+          for (const c of cells) grid[c] = 0;
+          rm.lake = { x: cx, z: cz, sx, sz, ux: -px, uz: -pz };   // (u: from the lake toward the trail)
+          break;
+        }
+      }
+    }
     // path polyline (start → exit/boss) along the main corridors
     const path = [];
     const pushP = (x, z) => { const p = path[path.length - 1]; if (!p || hyp(p.x - x, p.z - z) > 0.2) path.push({ x, z }); };
@@ -447,20 +483,27 @@ const LEVEL = (function () {
     return L;
   }
 
+  // Short narrated stops per chapter (room index → line; 07 says each once when Feza first comes near).
+  const ZSTORY = { kamp: [[0, 'orman_piknik'], [2, 'orman_dere']], gol: [[2, 'orman_egrelti']], mese: [[1, 'orman_mese']], selale: [], gece: [],
+    bataklik: [[1, 'orman_sazlik'], [-2, 'orman_golet']] };
   function forestAdventureData(L) {
-    const names = ['Dört Dostun Kampı', 'Şırıl Şırıl Dere', 'Timsah Sazlığı', 'Kadim Meşe Korusu', 'Eğrelti Patikası', 'Büyük Timsah Göleti'];
-    L.forestDistricts = names.map((ad, k) => ({ id: 'orman-durak-' + k, ad, roomStart: k * 4, roomEnd: k * 4 + 3, x: L.rooms[k * 4].x, z: L.rooms[k * 4].z }));
+    const Z = L.Z, N = Z.rooms, zi = L.zone, M = Math.max(1, N - 2);
+    L.forestDistricts = (ZSTORY[Z.id] || []).map(([ri, key], k) => { const rm = L.rooms[ri < 0 ? N + ri : ri]; return { id: 'orman-' + Z.id + '-' + k, ad: Z.ad, key, x: rm.x, z: rm.z }; });
     L.buriedBalls = [];
-    for (const ri of [1, 3, 5, 7, 9, 11, 13, 15, 18, 21]) {
-      const rm = L.rooms[ri]; let point = null;
-      // All ten discoveries sit beside the trail, never behind an obstacle or in the boss fight.
-      for (let n = 0; n < 32 && !point; n++) {
-        const a = .45 + n * 2.39996, d = 2.2 + (n % 4) * .5;
+    // Global ball numbers: chapter k's balls follow the previous chapters' (orman-top-01 … orman-top-10, the old single-forest ids).
+    let first = 0;
+    for (let k = 0; k < zi; k++) first += ZONES[k].balls || 0;
+    const n = Z.balls || 0;
+    for (let j = 0; j < n; j++) {
+      const ri = Math.min(N - 2, 1 + Math.floor((j + .5) * M / n)), rm = L.rooms[ri]; let point = null;
+      // Every discovery sits beside the trail, never behind an obstacle or in the boss fight.
+      for (let t = 0; t < 32 && !point; t++) {
+        const a = .45 + t * 2.39996 + j, d = 2.2 + (t % 4) * .5;
         const x = rm.x + Math.sin(a) * d, z = rm.z + Math.cos(a) * d;
         if (circleFree(L, x, z, .8) && !L.checkpoints.some(q => hyp(q.x - x, q.z - z) < 2.6) && !L.chests.some(q => hyp(q.x - x, q.z - z) < 2.1)) point = { x, z };
       }
       if (!point) point = { x: rm.x, z: rm.z };
-      L.buriedBalls.push({ id: 'orman-top-' + String(L.buriedBalls.length + 1).padStart(2, '0'), x: point.x, z: point.z, room: ri });
+      L.buriedBalls.push({ id: 'orman-top-' + String(first + j + 1).padStart(2, '0'), x: point.x, z: point.z, room: ri });
     }
     L.forestRouteLength = 0;
     for (let k = 1; k < L.path.length; k++) L.forestRouteLength += hyp(L.path[k].x - L.path[k - 1].x, L.path[k].z - L.path[k - 1].z);
@@ -539,7 +582,7 @@ const LEVEL = (function () {
 
     // boss (centre of the arena; the castle's dragon a little north of the hall's centre) · the castle's neşe kristali ·
     // every other zone's exit portal at the arena's north edge (GAME wakes it up when the boss is cheered up)
-    L.bossType = Z.boss || null;
+    L.bossType = zoneBoss(Z);
     if (Z.boss) {
       L.boss = castle ? { x: last.x, z: last.z - 1 } : { x: last.x, z: last.z };
       taken.push({ x: L.boss.x, z: L.boss.z, r: 5 });
@@ -587,7 +630,7 @@ const LEVEL = (function () {
 
     // checkpoints: one on the way — at the way INTO its room, so Feza lights it before he meets that room's pack (which waits on the
     // far side, see packIn) — and one right before the boss arena (in the room before it, on the arena side; the castle too)
-    const cpRooms = Z.expansion ? [4, 8, 12, 17, 22] : castle ? [Math.round((N - 1) * 0.45), N - 2] : [...new Set([Math.round((N - 1) * 0.4), N - 2])].filter(k => k > 0 && k < N - 1);
+    const cpRooms = Z.expansion ? (N <= 5 ? [N - 2] : [Math.floor((N - 1) * 0.45), N - 2]) : castle ? [Math.round((N - 1) * 0.45), N - 2] : [...new Set([Math.round((N - 1) * 0.4), N - 2])].filter(k => k > 0 && k < N - 1);
     const rsP = [];   // the route resampled every ≤ 0.8 m with its direction (the castle's path only has its corners)
     for (let i = 1; i < path.length; i++) {
       const a = path[i - 1], b = path[i], l = hyp(b.x - a.x, b.z - a.z) || 1, n = Math.max(1, Math.ceil(l / 0.8));
@@ -718,7 +761,7 @@ const LEVEL = (function () {
     // enemy packs — none within reach of a checkpoint's wake-up spot (cp.z + 1.6, where GAME puts Feza after a nap): creatures notice
     // him at ~9 m, so a pack there would be on him the moment he wakes up. 12 m (the pack's centre 13.5 m, room for its members),
     // else 10 m, else anywhere (a tiny room)
-    const types = Z.enemies;
+    const types = zoneEnemies(Z), ZEL = zoneElites(Z);
     let pack = 0;
     const wake = L.checkpoints.map(c => ({ x: c.x, z: c.z + 1.6 }));
     const cpD = (x, z) => { let d = 1e9; for (const w of wake) d = Math.min(d, hyp(w.x - x, w.z - z)); return d; };
@@ -760,7 +803,7 @@ const LEVEL = (function () {
         if (BIG.includes(t)) bigs++;
         list.push(t);
       }
-      if (elite) list[0] = Z.elites[eliteRooms.indexOf(ri) % Z.elites.length];
+      if (elite) list[0] = ZEL[eliteRooms.indexOf(ri) % ZEL.length];
       let eliteDone = false;
       list.forEach((t, m) => {
         const big = BIG.includes(t) || (elite && m === 0);
@@ -781,7 +824,7 @@ const LEVEL = (function () {
     };
     for (let k = 1; k < N; k++) {
       if (main[k].kind === 'boss') continue;
-      const n = k === 1 ? 3 : main[k].kind === 'exit' ? RNG.int(4, 6) : RNG.int(3, 6);
+      const n = Z.pack ? (k === 1 ? Z.pack[0] : RNG.int(Z.pack[0], Z.pack[1])) : k === 1 ? 3 : main[k].kind === 'exit' ? RNG.int(4, 6) : RNG.int(3, 6);
       packIn(k, n, eliteRooms.includes(k));
     }
     rooms.forEach((rm, ri) => { if (rm.kind === 'side' && RNG.chance(0.6)) packIn(ri, RNG.int(2, 3), false); });
@@ -1611,9 +1654,11 @@ const LEVEL = (function () {
         float lvPh = lvIp.x * 0.37 + lvIp.z * 0.23;
         float lvHt = max(0.0, position.y - 0.4);
         float lvSw = lvHt * lvHt * 0.0075;
-        transformed.x += (sin(uTime * 1.2 + lvPh) + 0.45 * sin(uTime * 2.3 + lvPh * 1.7)) * lvSw;
-        transformed.z += cos(uTime * 1.0 + lvPh * 1.3) * lvSw * 0.6;
-        if (vLvK > 0.5 && vLvK < 1.5) transformed += objectNormal * sin(uTime * 3.5 + dot(position, vec3(5.0, 7.0, 3.0))) * 0.02;`,
+        float lvG = sin(dot(lvIp.xz, vec2(0.13, 0.05)) - uTime * 1.3 + sin(lvIp.z * 0.07 + uTime * 0.3) * 1.5);   // (CEVRE) the same gusts as the grass
+        lvG = 0.55 + 0.9 * smoothstep(0.1, 1.0, lvG);
+        transformed.x += (sin(uTime * 1.2 + lvPh) + 0.45 * sin(uTime * 2.3 + lvPh * 1.7)) * lvSw * lvG + lvSw * (lvG - 0.55) * 0.9;
+        transformed.z += cos(uTime * 1.0 + lvPh * 1.3) * lvSw * 0.6 * lvG;
+        if (vLvK > 0.5 && vLvK < 1.5) transformed += objectNormal * sin(uTime * (3.5 + lvG) + dot(position, vec3(5.0, 7.0, 3.0))) * 0.02 * lvG;`,
       fDecl: GLSL_TRI + 'uniform sampler2D tBark, tBarkN, tLeaf, tLeafN; uniform vec2 uSc; uniform vec3 uTrans; varying vec3 vLvW; varying vec3 vLvN; varying float vLvK;',
       fMap: `vec3 lvN0 = normalize(vLvN); vec3 lvWt = lvW3(lvN0);
         vec3 lvP = vLvW * (vLvK < 0.5 ? uSc.x : uSc.y); vec3 lvDx = dFdx(lvP), lvDy = dFdy(lvP);
@@ -1682,8 +1727,12 @@ const LEVEL = (function () {
         transformed.y += sin(uTime * 1.5 + lvB) * 0.025; transformed.xz += vec2(sin(uTime * 0.55 + lvB * 1.7), cos(uTime * 0.47 + lvB * 2.3)) * 0.06; }
         else if (uv.x > 35.0) { float lvF = uv.y, lvP = position.x * 1.7 + position.z * 1.3;   // flags fluttering (Surlu Şehir's bunting and pennants): uv.y = how far from the string / pole
         transformed.x += sin(uTime * 3.4 + lvP + lvF * 2.0) * 0.06 * lvF; transformed.z += cos(uTime * 2.9 + lvP * 0.8 + lvF * 2.5) * 0.08 * lvF; transformed.y += sin(uTime * 4.1 + lvP) * 0.03 * lvF; }
-        else if (uv.x > 25.0) { float lvS = max(0.0, position.y) * 0.09;
-        transformed.x += sin(uTime * 2.1 + position.x * 0.9 + position.z * 0.7) * lvS; transformed.z += cos(uTime * 1.7 + position.x * 0.6) * lvS * 0.6; }`,
+        else if (uv.x > 25.0) { float lvS = max(0.0, position.y) * 0.11;
+        // (CEVRE) gusts of wind roll across the meadow as waves: the grass, flowers and reeds lean with them and flutter
+        float lvG = sin(dot(position.xz, vec2(0.13, 0.05)) - uTime * 1.3 + sin(position.z * 0.07 + uTime * 0.3) * 1.5);
+        lvG = 0.3 + 1.25 * smoothstep(0.1, 1.0, lvG);
+        transformed.x += sin(uTime * 2.1 + position.x * 0.9 + position.z * 0.7) * lvS * (0.5 + 0.4 * lvG) + lvS * lvG * 0.75;
+        transformed.z += cos(uTime * 1.7 + position.x * 0.6) * lvS * 0.6 + lvS * lvG * 0.25; transformed.y -= lvS * lvG * 0.2; }`,
     });
     rimify(m, 0xffffff, shiny ? 0.16 : 0.1, 2.6);
     return keep(m);
@@ -2072,7 +2121,12 @@ const LEVEL = (function () {
       const ar = L.rooms.find(r => r.kind === 'boss');
       if (ar) disc(ar.x, ar.z, ar.r * 0.8, 0.8, Bm, 0);
     } else if (L.theme === 'forest') {
-      band(L.path, 1.2, 1.3, Rm, 0.4);
+      const zf = (zlook(L) && zlook(L).floor) || {};
+      band(L.path, zf.path || 1.2, 1.3, Rm, 0.4);
+      if (zf.mud) for (const rm of L.rooms) for (let k = 0; k < zf.mud; k++) {   // (the swamp: soft mud patches in every clearing)
+        const a = k * 2.39996 + rm.x, d = rm.r * (.25 + .6 * hash2(k, rm.z | 0, seed));
+        disc(rm.x + Math.sin(a) * d, rm.z + Math.cos(a) * d, 1.1 + 1.3 * hash2(k + 7, rm.x | 0, seed), 1.1, Bm, 1.0);
+      }
       for (const l of L.links) if (!l.main) band(curvePts(l), 0.75, 1.1, Rm, 0.3);
       if (L.village) {
         const S = L.rooms[0], cx = S.x - 0.3, cz = S.z + 0.7;
@@ -2173,6 +2227,18 @@ const LEVEL = (function () {
     const mask = buildMask(L);
     B.dispose.push(mask);
     const m = floorMat(L.theme);
+    if (L.theme === 'forest') {   // (the chapter's own ground colours: uniform values only, the program stays the same)
+      const zl = zlook(L), F = Object.assign({}, FLOOR.forest, zl && zl.floor), u = m.userData.u, oc = lin(F.out);
+      u.uTintA.value.copy(lin(F.tA, F.tAk ?? 1)); u.uTintB.value.copy(lin(F.tB, F.tBk ?? 1)); u.uTintC.value.copy(lin(F.tC, F.tCk ?? 1));
+      u.uTintA2.value.copy(lin(F.tA2 ?? F.tA, F.tAk ?? 1)); u.uTintC2.value.copy(lin(F.tC2 ?? F.tC, F.tCk ?? 1));
+      u.uOut.value.set(oc.r, oc.g, oc.b, F.outAmt); u.uMacro.value.copy(lin(F.macro));
+      // (and its own ground surfaces: fallen leaves under the oaks, moss in the swamp, grey stone by the waterfalls)
+      const A = surf(F.a), Bs = surf(F.b), Cs = surf(F.c);
+      u.tA.value = A.map; u.tAn.value = A.normalMap; u.tB.value = Bs.map; u.tBn.value = Bs.normalMap; u.tC.value = Cs.map; u.tCn.value = Cs.normalMap;
+      u.uSc.value.set(1 / tM(F.a), 1 / (tM(F.b) * (F.bScale || 1)), 1 / (tM(F.c) * (F.cScale || 1)), F.anti && LV_HQ ? 1 : 0);
+      const fx = (zl && zl.fx) || { c: .16, s: 1, v: .8, w: 0, dry: [1.08, 1.04, .8] };   // (CEVRE: the chapter's ground life, see the floor shader)
+      u.uFz.value.set(fx.c, fx.s, fx.v, fx.w); u.uFzC.value.setRGB(...fx.dry);
+    }
     m.userData.u.tMask.value = mask; m.userData.u.uMaskInv.value.set(1 / L.W, 1 / L.H);
     m.userData.u.uDream.value = !L._title ? L.theme === 'moon' ? 2 : L.theme === 'bathroom' ? 1 : 0 : 0;
     let fg;
@@ -2281,7 +2347,8 @@ const LEVEL = (function () {
         // milk (cool, glossy bluish white) / kefir (warm ivory) / strawberry milk (pastel pink) tints, liquid roughness
         uLiqA: { value: lin(0xeaf3ff, 1.1) }, uLiqB: { value: lin(0xfff8e4, 1.08) }, uLiqC: { value: lin(0xffcfdc, 1.05) }, uLiqR: { value: th.lava === 2 ? 0.16 : 0.8 },
         uEdge: { value: lin(0xf0b45a) },   // Kefir Vadisi: the golden lip along the walkable edge
-        uRip: { value: [0, 1, 2, 3].map(() => new THREE.Vector4(0, 0, 0, 0)) },   // dairy: ripple sources (x, z, radius, kind: 1 the arena's kefir spring, 2 a waterfall's splash)
+        uRip: { value: [0, 1, 2, 3].map(() => new THREE.Vector4(0, 0, 0, 0)) },
+        uFz: { value: new THREE.Vector4(0, 0, 0, 0) }, uFzC: { value: new THREE.Color(1, 1, 1) },   // (CEVRE, forest chapters: cloud shadows, specks, grass variation, puddles · dry-grass tint)   // dairy: ripple sources (x, z, radius, kind: 1 the arena's kefir spring, 2 a waterfall's splash)
     };
     lvShade(m, {
       key: 'floor',
@@ -2289,7 +2356,7 @@ const LEVEL = (function () {
       vDecl: 'varying vec3 vLvW;',
       vBegin: 'vLvW = (modelMatrix * vec4(transformed, 1.0)).xyz;',
       fDecl: `uniform sampler2D tMask, tNoise, tA, tAn, tB, tBn, tC, tCn, tGlow, tLava, tLavaN, tFlow; uniform vec4 uSc, uMode, uOut, uLava; uniform vec2 uMaskInv;
-        uniform vec3 uTintA, uTintB, uTintC, uTintA2, uTintC2, uRough, uTrim, uMacro, uSpeck, uLavaT, uLiqA, uLiqB, uLiqC, uEdge; uniform vec4 uRip[4]; uniform float uLumC, uTime, uLiqR, uTrimM, uDream; varying vec3 vLvW;
+        uniform vec3 uTintA, uTintB, uTintC, uTintA2, uTintC2, uRough, uTrim, uMacro, uSpeck, uLavaT, uLiqA, uLiqB, uLiqC, uEdge; uniform vec4 uRip[4]; uniform float uLumC, uTime, uLiqR, uTrimM, uDream; uniform vec4 uFz; uniform vec3 uFzC; varying vec3 vLvW;
         ${GLSL_NOISE}
         float lvHB(float h1, float h2, float t) {   // height-aware blend weight of layer 2
           t = clamp(t, 0.0, 1.0);
@@ -2361,6 +2428,62 @@ const LEVEL = (function () {
           lvCol = mix(lvCol, uTrim, ln * 0.85); lvTrim = max(lvTrim, ln);
         }
         lvCol = mix(lvCol, uOut.rgb, smoothstep(0.25, 0.95, lvM.a) * uOut.a);
+        // (CEVRE) Saklı Toplar Ormanı's ground: sunny and lush grass patches, the trail's worn edge, tiny flowers in meadows /
+        // fallen leaves (Meşe) / glowing moss specks (night) / duckweed and puddles (swamp), slow cloud shadows drifting over everything
+        vec3 lvFzE = vec3(0.0); float lvPud = 0.0;
+        if (uFz.x + uFz.y + uFz.z + uFz.w > 0.0) {
+          float lvIn = 1.0 - smoothstep(0.2, 0.8, lvM.a), lvGr = (1.0 - wB) * (1.0 - wC);
+          float gv = texture2D(tNoise, lvXZ * 0.0123 + vec2(0.31, 0.17)).a;
+          lvCol *= mix(vec3(1.0), uFzC, smoothstep(0.5, 0.8, gv) * uFz.z * lvGr);
+          lvCol *= 1.0 - smoothstep(0.44, 0.16, gv) * 0.18 * uFz.z * lvGr;
+          lvCol *= 1.0 - 0.22 * uFz.z * smoothstep(0.12, 0.45, wB) * (1.0 - smoothstep(0.5, 0.85, wB));
+          float md = uFz.y;
+          if (md > 0.5) {
+            float cs = md > 1.5 && md < 2.5 ? 2.6 : md > 4.5 ? 3.4 : 1.9;
+            vec2 sp = lvXZ * cs, si = floor(sp); float h = lvH21(si + 17.0), h2 = lvH21(si + 41.0);
+            vec2 q = (fract(sp) - 0.5 - (vec2(lvH21(si + 3.1), lvH21(si + 8.3)) - 0.5) * 0.55) / cs;   // metres from the speck's centre
+            float fld = texture2D(tNoise, lvXZ * 0.031 + vec2(0.7, 0.2)).g;
+            if (md < 1.5 || (md > 3.5 && md < 4.5)) {   // flowers: five round petals, a golden heart; meadows of them, a few everywhere
+              float on = step(mix(0.965, 0.5, smoothstep(0.4, 0.66, fld)), h) * lvGr * lvIn;
+              if (on > 0.0) {
+                float r = length(q), an = atan(q.y, q.x), R = 0.085 * (0.75 + 0.5 * h2);
+                float pet = 1.0 - smoothstep(R * 0.85, R, r / (0.62 + 0.38 * abs(cos(an * 2.5 + h * 6.0))));
+                float hrt = 1.0 - smoothstep(R * 0.26, R * 0.34, r);
+                int ci = int(h2 * 4.99);
+                vec3 fc = md > 3.5 ? (ci < 2 ? vec3(0.95, 0.95, 1.0) : ci < 4 ? vec3(0.62, 0.42, 0.95) : vec3(0.45, 0.6, 1.0))
+                  : (ci == 0 ? vec3(1.0) : ci == 1 ? vec3(1.0, 0.86, 0.25) : ci == 2 ? vec3(1.0, 0.55, 0.75) : ci == 3 ? vec3(0.75, 0.6, 1.0) : vec3(0.55, 0.78, 1.0));
+                lvCol = mix(lvCol, mix(fc * 0.85, vec3(1.0, 0.78, 0.2), hrt), max(pet, hrt) * on);
+              }
+            } else if (md < 2.5) {   // fallen oak leaves: pointed (two-circle) leaves with a vein, red / orange / gold / brown, fewer on the trail
+              float on = step(mix(mix(0.78, 0.05, smoothstep(0.28, 0.6, fld + lvM.g * 0.5)), 0.75, wB), h) * lvIn;
+              if (on > 0.0) {
+                float a = h2 * 6.2831, c = cos(a), sn = sin(a); vec2 l = vec2(c * q.x - sn * q.y, sn * q.x + c * q.y);
+                float R = 0.13 * (0.75 + 0.5 * h), o = R * 0.7;
+                float lf = (1.0 - smoothstep(R - 0.006, R, length(l - vec2(o, 0.0)))) * (1.0 - smoothstep(R - 0.006, R, length(l + vec2(o, 0.0))));
+                float vn = 1.0 - smoothstep(0.0, 0.006, abs(l.x));
+                int ci = int(h * 13.0) - int(h * 13.0 / 4.0) * 4;
+                vec3 lc = ci == 0 ? vec3(0.85, 0.22, 0.08) : ci == 1 ? vec3(0.95, 0.5, 0.1) : ci == 2 ? vec3(0.95, 0.75, 0.2) : vec3(0.5, 0.28, 0.12);
+                lvCol = mix(lvCol, lc * (0.8 + 0.35 * smoothstep(0.0, R, abs(l.y) + 0.03)) * (1.0 - vn * 0.35), lf * on * 0.95);
+              }
+            } else if (md < 3.5) {   // night: glowing moss specks, softly breathing
+              float on = step(0.82, h) * lvGr * lvIn * smoothstep(0.4, 0.62, fld);
+              float g = (1.0 - smoothstep(0.012, 0.03, length(q))) * on;
+              lvFzE = mix(vec3(0.3, 1.0, 0.85), vec3(0.55, 0.65, 1.0), h2) * g * (0.5 + 0.5 * sin(uTime * 1.4 + h * 40.0)) * 0.9;
+            } else {   // the swamp: duckweed / moss bits
+              float on = step(0.5, h) * lvIn * smoothstep(0.35, 0.6, fld) * (1.0 - wB * 0.7);
+              float g = (1.0 - smoothstep(0.02, 0.035, length(q * vec2(1.0, 1.3)))) * on;
+              lvCol = mix(lvCol, vec3(0.42, 0.55, 0.12) * (0.8 + 0.4 * h2), g * 0.85);
+            }
+          }
+          if (uFz.w > 0.0) {   // puddles in the middle of the mud patches: dark, still and glossy
+            lvPud = smoothstep(0.66, 0.84, lvM.b + (lvN.r - 0.5) * 0.35) * uFz.w;
+            lvCol = mix(lvCol, lvCol * 0.42 + vec3(0.012, 0.016, 0.01), lvPud);
+          }
+          if (uFz.x > 0.0) {   // slow cloud shadows drifting across the forest
+            float cl = texture2D(tNoise, lvXZ * 0.0078 + uTime * vec2(0.0034, 0.0021)).r;
+            lvCol *= 1.0 - uFz.x * smoothstep(0.5, 0.74, cl + 0.15 * texture2D(tNoise, lvXZ * 0.021 + uTime * vec2(0.006, 0.004)).b - 0.07);
+          }
+        }
         if (uDream > .5) {
           float outside = smoothstep(.43, .57, lvM.g);
           vec3 ground = uDream > 1.5 ? vec3(.045,.072,.108) : vec3(.055,.17,.18);
@@ -2455,12 +2578,13 @@ const LEVEL = (function () {
         lvNt = normalize(mix(lvNt, lvLqN, lvLv));
         vec3 lvWn = normalize(vec3(lvNt.x, lvNt.z, -lvNt.y));
         normal = normalize((viewMatrix * vec4(lvWn, 0.0)).xyz);
-        roughnessFactor = mix(mix(mix(mix(uRough.x, uRough.y, wB), uRough.z, wC), 0.3, lvTrim), uLiqR, lvLv);
+        roughnessFactor = mix(mix(mix(mix(mix(uRough.x, uRough.y, wB), uRough.z, wC), 0.3, lvTrim), uLiqR, lvLv), 0.1, lvPud);
+        if (lvPud > 0.01) normal = normalize(mix(normal, (viewMatrix * vec4(0.0, 1.0, 0.0, 0.0)).xyz, lvPud * 0.85));
         metalnessFactor = lvTrim * uTrimM;`,
       fAO: 'reflectedLight.indirectDiffuse *= lvAOv; reflectedLight.indirectSpecular *= lvAOv * lvAOv;',
       // baked coloured light pools (crystals, torches, lamps, stained glass) with a gentle shimmer
       fOut: `vec3 lvGl = lvGs.rgb * ${GLOW_K.toFixed(1)};
-        outgoingLight += lvGl * (diffuseColor.rgb + 0.07) * (0.86 + 0.14 * sin(uTime * 1.9 + vLvW.x * 0.41 + vLvW.z * 0.53)) + uSpeck * lvSp + lvLvE * lvLv;
+        outgoingLight += lvGl * (diffuseColor.rgb + 0.07) * (0.86 + 0.14 * sin(uTime * 1.9 + vLvW.x * 0.41 + vLvW.z * 0.53)) + uSpeck * lvSp + lvLvE * lvLv + lvFzE;
         if (uLava.x > 1.5) outgoingLight += vec3(0.95, 0.97, 1.0) * lvLv * (0.05 + 0.3 * pow(1.0 - saturate(dot(normal, normalize(vViewPosition))), 3.0)) + vec3(0.17, 0.19, 0.22) * lvLqSh * lvLv;   // milk: a soft glossy sheen + streaks moving with the current`,
     });
     return (R.mat[key] = keep(m));
@@ -2523,6 +2647,28 @@ const LEVEL = (function () {
     town: { moss: [0x7a9a5a, 0.3], rim: [0xfff0e0, 0.1], fog: [0xf2d6cc, 40, 100], hemiSky: 0xfff2e8, hemiGround: 0xc8a888, hemi: 0.78, sunColor: 0xffe2b4, sun: 2.35, sunOffset: [-15, 24, 12],
       env: [0xb8d6ff, 0xffe4d0, 0xa08870, 0.8], bloom: 0.42, exposure: 1.0, fezaLight: 0, fezaLightColor: 0xffd9a0, sat: 1.08, vig: 0.26 },
   };
+
+  // Saklı Toplar Ormanı: each chapter's own light, haze and ground colours on top of THEME.forest / FLOOR.forest (uniform values
+  // only: the one forest floor program and every material stay compiled across chapters). trees: species weights, pal: leaf colours.
+  const ZLOOK = {
+    kamp: { fx: { c: .2, s: 1, v: 1, w: 0, dry: [1.12, 1.05, .74] }, light: { fog: [0xbfe0c6, 38, 90], sun: 2.6 }, trees: { oak: .55, lolli: .3, pine: .15 }, pal: 'green' },
+    // misty lake morning: a pale blue-green haze close in, soft light, fresh green grass and a sandy shore path
+    gol: { fx: { c: .13, s: 1, v: .8, w: 0, dry: [1.06, 1.06, .84] }, light: { sunOffset: [13, 20, 12], fog: [0xbcd6dc, 22, 66], hemiSky: 0xe0f0ff, hemiGround: 0x4a6a62, hemi: 1.05, sunColor: 0xf6f4ee, sun: 1.9, env: [0xb0d8f0, 0xf0f0e8, 0x4a6650, .95], bloom: .58, sat: .9, vig: .3 },
+      floor: { tA: 0x88bcbc, b: 'caveSand', tB: 0xfff0d8, out: 0x1e4a48, macro: 0xd0f0ff }, tuft: 0xb8e0d0, trees: { willow: .45, oak: .3, lolli: .25 }, pal: 'green' },
+    // golden autumn afternoon: warm low sun, orange-gold grass, red and amber oaks
+    mese: { fx: { c: .18, s: 2, v: .7, w: 0, dry: [1.1, .95, .78] }, light: { fog: [0xf0d4ac, 32, 84], hemiSky: 0xfff0d8, hemiGround: 0x7a5a30, hemi: .95, sunColor: 0xffd49a, sun: 2.5, sunOffset: [-18, 21, 10], env: [0xffd8a8, 0xfff0dc, 0x6a4a2a, .95], bloom: .5, sat: 1.08 },
+      floor: { tA: 0xf4d27a, tB: 0xf0c098, out: 0x4a2a10, macro: 0xffb060 }, tuft: 0xffc070, bush: 'autumnBush', trees: { bigOak: .45, oak: .4, lolli: .15 }, pal: 'autumn', big: 1.22 },
+    // crisp, bright mountain air: cool blue haze far away, grey stone path, pines
+    selale: { fx: { c: .22, s: 4, v: .9, w: 0, dry: [1.08, 1.05, .8] }, light: { sunOffset: [-8, 30, 9], fog: [0xcfe6f2, 38, 96], hemiSky: 0xe4f2ff, hemiGround: 0x5a6870, hemi: 1.0, sunColor: 0xf4f8ff, sun: 2.6, sat: .96, env: [0xbfe4ff, 0xf4f4f0, 0x5a6a5a, 1.0], bloom: .52 },
+      floor: { tA: 0x94b0a4, b: 'caveFloor', tB: 0xe4e8ee, tC: 0xeeeae2, out: 0x3a4648, macro: 0xe8f4ff }, tuft: 0xd8e8c0, trees: { fir: .6, pine: .15, lolli: .1, oak: .15 }, pal: 'green' },
+    // a magical, friendly night: deep blue haze, silver moonlight, warm light around Feza (Father's lantern), glowing mushrooms and fireflies
+    gece: { fx: { c: 0, s: 3, v: .5, w: 0, dry: [.92, 1.0, 1.1] }, light: { fog: [0x1c2846, 24, 70], hemiSky: 0x94acec, hemiGround: 0x2c3454, hemi: .66, sunColor: 0xb8ccff, sun: 1.1, sunOffset: [11, 26, 12], env: [0x3a4a78, 0x6a6a9a, 0x1a1e38, .55], bloom: .82, exposure: 1.08, fezaLight: 2.4, fezaLightColor: 0xffd49a, sat: 1.1, vig: .32 },
+      floor: { tA: 0x7e98c8, tB: 0xa8a4c8, tC: 0xc4c4dc, out: 0x0e1428, outAmt: .7, macro: 0xa8c0ff }, tuft: 0x90a8d8, trees: { pine: .4, oak: .4, lolli: .2 }, pal: 'night', night: true },
+    // a soft green swamp haze, olive grass and muddy paths, willows and reeds
+    bataklik: { fx: { c: .1, s: 5, v: .8, w: 1, dry: [1.06, 1.0, .74] }, light: { fog: [0x94b08a, 16, 56], hemiSky: 0xc4d8bc, hemiGround: 0x34442a, hemi: .85, sunColor: 0xf0e4c0, sun: 1.55, env: [0x90b494, 0xdce4c8, 0x34442a, .8], bloom: .5, exposure: .96, sat: .92, vig: .38 },
+      floor: { a: 'moss', tA: 0x847c46, b: 'dirt', tB: 0x7a5c40, c: 'caveSand', tC: 0x8a7054, out: 0x182410, macro: 0xc0c080, path: 2.1, mud: 6 }, tuft: 0x9aa060, trees: { swampWillow: .55, willow: .1, oak: .25, pine: .1 }, pal: 'swamp' },
+  };
+  const zlook = L => (L && L.Z && L.Z.expansion && ZLOOK[L.Z.id]) || null;
 
   // ── Instancing (chunked ~16 m for frustum culling) and merged static decor per chunk ──
   const WHITE = new THREE.Color(1, 1, 1);
@@ -2638,6 +2784,7 @@ const LEVEL = (function () {
   const SPEC = {   // canopy radius / bottom / top at scale 1 (for the occlusion test)
     oak: { cr: 2.25, yb: 1.9, yt: 5.3 }, blossom: { cr: 2.5, yb: 1.9, yt: 4.3 }, pine: { cr: 1.75, yb: 0.5, yt: 5.1 },
     lolli: { cr: 1.55, yb: 1.7, yt: 4.8 }, willow: { cr: 2.25, yb: 1.3, yt: 4.4 }, bush: { cr: 0.95, yb: 0, yt: 1.05 },
+    bigOak: { cr: 3.3, yb: 3.0, yt: 6.4 }, swampWillow: { cr: 2.3, yb: 1.6, yt: 4.3 }, fir: { cr: 1.6, yb: 0.5, yt: 4.6 }, oakLo: { cr: 2.25, yb: 1.9, yt: 5.3 }, willowLo: { cr: 2.25, yb: 1.3, yt: 4.4 },
   };
   // Three linked branch tiers, low-cost leaf fans and buttress roots: a broad old oak rather than a green sphere.
   function forestLeafFan(k, p, radius, yaw, rise = .5, ci = 0) {
@@ -2692,6 +2839,68 @@ const LEVEL = (function () {
     return k.build();
   } };
   KIND.willow = { mat: 'foliage', shadow: 'near', proxy: { c: [2.9, 1.8, 1.4], t: [2.0, .25] }, geo: () => forestExpGeo('willow') };
+  // (CEVRE) each chapter's own trees, and cheaper stand-ins for the far ones (the camera only sees their crowns)
+  // Yaşlı Meşe: a giant old oak — a massive trunk on flared buttress roots, four thick limbs, a broad flat-bottomed crown
+  KIND.bigOak = { mat: 'foliage', shadow: 'near', proxy: { c: [4.4, 2.5, 1.5], t: [3.0, .45] }, geo() {
+    const k = new Kit(), bc = 0xcbb299, top = [.1, 2.25, -.05];
+    for (let i = 0; i < 7; i++) { const a = i * TAU / 7 + .3, r = 1.45 + (i % 3) * .2; k.seg([Math.cos(a) * .32, .62, Math.sin(a) * .32], [Math.cos(a) * r, -.06, Math.sin(a) * r], .34, bc, .06, 7); }
+    k.seg([0, -.1, 0], top, .74, bc, .52, 14);
+    forestBarkDetail(k, [0, 0, 0], top, .68);
+    k.add(marked(G.torus(TAU, .07, 12), 0), 0xb39a80, [.25, 1.25, .62], [.3, .2, 0], [.2, .3, .12]);   // a knot hole
+    k.add(G.sphere(8, 6), 0x3a2a1e, [.25, 1.25, .66], 0, [.13, .2, .05]);
+    const limbs = [[2.1, 3.7, .7], [-1.9, 3.9, .4], [.3, 4.2, -2.0], [-.5, 4.1, 1.8]];
+    for (const e of limbs) { const m = [e[0] * .5, e[1] - .75, e[2] * .5]; k.seg(top, m, .32, bc, .2, 9); k.seg(m, e, .2, bc, .07, 7); }
+    const cr = [[2.1, 4.4, .7, 1.6], [-1.9, 4.6, .4, 1.65], [.3, 4.8, -2.0, 1.55], [-.5, 4.7, 1.8, 1.55], [0, 5.5, 0, 1.9], [1.3, 5.2, -1.1, 1.25], [-1.2, 5.3, -1.0, 1.25], [1.1, 5.1, 1.2, 1.25], [-1.3, 5.0, 1.1, 1.15]];
+    cr.forEach((c, i) => k.add(leafBlob1(i % 3), leafRamp(3.3, 6.6), [c[0], c[1], c[2]], [.1 * i, i * 1.3, .12], [c[3], c[3] * .62, c[3]]));
+    return k.build();
+  } };
+  // Timsah Bataklığı: a crooked swamp willow leaning over the water, knobbly knees, grey-green moss hanging from every branch
+  KIND.swampWillow = { mat: 'foliage', shadow: 'near', proxy: { c: [2.9, 1.9, 1.1], t: [2.0, .3] }, geo() {
+    const k = new Kit(), bc = 0xa89880, p = [[0, -.1, 0], [.38, 1.15, .1], [.12, 2.2, .3], [.62, 3.05, .12]];
+    for (let i = 0; i < 3; i++) k.seg(p[i], p[i + 1], .42 - i * .09, bc, .33 - i * .09, 10);
+    roots(k, .44, 6, bc, .3);
+    for (let i = 0; i < 3; i++) { const a = i * 2.1 + .5; k.seg([Math.cos(a) * .3, .5, Math.sin(a) * .3], [Math.cos(a) * 1.0, .35, Math.sin(a) * 1.0], .1, bc, .08, 6); k.seg([Math.cos(a) * 1.0, .35, Math.sin(a) * 1.0], [Math.cos(a) * 1.5, -.05, Math.sin(a) * 1.5], .08, bc, .05, 6); }
+    const moss = marked(G.cone(5), 20), top = p[3];
+    for (let i = 0; i < 6; i++) {
+      const a = i * TAU / 6 + .4, r = 1.35 + (i % 2) * .3, mid = [top[0] + Math.cos(a) * r * .5, top[1] + .45, top[2] + Math.sin(a) * r * .5], tip = [top[0] + Math.cos(a) * r, top[1] - .1 - (i % 3) * .15, top[2] + Math.sin(a) * r];
+      k.seg(top, mid, .1, bc, .06, 6); k.seg(mid, tip, .06, bc, .02, 5);
+      k.add(leafBlobLo(i % 3), leafRamp(1.6, 4.2), mid, [.1, a, .1], [.72, .42, .62]);
+      for (let j = 0; j < 4; j++) {
+        const f = .35 + j * .2, x = mid[0] + (tip[0] - mid[0]) * f + Math.sin(i * 3 + j) * .08, y = mid[1] + (tip[1] - mid[1]) * f, z = mid[2] + (tip[2] - mid[2]) * f + Math.cos(i * 5 + j) * .08, h = .75 + ((i + j) % 3) * .3;
+        k.add(moss, (x2, y2) => new THREE.Color(0x8a9c78).lerp(new THREE.Color(0xc0c8a0), clamp((y2 - (y - h)) / h, 0, 1)), [x, y - h / 2 + .05, z], [Math.PI + .04 * j, a, 0], [.07, h, .07]);
+      }
+    }
+    k.add(leafBlob1(1), leafRamp(1.6, 4.4), [top[0], top[1] + .65, top[2]], [.1, .4, .1], [1.05, .55, .95]);
+    return k.build();
+  } };
+  // Şelale: a dark, layered fir (four drooping tiers) — reads as a star from above
+  KIND.fir = { mat: 'foliage', shadow: 'near', proxy: { c: [2.2, 1.2, 2.2], t: [1.2, .2] }, geo() {
+    const k = new Kit();
+    k.seg([0, -.1, 0], [0, 1.4, 0], .22, BARK, .14, 9); roots(k, .22, 5, BARK, .26);
+    const T = [[.55, 1.55, 1.6], [1.45, 1.25, 1.42], [2.3, .95, 1.25], [3.05, .62, 1.15], [3.65, .32, .9]];
+    T.forEach(([y, r, h], i) => k.add(R.geo['fir' + (i % 3)] || (R.geo['fir' + (i % 3)] = lumpyCone(880 + i, 14, .16, 10)), leafRamp(.4, 4.8), [0, y + h / 2, 0], [0, i * .9, 0], [r, h, r]));
+    return k.build();
+  } };
+  // far stand-ins: the same silhouettes from above with a third of the triangles
+  KIND.oakLo = { mat: 'foliage', shadow: 'near', proxy: { c: [3.5, 1.9, 1.3], t: [2.4, 0.3] }, geo() {
+    const k = new Kit(), fork = [.12, 2.05, -.06];
+    k.seg([0, -.1, 0], fork, .38, BARK, .23, 8);
+    for (let i = 0; i < 5; i++) { const a = i * TAU / 5 + .3, e = [Math.sin(a) * 1.2, 3.0 + (i % 2) * .3, Math.cos(a) * 1.2]; k.seg(fork, e, .13, BARK, .05, 5); forestLeafFan(k, [e[0], e[1] + .3, e[2]], 1.15, a, .55, i); }
+    forestLeafFan(k, [.2, 4.25, -.16], 1.15, .5, .55);
+    return k.build();
+  } };
+  KIND.willowLo = { mat: 'foliage', shadow: 'near', proxy: { c: [2.9, 1.8, 1.4], t: [2.0, .25] }, geo() {
+    const k = new Kit(), fork = [.14, 2.12, -.09];
+    k.seg([0, -.1, 0], fork, .33, BARK, .19, 8);
+    for (let i = 0; i < 6; i++) {
+      const a = i * TAU / 6, x = Math.sin(a) * 1.55, z = Math.cos(a) * 1.55, y = 3.1 + (i % 2) * .25;
+      k.seg(fork, [x, y, z], .1, BARK, .03, 5);
+      forestLeafFan(k, [x * .7, y + .05, z * .7], .9, a, .38, i);
+      k.add(leafBlobLo(i % 3), leafRamp(.6, 4.5), [x, y - .7, z], [.04, a, .1], [.32, .85, .24]);
+    }
+    forestLeafFan(k, [.12, 3.62, -.08], .85, .2, .44);
+    return k.build();
+  } };
   KIND.lolli = { mat: 'foliage', shadow: 'near', proxy: { c: [3.35, 1.35, 1.2], t: [2.3, 0.22] }, geo() {
     const k = new Kit();
     k.seg([0, -.1, 0], [.12, 3.35, .08], .21, 0xe8d2b4, .054, 10); roots(k, .24, 5, BARK, .3);
@@ -2827,14 +3036,20 @@ const LEVEL = (function () {
     autumn: [0xf2a040, 0xe8743a, 0xf4c84a, 0xd95a36],
     blossom: [0xffb8d8, 0xffa6cc, 0xffd2e6, 0xf7a0c8],
     pine: [0x3f8a45, 0x4a9a50, 0x367c42],
+    fir: [0x2f6a4a, 0x356f52, 0x2a5f48, 0x3f7a55],
     lolli: [0x99b56e, 0x8eac60, 0xb2c479],
+    night: [0x4f8270, 0x467866, 0x5c907c, 0x3e6e60],
+    swamp: [0x7a9448, 0x6a8440, 0x88a052, 0x5e7a3c],
+    autumnBush: [0xd0a040, 0xe08a3a, 0x9aa848, 0xe8b050, 0xc86a34],
   };
+  const TREE_LO = { oak: 'oakLo', pine: 'fir', willow: 'willowLo', bigOak: 'oakLo' };
   function treeLayer(L, B, opt) {
     const rnd = B.rnd, W = L.W, H = L.H, dF = L._dF, s1 = (L.seed & 0xffff) + 5, s2 = s1 + 9;
     const bCap = g => southCap(g, 0.85, 1.15);   // bushes: top ≤ 0.85 m within 2 m south of the floor, ≤ 1.15 m within 5 m
     const blocked = (x, z, r) => B.noTree.some(o => hyp(o.x - x, o.z - z) < o.r + r);
     const cell = (x, z) => { const i = Math.floor(x), j = Math.floor(z); return i < 0 || j < 0 || i >= W || j >= H ? -1 : j * W + i; };
     const pick = a => a[Math.floor(rnd() * a.length)];
+    const ZL0 = zlook(L), BP = ZL0 && ZL0.bush ? PAL[ZL0.bush] : ZL0 && (ZL0.pal === 'night' || ZL0.pal === 'swamp') ? PAL[ZL0.pal] : PAL.green;
     const place = (sp, x, z, s, colPal) => {
       inst(B, sp, mat4(x, 0, z, rnd() * TAU, s, s * (0.92 + rnd() * 0.16), s), lin(pick(colPal), 0.94 + rnd() * 0.12));
       if ((sp === 'blossom' || colPal === PAL.autumn) && dF[cell(x, z)] < 5 && rnd() < 0.5) opt.petals.push([x, z, s, colPal]);
@@ -2850,21 +3065,25 @@ const LEVEL = (function () {
       if (blocked(x, z, 1.6)) continue;
       const b = vnoise(x / 17, z / 17, s1), au = vnoise(x / 12, z / 12, s2) > 0.42;
       let sp = b > 0.33 ? (rnd() < 0.72 ? 'blossom' : 'lolli') : b < -0.38 ? (rnd() < 0.75 ? 'pine' : 'oak') : (rnd() < 0.55 ? 'oak' : rnd() < 0.65 ? 'lolli' : 'pine');
-      if (L.Z.expansion) { const nearest = L.rooms.reduce((best, q) => hyp(q.x-x,q.z-z) < hyp(best.x-x,best.z-z) ? q : best, L.rooms[0]);
-        sp = nearest.forestDistrict === 1 || nearest.forestDistrict === 2 ? (rnd() < .32 ? 'willow' : 'oak') : nearest.forestDistrict === 4 ? (rnd() < .58 ? 'pine' : 'lolli') : rnd() < .72 ? 'oak' : 'lolli'; }
-      let s = (0.85 + rnd() * 0.35) * (far ? 1.4 : 1);
+      const ZL = zlook(L);
+      if (ZL) sp = wpick(ZL.trees, rnd);
+      if (d > 7.5 && TREE_LO[sp]) sp = TREE_LO[sp];   // (CEVRE) far trees: cheaper stand-ins
+      let s = (0.85 + rnd() * 0.35) * (far ? 1.4 : 1) * (ZL && ZL.big && sp === 'oak' && far ? ZL.big : 1);
       const tries = [[sp, s], [sp, s * 0.72], ['lolli', 0.66], ['lolli', 0.5]];
       const g = southGap(L, x, z), tCap = southCap(g, 0, 0);   // camera side: no trees within 5 m south of the floor, then graded
       let done = false;
       for (const [q, k] of tries) {
         const S = SPEC[q];
         if (S.yt * k > tCap || hides(L, x, z, S.cr * k, S.yb * k, S.yt * k)) continue;
-        const pal = q === 'blossom' ? PAL.blossom : q === 'pine' ? PAL.pine : q === 'willow' ? PAL.lolli : au && !L.Z.expansion ? PAL.autumn : q === 'lolli' ? PAL.lolli : PAL.green;
-        place(q, x, z, k, pal); done = true; break;
+        const zp = ZL && ZL.pal !== 'green' ? PAL[ZL.pal] : null;
+        const pal = zp && ((q !== 'pine' && q !== 'fir') || ZL.pal === 'night') && !(ZL.pal === 'autumn' && rnd() < .25) ? zp : q === 'blossom' ? PAL.blossom : q === 'pine' || q === 'fir' ? (ZL && ZL.pal === 'green' && L.Z.id === 'selale' ? PAL.fir : PAL.pine) : q === 'willow' ? PAL.lolli : au && !L.Z.expansion ? PAL.autumn : q === 'lolli' ? PAL.lolli : PAL.green;
+        place(q, x, z, k, pal); done = true;
+        if (ZL && L.Z.id === 'selale' && rnd() < .4) { const ra = rnd() * TAU, rr = .9 + rnd() * .6; inst(B, 'rock' + Math.floor(rnd() * 3), mat4(x + Math.cos(ra) * rr * k, 0, z + Math.sin(ra) * rr * k, rnd() * TAU, .5 + rnd() * .5, .4 + rnd() * .4, .5 + rnd() * .4), lin(0xc4c2bc, .85 + rnd() * .2)); }
+        break;
       }
       if (!done && (d < 4 || g <= 5)) {
         const k = 0.8 + rnd() * 0.4, ky = Math.min(k, bCap(g) / 1.05);
-        if (!hides(L, x, z, 0.95 * k, 0, 1.05 * ky, 0.85)) addBush(B, mat4(x, 0, z, rnd() * TAU, k, ky, k), lin(pick(PAL.green), 0.9 + rnd() * 0.15), rnd() < 0.3);
+        if (!hides(L, x, z, 0.95 * k, 0, 1.05 * ky, 0.85)) addBush(B, mat4(x, 0, z, rnd() * TAU, k, ky, k), lin(pick(BP), 0.9 + rnd() * 0.15), rnd() < 0.3);
       }
     }
     // bushes hide the cell-shaped edge of the walkable area (the only thing allowed on the camera side)
@@ -2877,12 +3096,13 @@ const LEVEL = (function () {
       let s = 0.85 + rnd() * 0.4;
       if (hides(L, x, z, 0.95 * s, 0, 1.05 * s, 0.85)) s *= 0.7;
       const sy = Math.min(s * (0.85 + rnd() * 0.3), bCap(southGap(L, x, z)) / 1.05);   // lower on the camera side (a soft hedge)
-      addBush(B, mat4(x, 0, z, rnd() * TAU, s, sy, s), lin(pick(PAL.green), 0.88 + rnd() * 0.2), rnd() < 0.28);
+      addBush(B, mat4(x, 0, z, rnd() * TAU, s, sy, s), lin(pick(BP), 0.88 + rnd() * 0.2), rnd() < 0.28);
     }
   }
   function buildForest(L, B) {
     const rnd = B.rnd, W = L.W, H = L.H, grid = L.grid, dW = L.dWall, M = L._mask;
     L._dF = chamfer(W, H, grid, 1);
+    const tuftC = zlook(L) && zlook(L).tuft ? lin(zlook(L).tuft) : null;   // (the chapter's grass colour: golden in autumn, blue at night…)
     const opt = { petals: [] }, arenaPlan = L.Z.expansion ? null : forestArenaPlan(L, B);   // the arena's giant toadstools keep the trees away first
     if (L.Z.expansion) reserveForestPonds(L, B);
     treeLayer(L, B, opt);
@@ -2903,7 +3123,7 @@ const LEVEL = (function () {
         const x = i + rnd(), z = j + rnd(), pv = maskAt(x, z, 0), pl = maskAt(x, z, 2);
         const open = (1 - smooth01((pv - 0.3) * 4)) * (1 - smooth01((pl - 0.3) * 4));
         const edge = fl ? clamp(1.8 - d * 0.45, 0.25, 1) : 1;
-        if (rnd() < 0.3 * open * edge) dec(B, 'decor', tuftGeo(Math.floor(rnd() * 3)), mat4(x, 0, z, rnd() * TAU, (fl && d > 2 ? 0.9 : 1.3) + rnd() * 0.7), null);
+        if (rnd() < 0.3 * open * edge) dec(B, 'decor', tuftGeo(Math.floor(rnd() * 3)), mat4(x, 0, z, rnd() * TAU, (fl && d > 2 ? 0.9 : 1.3) + rnd() * 0.7), tuftC);
         if (fl && open > 0.9 && rnd() < 0.035) dec(B, 'decor', flowerGeo(rnd() < 0.6 ? 0 : 1), mat4(x, 0, z, rnd() * TAU, 0.62 + rnd() * 0.25), null);   // lone daisies
         if (!fl && rnd() < 0.18) dec(B, 'decor', fernGeo(), mat4(x, 0, z, rnd() * TAU, 0.8 + rnd() * 0.6), lin(0xffffff, 0.85 + rnd() * 0.3));
         if (fl && d < 2.2 && rnd() < 0.012 * open) {
@@ -2933,16 +3153,94 @@ const LEVEL = (function () {
     }
     forestArenaDecor(L, B, arenaPlan);
     if (L.Z.expansion) buildForestAdventure(L, B);
+    if (L.Z.expansion) lightShafts(L, B, Object.assign({}, THEME.forest, zlook(L) && zlook(L).light));
+    if (L.Z.expansion) skyDome(L, B);
     // falling petals under blossom trees, soft light motes floating over the paths
     for (const [x, z, s, pal] of opt.petals) for (let m = 0; m < 3; m++)
       B.pts.norm.push({ x: x + (rnd() - 0.5) * 2.4 * s, y: 3.2 * s, z: z + (rnd() - 0.5) * 2.4 * s, kind: 5, ph: rnd(), size: pal === PAL.autumn ? 0.17 : 0.13, prm: 0.1 + rnd() * 0.06, col: pick(pal || PAL.blossom) });
-    for (let n = 0; n < 70; n++) {
+    if (L.Z.expansion) forestGroundDressing(L, B, maskAt);
+    if (L.Z.expansion) forestAmbience(L, B);
+    for (let n = 0, nm = zlook(L) && zlook(L).night ? 0 : 70; n < nm; n++) {   // (the night chapter has its fireflies instead)
       const x = rnd() * W, z = rnd() * H;
       if (!grid[Math.floor(z) * W + Math.floor(x)]) continue;
       B.pts.add.push({ x, y: 0.6 + rnd() * 2.2, z, kind: 1, ph: rnd(), size: 0.09 + rnd() * 0.05, prm: 0.6 + rnd() * 0.8, col: lin(0xfff2b0, 1.4) });
     }
   }
 
+  // (CEVRE) more ground life for the six chapters: little stones along the trail's edges, extra flower meadows (camp, lake, waterfall),
+  // ferns and low undergrowth filling the forest floor between the trees (all merged / instanced into the existing chunks)
+  function forestGroundDressing(L, B, maskAt) {
+    const id = L.Z.id, rnd = B.rnd, W = L.W, H = L.H, grid = L.grid, zf = (zlook(L) && zlook(L).floor) || {}, hw = zf.path || 1.2;
+    const stoneC = { kamp: 0xb8ae9c, gol: 0xc4c0b0, mese: 0xb09a80, selale: 0xa8acb0, gece: 0x8890a8, bataklik: 0x8a8a6c }[id] || 0xb0a898;
+    const lines = [L.path.map(p => [p.x, p.z])].concat(L.links.filter(l => !l.main && l.curve).map(l => l.curve));
+    for (const pts of lines) for (let i = 1; i < pts.length; i++) {
+      const [x0, z0] = pts[i - 1], [x1, z1] = pts[i], len = hyp(x1 - x0, z1 - z0), tx = (x1 - x0) / (len || 1), tz = (z1 - z0) / (len || 1);
+      for (let t = 0; t < len; t += .9) {
+        if (rnd() < .62) continue;
+        const sd = rnd() < .5 ? -1 : 1, o = hw * (.85 + rnd() * .35), x = x0 + tx * t - tz * o * sd, z = z0 + tz * t + tx * o * sd;
+        if (!isFloor(L, x, z) || B.noDec[Math.floor(z) * W + Math.floor(x)]) continue;
+        const k = .1 + rnd() * .11;
+        inst(B, 'rockS', mat4(x, .0, z, rnd() * TAU, k * (1 + rnd() * .5), k * .5, k), lin(stoneC, 1.25 + rnd() * .35));
+        if (rnd() < .35) dec(B, 'decor', pebbleGeo(1 + Math.floor(rnd() * 2)), mat4(x + (rnd() - .5) * .5, 0, z + (rnd() - .5) * .5, rnd() * TAU, .9), null);
+      }
+    }
+    const meadow = { kamp: 1, gol: .6, selale: .9, mese: .3, gece: .25, bataklik: .2 }[id] || 0;
+    const pal = id === 'selale' ? [0, 3, 5, 0, 3] : id === 'gece' ? [3, 5, 0] : id === 'mese' ? [1, 6, 4] : id === 'bataklik' ? [1, 0] : [0, 1, 2, 3, 4, 5, 6];
+    for (let n = 0, N = Math.round(W * H / 70 * meadow); n < N; n++) {
+      const x = 1 + rnd() * (W - 2), z = 1 + rnd() * (H - 2), c = Math.floor(z) * W + Math.floor(x);
+      if (!grid[c] || L.dWall[c] < 1 || maskAt(x, z, 0) > .3 || maskAt(x, z, 2) > .3 || B.noDec[c]) continue;
+      const ci = pal[Math.floor(rnd() * pal.length)], cnt = 6 + Math.floor(rnd() * 8);
+      for (let m = 0; m < cnt; m++) {
+        const a = rnd() * TAU, r = Math.sqrt(rnd()) * 1.4, px = x + Math.cos(a) * r, pz = z + Math.sin(a) * r;
+        if (!isFloor(L, px, pz) || B.noDec[Math.floor(pz) * W + Math.floor(px)] || maskAt(px, pz, 0) > .35) continue;
+        dec(B, 'decor', flowerGeo(rnd() < .75 ? ci : pal[Math.floor(rnd() * pal.length)]), mat4(px, 0, pz, rnd() * TAU, .8 + rnd() * .5), null);
+      }
+    }
+    const fc = lin({ gece: 0x9ab0d0, mese: 0xf0c880, bataklik: 0xc8d8a0, selale: 0xd8ecc0 }[id] || 0xe2f0c5);
+    for (let j = 1; j < H - 1; j++) for (let i = 1; i < W - 1; i++) {   // undergrowth between the trees
+      const c = j * W + i, d = L._dF[c];
+      if (grid[c] || d < 1.6 || d > 5 || B.noDec[c] || rnd() > .16) continue;
+      const x = i + rnd(), z = j + rnd();
+      if (B.noTree.some(o => hyp(o.x - x, o.z - z) < o.r - .4)) continue;
+      dec(B, 'decor', fernGeo(), mat4(x, 0, z, rnd() * TAU, 1.0 + rnd() * .7, .9 + rnd() * .6, 1.0 + rnd() * .7), fc);
+    }
+  }
+  // (CEVRE) each chapter's own life in the air, all in the two GPU point batches (no extra draw calls): butterflies and pollen at the
+  // camp, darting light dots and dandelion fluff over the lake, autumn leaves tumbling down under the oaks, spray from the waterfalls,
+  // glowing pollen at night, low fog creeping over the swamp and a few friendly green lights over its pools.
+  function forestAmbience(L, B) {
+    const id = L.Z.id, rnd = B.rnd, W = L.W, H = L.H, plan = B.fz || { waters: [], marks: [] }, pick = a => a[Math.floor(rnd() * a.length)];
+    const floorPt = () => { for (let t = 0; t < 30; t++) { const x = rnd() * W, z = rnd() * H; if (L.grid[Math.floor(z) * W + Math.floor(x)]) return [x, z]; } return [W / 2, H / 2]; };
+    const nearFloor = (r) => { const [x, z] = floorPt(), a = rnd() * TAU, d = rnd() * r; return [x + Math.cos(a) * d, z + Math.sin(a) * d]; };
+    const area = W * H / 1000;
+    const bfly = (n, cols) => { for (let i = 0; i < n; i++) { const [x, z] = nearFloor(3); B.pts.norm.push({ x, y: .7 + rnd() * .8, z, kind: 11, ph: rnd(), size: .42 + rnd() * .12, prm: .7 + rnd() * .6, col: lin(pick(cols)) }); } };
+    if (id === 'kamp') {
+      bfly(Math.round(10 + area * 2), [0xffd23a, 0xff9a3a, 0x7ac8ff, 0xff8ac8, 0xfff4e0, 0xb48aff]);
+      for (let i = 0; i < 60; i++) { const [x, z] = nearFloor(2); B.pts.add.push({ x, y: .4 + rnd() * 2.4, z, kind: 1, ph: rnd(), size: .06 + rnd() * .04, prm: .5 + rnd() * .8, col: lin(0xfff0a0, 1.3) }); }
+    }
+    if (id === 'gol') {
+      for (const w of plan.waters) for (let i = 0, n = w.shallow ? 2 : Math.min(8, Math.round(w.sx * w.sz / 3)); i < n; i++)
+        B.pts.add.push({ x: w.x + (rnd() - .5) * w.sx, y: .35 + rnd() * .5, z: w.z + (rnd() - .5) * w.sz, kind: 12, ph: rnd(), size: .13 + rnd() * .05, prm: .6 + rnd() * .7, col: lin(pick([0x9af0ff, 0xb8ffd0, 0xfff2a8]), 1.8) });
+      bfly(6, [0xffffff, 0x9ad0ff, 0xffd23a]);
+      for (let i = 0; i < 26; i++) { const [x, z] = nearFloor(3); B.pts.norm.push({ x, y: .8 + rnd() * 1.4, z, kind: 6, ph: rnd(), size: .16, prm: .45 + rnd() * .5, col: lin(0xfaf8f0) }); }
+    }
+    if (id === 'mese') {
+      for (let i = 0, n = Math.round(90 + area * 12); i < n; i++) { const [x, z] = nearFloor(4); B.pts.norm.push({ x, y: 3.2 + rnd() * 2.2, z, kind: 13, ph: rnd(), size: .2 + rnd() * .1, prm: .06 + rnd() * .05, col: lin(pick([0xe8541e, 0xf08a1e, 0xf4c43a, 0xc0401a, 0x9a5a2a]), 1.05) }); }
+      for (let i = 0; i < 40; i++) { const [x, z] = nearFloor(2); B.pts.add.push({ x, y: .5 + rnd() * 2.6, z, kind: 1, ph: rnd(), size: .07 + rnd() * .04, prm: .4 + rnd() * .6, col: lin(0xffc860, 1.4) }); }
+    }
+    if (id === 'selale') {
+      for (const m of plan.marks) if (m.kind === 'fall') {
+        for (let i = 0; i < 34; i++) B.pts.add.push({ x: m.x + (rnd() - .5) * 1.6, y: .15, z: m.z + 1.1 + rnd() * .5, kind: 15, ph: rnd(), size: .06 + rnd() * .05, prm: .7 + rnd() * .6, col: lin(0xdff4ff, 1.5) });
+        for (let i = 0; i < 8; i++) B.pts.norm.push({ x: m.x + (rnd() - .5) * 3, y: .2 + rnd() * 1.5, z: m.z + 1.2 + rnd() * 1.6, kind: 14, ph: rnd(), size: 2.2 + rnd() * 1.4, prm: .8 + rnd() * .6, col: lin(0xf4faff, 1.0) });
+      }
+      bfly(7, [0xffffff, 0x8ab8ff, 0xc8a0ff]);
+    }
+    if (id === 'gece') for (let i = 0; i < 50; i++) { const [x, z] = nearFloor(3); B.pts.add.push({ x, y: .3 + rnd() * 1.8, z, kind: 1, ph: rnd(), size: .05 + rnd() * .04, prm: .3 + rnd() * .5, col: lin(pick([0x8ab8ff, 0xb8a0ff, 0x8affe0]), 1.6) }); }
+    if (id === 'bataklik') {
+      for (let i = 0, n = Math.round(18 + area * 3); i < n; i++) { const [x, z] = nearFloor(4); B.pts.norm.push({ x, y: .06 + rnd() * .1, z, kind: 14, ph: rnd(), size: 1.8 + rnd() * .9, prm: .6 + rnd() * .8, col: lin(0xdce6d0, .55) }); }
+      for (const w of plan.waters) if (!w.shallow && rnd() < .7) B.pts.add.push({ x: w.x, y: .5 + rnd() * .4, z: w.z, kind: 12, ph: rnd(), size: .14, prm: .35 + rnd() * .3, col: lin(0xc8ff9a, 1.6) });
+    }
+  }
   // Expedition-specific prototypes are lazy: ordinary chapters allocate none of them.
   function forestExpGeo(kind) {
     const key = 'exp-' + kind;
@@ -3076,133 +3374,560 @@ const LEVEL = (function () {
       forestLeafFan(k, [.12, 3.62, -.08], .80, .2, .42);
     }
     const geo = k.build();
+    if (kind === 'reeds') markUV(geo, 30);   // (CEVRE) the reeds sway in the wind, the lily pads bob on the water (decor shader)
+    if (kind === 'lily') markUV(geo, 50);
     if (kind === 'hollow') {
       const C = geo.attributes.color, U = geo.attributes.uv, tint = lin(kind === 'willow' ? 0x94bd65 : 0x8caf58);
       for (let i = 0; i < C.count; i++) if (U.getX(i) > 5 && U.getX(i) < 15) C.setXYZ(i, C.getX(i) * tint.r, C.getY(i) * tint.g, C.getZ(i) * tint.b);
     }
     return (R.geo[key] = keep(geo));
   }
+  // ── Forest water (CEVRE): ponds, lakes, wading pools, the camp stream and the waterfall pools ──
+  // One transparent standard material, one merged mesh per 16 m chunk. Each vertex carries aW = (shore distance s in metres,
+  // negative out on the water · depth 0 at the shore → 1 in the middle · flow x · flow z) and aK = (wading pool, white water).
+  // The shader draws a soft wet bank outside the shore (fading into the grass, no hard disc edge), a foam line lapping at the
+  // shore, shallow → deep colour, drifting caustics in the shallows, wind ripples (analytic waves warped by the noise, so the
+  // light glints move), now and then a ring spreading where a fish or a drop touched the water, sun sparkles by day, the stars
+  // mirrored by night, current streaks on the stream, churning white water under the waterfalls.
+  const WATER_LOOK = {   // shallow, deep, sky (reflection), wet bank · night: stars in the water · bub: swamp bubbles
+    kamp: { sh: 0x52b8b4, dp: 0x0d4a6a, sky: 0xcfeaff, bank: 0x3a3a1c },
+    gol: { sh: 0x5cb8a4, dp: 0x0c4660, sky: 0xd8ecf6, bank: 0x2e3a22 },
+    mese: { sh: 0x7aa868, dp: 0x1c4a48, sky: 0xffe2b8, bank: 0x4a3018 },
+    selale: { sh: 0x5ccad0, dp: 0x0a5a86, sky: 0xe4f4ff, bank: 0x3a403c },
+    gece: { sh: 0x2a4a78, dp: 0x060f28, sky: 0x5a70b8, bank: 0x0c1220, night: 1 },
+    bataklik: { sh: 0x3a6a3c, dp: 0x0e2a18, sky: 0x7a9070, bank: 0x2a2412, bub: 1, foam: .08, op: .9 },   // dark emerald / moss green, heavy and opaque, almost no foam
+  };
   function forestWaterMat() {
     if (R.mat.forestWater) return R.mat.forestWater;
-    const m = new THREE.MeshStandardMaterial({ color: 0x74bec9, roughness: .26, metalness: 0 });
-    lvShade(m, { key: 'forest-water', uniforms: { uTime: TIME.u, tNoise: { value: TEX.noise || blackTex() } },
-      vDecl: 'varying vec3 vFw; varying vec2 vFwUv;', vBegin: 'vFw=(modelMatrix*vec4(transformed,1.0)).xyz;vFwUv=uv;',
-      fDecl: 'uniform float uTime; uniform sampler2D tNoise; varying vec3 vFw; varying vec2 vFwUv;',
-      fMap: `vec2 fw=vFw.xz; float n=texture2D(tNoise,fw*.18+vec2(uTime*.018,-uTime*.025)).r;
-        float n2=texture2D(tNoise,fw*.43+vec2(-uTime*.009,uTime*.017)).g;
-        float wav=sin(fw.x*2.1+fw.y*1.1-uTime*1.8+n*2.0)*.5+.5;
-        float edge=smoothstep(.52,1.,length(vFwUv*2.-1.));
-        float waterTone=n*.36+n2*.23+wav*.24;
-        diffuseColor.rgb=mix(vec3(.025,.14,.19),vec3(.12,.34,.39),waterTone);
-        diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.20,.37,.31)*( .80+n2*.32),edge*.64);
-        float bankRipple=pow(max(0.,sin(length(vFwUv*2.-1.)*26.-uTime*1.7+n*2.)),14.)*edge*(1.-smoothstep(.96,1.,length(vFwUv*2.-1.)));
-        diffuseColor.rgb+=vec3(.12,.16,.14)*bankRipple*(.4+.6*n2);`,
-      fNormal: `vec2 fs=vec2(cos(fw.x*2.1+fw.y*1.1-uTime*1.8+n*1.8),sin(fw.y*2.4-fw.x*.8-uTime*1.5+n2*1.5))*.11;
-        normal=normalize((viewMatrix*vec4(-fs.x,1.,-fs.y,0.)).xyz);`,
-      fOut: `float sheen=pow(1.-saturate(dot(normal,normalize(vViewPosition))),4.);
-        outgoingLight+=vec3(.22,.31,.29)*sheen+vec3(.03,.045,.045)*pow(wav,18.);` });
+    const m = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .12, metalness: 0, transparent: true, depthWrite: false });
+    const U = m.userData.u = { uTime: TIME.u, tNoise: { value: (texOK() && TEX.noise) || blackTex() },
+      uSh: { value: new THREE.Color() }, uDp: { value: new THREE.Color() }, uSky: { value: new THREE.Color() }, uBank: { value: new THREE.Color() },
+      uWZ: { value: new THREE.Vector4(0, 0, 0, 0) } };
+    m.userData.wt = { value: new THREE.Color(1, 1, 1) };   // (kept for older callers)
+    lvShade(m, { key: 'forest-water2', uniforms: U,
+      vDecl: 'attribute vec4 aW; attribute vec2 aK; varying vec3 vFw; varying vec4 vW; varying vec2 vK;',
+      vBegin: 'vFw = (modelMatrix * vec4(transformed, 1.0)).xyz; vW = aW; vK = aK;',
+      fDecl: `uniform float uTime; uniform sampler2D tNoise; uniform vec3 uSh, uDp, uSky, uBank; uniform vec4 uWZ;
+        varying vec3 vFw; varying vec4 vW; varying vec2 vK;
+        ${GLSL_NOISE}`,
+      fMap: `vec2 wp = vFw.xz; float ws = vW.x, wd = clamp(vW.y, 0.0, 1.0), wsh = vK.x, wtb = vK.y; vec2 wfl = vW.zw;
+        float wfs = length(wfl);
+        vec2 wa = wp - wfl * uTime;                                                     // carried by the current
+        vec4 wn1 = texture2D(tNoise, wa * 0.19 + vec2(uTime * 0.011, -uTime * 0.016));
+        vec4 wn2 = texture2D(tNoise, wa * 0.47 + vec2(-uTime * 0.019, uTime * 0.012));
+        float wamp = (1.0 - wsh * 0.45) * (1.0 + wtb * 2.2) * (0.55 + 0.45 * smoothstep(0.0, 0.5, wd));
+        vec2 wg = vec2(0.0);
+        float a1 = dot(wa, vec2(2.1, 1.3)) - uTime * 1.55 + wn1.r * 4.0; wg += vec2(2.1, 1.3) * cos(a1) * 0.030;
+        float a2 = dot(wa, vec2(-1.4, 2.5)) - uTime * 1.2 + wn2.g * 4.0; wg += vec2(-1.4, 2.5) * cos(a2) * 0.026;
+        float a3 = dot(wa, vec2(4.3, -3.1)) - uTime * 2.3 + wn1.b * 2.0; wg += vec2(4.3, -3.1) * cos(a3) * 0.010;
+        wg *= wamp;
+        // a ring now and then (a fish, a drop from a reed), one per 3.3 m cell, on the deeper water
+        vec2 rc = floor(wp / 3.3), rf = wp - (rc + 0.5) * 3.3; float rh = lvH21(rc);
+        vec2 ro = (vec2(lvH21(rc + 5.1), lvH21(rc + 9.7)) - 0.5) * 1.6; float rl = fract(uTime * (0.09 + rh * 0.08) + rh * 7.0);
+        float rd = length(rf - ro), rr = rl * 1.5, rk = step(0.45, rh) * (1.0 - rl) * smoothstep(0.15, 0.4, wd) * (1.0 - wsh * 0.5) * step(wfs, 0.01);
+        float rw = sin((rd - rr) * 18.0) * smoothstep(0.32, 0.0, abs(rd - rr)) * rk;
+        wg += (rf - ro) / max(rd, 0.05) * rw * 0.22;
+        // white water under a waterfall: fast churning rings
+        if (wtb > 0.01) { float tw = sin(wn2.r * 9.0 + wn1.g * 5.0 - uTime * 5.0); wg += vec2(wn1.g - 0.5, wn2.b - 0.5) * tw * 0.25 * wtb; }
+        vec3 wN = normalize(vec3(-wg.x, 1.0, -wg.y));
+        // colour: shallow → deep, a little noise, caustics in the shallows
+        vec3 wc = mix(uSh, uDp, smoothstep(0.0, 0.9, wd * (1.0 - wsh * 0.55))) * (0.62 + 0.2 * wn1.g);
+        wc = mix(wc, mix(uSh, uBank * 1.6, 0.45) * (0.75 + 0.3 * wn2.r), wsh * (1.0 - wd * 0.5) * (1.0 - uWZ.w * 0.7));   // wading pools: a sandy-muddy bottom shows through
+        float wca = 1.0 - abs(wn1.b - wn2.r) * 5.0; wca = smoothstep(0.55, 1.0, wca);
+        wc += vec3(0.9, 1.0, 0.85) * wca * (1.0 - wd) * 0.16 * (1.0 - uWZ.x * 0.8) * (1.0 - uWZ.w);   // (no caustics in the murky swamp)
+        // current streaks (the stream)
+        if (wfs > 0.01) { float st = smoothstep(0.62, 0.8, texture2D(tNoise, vec2(dot(wa, normalize(vec2(-wfl.y, wfl.x))) * 0.9, dot(wa, normalize(wfl)) * 0.12)).g); wc += vec3(0.25, 0.3, 0.3) * st * wd; }
+        // foam lapping at the shore (the line breathes in and out, broken up by the noise)
+        float wlap = ws + sin(uTime * 1.15 + wn1.r * 6.0) * 0.07;
+        float wfo = smoothstep(-0.22, -0.07, wlap) * (1.0 - smoothstep(-0.04, 0.02, wlap));
+        wfo *= smoothstep(0.42, 0.68, wn2.g + 0.3 * sin(ws * 30.0 - uTime * 2.2 + wn1.b * 5.0));
+        wfo = max(wfo, wtb * smoothstep(0.42, 0.7, wn2.b * 0.6 + wn1.a * 0.6 - wd * 0.15));
+        wfo *= uWZ.z;
+        wc = mix(wc, vec3(0.9, 0.96, 0.98) * (1.0 - uWZ.x * 0.55), wfo * 0.75);
+        // the wet bank outside the shore, fading into the grass
+        float wIn = 1.0 - smoothstep(-0.05, 0.03, ws);
+        vec3 wbk = uBank * (0.3 + 0.15 * wn2.r);
+        float wbA = pow(1.0 - smoothstep(0.0, 0.62, ws), 1.6) * 0.72;
+        float wA = mix(mix(0.72, 0.97, smoothstep(0.0, 0.6, wd)), mix(0.7, 0.86, wd), wsh);
+        wA = mix(wA, 0.97, uWZ.w * smoothstep(0.0, 0.25, wd + 0.1));   // (the swamp: heavy, opaque water)
+        diffuseColor.rgb = mix(wbk, wc, wIn);
+        diffuseColor.a = mix(wbA, max(wA, wfo * 0.95), wIn);
+        float wRough = mix(0.32, 0.07 + wfo * 0.5, wIn);`,
+      fNormal: 'normal = normalize((viewMatrix * vec4(mix(vec3(0.0, 1.0, 0.0), wN, wIn), 0.0)).xyz); roughnessFactor = wRough;',
+      fOut: `float wFr = pow(1.0 - saturate(dot(normal, normalize(vViewPosition))), 3.0);
+        outgoingLight += uSky * (0.025 + wFr * 0.4) * wIn * (1.0 - wfo) * (1.0 - uWZ.w * 0.5);
+        // sun sparkles by day, the stars mirrored by night
+        vec2 sc = floor(wp * 2.3); float sh = lvH21(sc);
+        vec2 so = fract(wp * 2.3) - 0.5 - (vec2(lvH21(sc + 3.3), lvH21(sc + 7.7)) - 0.5) * 0.6;
+        float spk = smoothstep(0.09, 0.0, length(so)) * step(0.93, sh) * wIn * smoothstep(0.1, 0.5, wd);
+        spk *= uWZ.x > 0.5 ? (0.55 + 0.45 * sin(uTime * 2.0 + sh * 60.0)) : pow(max(0.0, sin(uTime * 3.1 + sh * 80.0 + wg.x * 30.0)), 12.0);
+        outgoingLight += (uWZ.x > 0.5 ? vec3(0.8, 0.9, 1.3) : vec3(1.4, 1.35, 1.2)) * spk;
+        // swamp: bubbles popping at the surface (a little ring, a glint)
+        if (uWZ.y > 0.5) { vec2 bc = floor(wp * 1.4); float bh = lvH21(bc + 2.0); vec2 bo = fract(wp * 1.4) - 0.5 - (vec2(lvH21(bc + 1.3), lvH21(bc + 4.4)) - 0.5) * 0.5;
+          float bl = fract(uTime * (0.15 + bh * 0.2) + bh * 11.0), bd = length(bo), br = 0.05 + bl * 0.22;
+          float bb = step(0.72, bh) * wIn * (smoothstep(0.03, 0.0, abs(bd - br)) * (1.0 - bl) + smoothstep(0.05, 0.0, bd) * step(bl, 0.12));
+          outgoingLight += vec3(0.32, 0.36, 0.26) * bb; }` });
     return (R.mat.forestWater = keep(m));
   }
+  function waterLook(id) {   // the chapter's water colours into the shared material's uniforms
+    const m = forestWaterMat(), u = m.userData.u, W = WATER_LOOK[id] || WATER_LOOK.kamp;
+    u.uSh.value.copy(lin(W.sh)); u.uDp.value.copy(lin(W.dp)); u.uSky.value.copy(lin(W.sky, .9)); u.uBank.value.copy(lin(W.bank));
+    u.uWZ.value.set(W.night ? 1 : 0, W.bub ? 1 : 0, W.foam ?? 1, W.op ?? 0);
+    return m;
+  }
+  // Water geometry: polar rings round an ellipse (distances from its shore) and ribbons along a polyline (the stream).
+  function WaterBuf() { this.p = []; this.w = []; this.k = []; this.i = []; }
+  WaterBuf.prototype.pond = function (x, z, sx, sz, y, o) {
+    const NA = Math.max(24, Math.min(48, Math.round((sx + sz) * 4))), bank = o.bank ?? .62, rmin = Math.min(sx, sz);
+    const ring = [-rmin * .55, -1.5, -.8, -.4, -.18, -.06, 0, .12, .3, bank].filter((d, j, a) => d > -rmin * .9 && (j === 0 || d > a[0]));
+    ring.sort((a, b) => a - b);
+    const dpK = Math.max(.6, rmin * .65), v0 = this.p.length / 3, K = ring.length, sh = o.shallow ? 1 : 0, tb = o.turb || 0;
+    this.p.push(x, y, z); this.w.push(-rmin, 1, 0, 0); this.k.push(sh, tb);
+    for (let a = 0; a < NA; a++) {
+      const an = a / NA * TAU, ex = Math.cos(an) * sx, ez = Math.sin(an) * sz, ra = Math.hypot(ex, ez), ux = ex / ra, uz = ez / ra;
+      for (let j = 0; j < K; j++) {
+        const d = ring[j], tb2 = tb * Math.max(0, 1 - Math.hypot(ux * (ra + d) - (o.tx || 0), uz * (ra + d) - (o.tz || 0)) / 2.6);
+        this.p.push(x + ux * (ra + d), y, z + uz * (ra + d)); this.w.push(d, clamp(-d / dpK, 0, 1), 0, 0); this.k.push(sh, o.tx !== undefined ? tb2 : tb);
+      }
+    }
+    for (let a = 0; a < NA; a++) {
+      const b = (a + 1) % NA, A0 = v0 + 1 + a * K, B0 = v0 + 1 + b * K;
+      this.i.push(v0, B0, A0);
+      for (let j = 0; j < K - 1; j++) this.i.push(A0 + j, B0 + j, A0 + j + 1, A0 + j + 1, B0 + j, B0 + j + 1);
+    }
+  };
+  WaterBuf.prototype.ribbon = function (pts, w, y, speed) {   // pts [[x,z],…]: a stream of half-width w flowing from the first point to the last
+    const off = [-w - .6, -w - .3, -w - .1, -w, -w + .08, -w + .25, -w * .5, 0, w * .5, w - .25, w - .08, w, w + .1, w + .3, w + .6];
+    const K = off.length, v0 = this.p.length / 3;
+    for (let n = 0; n < pts.length; n++) {
+      const a = pts[Math.max(0, n - 1)], b = pts[Math.min(pts.length - 1, n + 1)], dx = b[0] - a[0], dz = b[1] - a[1], l = Math.hypot(dx, dz) || 1, tx = dx / l, tz = dz / l;
+      const ends = Math.min(1, n / 2, (pts.length - 1 - n) / 2);   // the ribbon's ends tuck into the ponds
+      for (let j = 0; j < K; j++) {
+        const o = off[j], s = Math.abs(o) - w;
+        this.p.push(pts[n][0] - tz * o, y, pts[n][1] + tx * o); this.w.push(s, clamp(-s / Math.max(.4, w * .8), 0, 1), tx * speed * (.4 + .6 * ends), tz * speed * (.4 + .6 * ends)); this.k.push(0, 0);
+      }
+    }
+    for (let n = 0; n < pts.length - 1; n++) for (let j = 0; j < K - 1; j++) {
+      const A = v0 + n * K + j, B = A + K;
+      this.i.push(A, A + 1, B, A + 1, B + 1, B);
+    }
+  };
+  WaterBuf.prototype.build = function () {
+    const g = new THREE.BufferGeometry(), n = this.p.length / 3, N = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) N[i * 3 + 1] = 1;
+    g.setAttribute('position', new THREE.Float32BufferAttribute(this.p, 3)); g.setAttribute('normal', new THREE.BufferAttribute(N, 3));
+    g.setAttribute('aW', new THREE.Float32BufferAttribute(this.w, 4)); g.setAttribute('aK', new THREE.Float32BufferAttribute(this.k, 2));
+    g.setIndex(n > 65535 ? new THREE.Uint32BufferAttribute(this.i, 1) : new THREE.Uint16BufferAttribute(this.i, 1));
+    g.computeBoundingSphere();
+    return g;
+  };
+  // (CEVRE) Şelale: curved sheets of falling water — streaks rushing down, frayed edges, a white lip at the top, churning foam at the
+  // foot — all the chapter's falls in one mesh (u across, v from the foot up; aP: the fall's own phase)
+  const FALL2_VS = `attribute vec2 aU; attribute float aP; varying vec2 vU; varying float vP, vFogD;
+    void main() { vU = aU; vP = aP; vec4 mv = modelViewMatrix * vec4(position, 1.0); vFogD = -mv.z; gl_Position = projectionMatrix * mv; }`;
+  const FALL2_FS = `uniform float uTime, fogNear, fogFar; uniform vec3 fogColor; uniform sampler2D tNoise; varying vec2 vU; varying float vP, vFogD;
+    void main() {
+      float u = vU.x, v = vU.y, t = uTime + vP * 10.0;
+      float s1 = texture2D(tNoise, vec2(u * 2.2 + vP, v * 0.35 + t * 0.75)).g, s2 = texture2D(tNoise, vec2(u * 5.5 + 0.3 + vP, v * 0.8 + t * 1.45)).b;
+      float s3 = texture2D(tNoise, vec2(u * 11.0 + 0.7, v * 1.6 + t * 2.3)).r;
+      float streak = smoothstep(0.42, 0.8, s1) * 0.55 + smoothstep(0.5, 0.85, s2) * 0.45 + smoothstep(0.6, 0.9, s3) * 0.3;
+      float edge = min(u, 1.0 - u) + (s2 - 0.5) * 0.1;
+      float a = smoothstep(0.0, 0.13, edge);
+      float lip = smoothstep(0.86, 0.97, v), foot = 1.0 - smoothstep(0.0, 0.16, v + (s1 - 0.5) * 0.12);
+      vec3 col = mix(vec3(0.42, 0.72, 0.9), vec3(1.0), clamp(streak + lip * 0.6 + foot * 0.9, 0.0, 1.0));
+      col *= 1.0 + 0.25 * smoothstep(0.85, 1.0, s3);
+      float al = (0.5 + 0.42 * streak + 0.3 * foot + 0.25 * lip) * a * (1.0 - smoothstep(0.985, 1.0, v));
+      col = mix(col, fogColor, smoothstep(fogNear, fogFar, vFogD));
+      gl_FragColor = vec4(col * 1.08, clamp(al, 0.0, 0.95));
+      #include <colorspace_fragment>
+    }`;
+  function fallSheets(L, B) {
+    const pos = [], uv = [], ph = [], idx = [], NU = 6, NV = 14;
+    for (const f of B.fzFalls) {
+      const v0 = pos.length / 3, p = (f.x * 0.37 + f.z * 0.11) % 1;
+      for (let j = 0; j <= NV; j++) {
+        const v = j / NV, y = v * f.h, out = (1 - v) * (1 - v * .3), z = f.z + .2 + .7 * out, w = 1.0 + .25 * (1 - v);
+        for (let i = 0; i <= NU; i++) { const u = i / NU, x = (u - .5) * 2 * w; pos.push(f.x + x, y, z + Math.cos((u - .5) * 2.6) * .22 * (1 - v * .6)); uv.push(u, v); ph.push(p); }
+      }
+      for (let j = 0; j < NV; j++) for (let i = 0; i < NU; i++) { const a = v0 + j * (NU + 1) + i, b = a + NU + 1; idx.push(a, a + 1, b, a + 1, b + 1, b); }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('aU', new THREE.Float32BufferAttribute(uv, 2)); g.setAttribute('aP', new THREE.Float32BufferAttribute(ph, 1));
+    g.setIndex(idx); g.computeBoundingSphere();
+    const m = R.mat.fall2 || (R.mat.fall2 = keep(new THREE.ShaderMaterial({
+      uniforms: Object.assign({ uTime: TIME.u, tNoise: { value: texOK() && TEX.noise ? TEX.noise : blackTex() } }, THREE.UniformsUtils.clone(THREE.UniformsLib.fog)),
+      vertexShader: FALL2_VS, fragmentShader: FALL2_FS, transparent: true, depthWrite: false, side: THREE.DoubleSide, fog: true })));
+    const mesh = new THREE.Mesh(g, m); mesh.renderOrder = 2; mesh.name = 'selale-akis'; B.g.add(mesh); B.dispose.push(g);
+  }
+  // (CEVRE) the sky over the forest: only seen when the camera looks up (the camp scenes, the eagle's flight). Its horizon follows
+  // scene.background every frame (the camp scenes tint it), so it always meets the haze; above: a deeper sky with drifting clouds by
+  // day, stars and a soft moon by night. Drawn after the opaque scene with the depth test, so the ground hides it almost for free.
+  const SKY_VS = `varying vec3 vD; void main() { vD = normalize(position); vec4 p = projectionMatrix * modelViewMatrix * vec4(position, 1.0); gl_Position = p.xyww; }`;
+  const SKY_FS = `uniform vec3 uHor; uniform float uTime, uNight; uniform sampler2D tNoise; varying vec3 vD;
+    float h21(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+    void main() {
+      vec3 d = normalize(vD); float y = d.y;
+      vec3 zen = mix(uHor * vec3(0.62, 0.8, 1.15), uHor * vec3(0.35, 0.45, 0.85), uNight);
+      vec3 col = mix(uHor, zen, smoothstep(0.0, 0.65, y));
+      if (y > 0.0) {
+        vec2 cp = d.xz / (y + 0.18);
+        float c = texture2D(tNoise, cp * 0.11 + vec2(uTime * 0.004, uTime * 0.002)).r * 0.65 + texture2D(tNoise, cp * 0.31 - vec2(uTime * 0.006, 0.0)).g * 0.35;
+        float cl = smoothstep(0.48, 0.72, c) * smoothstep(0.02, 0.25, y) * (1.0 - uNight * 0.85);
+        col = mix(col, mix(vec3(1.0, 0.98, 0.95), uHor * 1.15, 0.25) * (0.85 + 0.25 * smoothstep(0.5, 0.8, c)), cl * 0.85);
+        if (uNight > 0.01) {
+          vec2 sp = vec2(atan(d.z, d.x) * 60.0, y * 70.0), si = floor(sp); float h = h21(si);
+          vec2 so = fract(sp) - 0.5 - (vec2(h21(si + 3.1), h21(si + 7.9)) - 0.5) * 0.6;
+          float st = smoothstep(0.12, 0.0, length(so)) * step(0.9, h) * smoothstep(0.05, 0.3, y) * (0.55 + 0.45 * sin(uTime * (1.0 + h * 3.0) + h * 50.0));
+          col += vec3(1.0, 0.96, 0.85) * st * 1.6 * uNight;
+        }
+      }
+      gl_FragColor = vec4(col, 1.0);
+      #include <colorspace_fragment>
+    }`;
+  function skyDome(L, B) {
+    const g = R.geo.sky || (R.geo.sky = keep(new THREE.SphereGeometry(100, 24, 12)));
+    const m = R.mat.sky || (R.mat.sky = keep(new THREE.ShaderMaterial({ uniforms: { uHor: { value: new THREE.Color() }, uTime: TIME.u, uNight: { value: 0 }, tNoise: { value: texOK() && TEX.noise ? TEX.noise : blackTex() } },
+      vertexShader: SKY_VS, fragmentShader: SKY_FS, side: THREE.BackSide, depthWrite: false, fog: false })));
+    const mesh = new THREE.Mesh(g, m); mesh.name = 'gokyuzu'; mesh.frustumCulled = false; mesh.renderOrder = 1;
+    mesh.onBeforeRender = (r, sc, cam) => {
+      mesh.position.copy(cam.position); mesh.updateMatrixWorld();
+      const bg = sc.background && sc.background.isColor ? sc.background : null;
+      if (bg) { m.uniforms.uHor.value.copy(bg); const l = bg.r * .3 + bg.g * .59 + bg.b * .11; m.uniforms.uNight.value = clamp((.06 - l) / .05, 0, 1); }
+    };
+    B.g.add(mesh);
+  }
+  // (CEVRE) light shafts: soft beams slanting down from the sun (or the moon) through the canopy onto the clearings, dust drifting in
+  // them. One mesh for the chapter: each beam is a quad turned round its own axis towards the camera in the vertex shader.
+  const SHAFT_VS = `uniform vec3 uDir; attribute vec4 aS; varying vec2 vS; varying float vPh, vFd;
+    void main() {
+      vec3 base = (modelMatrix * vec4(position, 1.0)).xyz, P = base + uDir * aS.y * aS.z;
+      vec3 side = cross(uDir, cameraPosition - P); side.y = 0.0; side = normalize(side + vec3(1e-4, 0.0, 0.0));
+      P += side * aS.x * aS.w * (0.75 + 0.5 * aS.y);
+      vS = vec2(aS.x, aS.y); vPh = fract(position.x * 0.37 + position.z * 0.61); vFd = smoothstep(0.42, 0.62, normalize(cameraPosition - base).y);   // (gone when the camera looks along the ground: the camp scenes)
+      gl_Position = projectionMatrix * viewMatrix * vec4(P, 1.0);
+    }`;
+  const SHAFT_FS = `uniform float uTime; uniform vec3 uCol; uniform sampler2D tNoise; varying vec2 vS; varying float vPh, vFd;
+    void main() {
+      float across = clamp(1.0 - abs(vS.x), 0.0, 1.0), v = clamp(vS.y, 0.0, 1.0);   // (clamped: pow() of a hair below 0 at the quad's edge is NaN → black dashes)
+      float a = pow(across, 1.6) * smoothstep(0.02, 0.35, v) * (1.0 - smoothstep(0.55, 1.0, v));
+      float n = texture2D(tNoise, vec2(vS.x * 0.4 + vPh, v * 0.5 - uTime * 0.02)).g;
+      a *= (0.55 + 0.7 * n) * (0.7 + 0.3 * sin(uTime * 0.45 + vPh * 30.0));
+      float dust = smoothstep(0.83, 0.9, texture2D(tNoise, vec2(vS.x * 1.7 + vPh * 3.0, v * 2.4 - uTime * 0.05)).b) * across * smoothstep(0.05, 0.3, v) * (1.0 - smoothstep(0.6, 0.95, v));
+      gl_FragColor = vec4(uCol * (a + dust * 0.6) * vFd, 1.0);
+      #include <colorspace_fragment>
+    }`;
+  const SHAFT_LOOK = { kamp: [0xfff2d0, .2, 5], gol: [0xe0f4ff, .26, 7], mese: [0xffc070, .34, 9], selale: [0xfffcf0, .16, 4], bataklik: [0xd8f0b0, .14, 4] };   // (no moonbeams at night: from above they read as smudges)
+  function lightShafts(L, B, th) {
+    const S = SHAFT_LOOK[L.Z.id]; if (!S) return;
+    const rnd = B.rnd, so = th.sunOffset || [-12, 26, 14], d = new THREE.Vector3(...so).normalize(), pos = [], at = [], idx = [];
+    let n = 0;
+    for (let ri = 1; ri < L.rooms.length && n < S[2]; ri++) {
+      const rm = L.rooms[ri];
+      for (let k = 0; k < 2 && n < S[2]; k++) {
+        const a = rnd() * TAU, r = rm.r * (.2 + rnd() * .6), x = rm.x + Math.cos(a) * r, z = rm.z + Math.sin(a) * r, len = 7 + rnd() * 3, w = 1.0 + rnd() * .9, v0 = pos.length / 3;
+        glowAt(B, x, z, 1.3 + w * .5, S[0], S[1] * .9, 1, .8);   // a soft sunny (moonlit) spot where the beam meets the ground
+        for (const [u, v] of [[-1, 0], [1, 0], [-1, 1], [1, 1]]) { pos.push(x, 0, z); at.push(u, v, len, w); }
+        idx.push(v0, v0 + 1, v0 + 2, v0 + 1, v0 + 3, v0 + 2); n++;
+      }
+    }
+    if (!n) return;
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('aS', new THREE.Float32BufferAttribute(at, 4)); g.setIndex(idx);
+    g.boundingSphere = new THREE.Sphere(new THREE.Vector3(L.W / 2, 3, L.H / 2), Math.hypot(L.W, L.H) / 2 + 10);
+    const m = R.mat.shaft || (R.mat.shaft = keep(new THREE.ShaderMaterial({
+      uniforms: { uTime: TIME.u, uDir: { value: new THREE.Vector3() }, uCol: { value: new THREE.Color() }, tNoise: { value: texOK() && TEX.noise ? TEX.noise : blackTex() } },
+      vertexShader: SHAFT_VS, fragmentShader: SHAFT_FS, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide })));
+    m.uniforms.uDir.value.copy(d); m.uniforms.uCol.value.copy(lin(S[0], S[1]));
+    const mesh = new THREE.Mesh(g, m); mesh.renderOrder = 3; mesh.name = 'isik-huzmeleri'; mesh.frustumCulled = false; B.g.add(mesh); B.dispose.push(g);
+  }
+  // ── Saklı Toplar Ormanı: each chapter's water, landmarks and arena dressing ──
+  // Planned before the trees (they keep away from it), drawn in buildForestAdventure. Everything stands outside the walkable floor
+  // and its corridor mouths; tall landmarks only where they hide no floor from the gameplay camera (hides()).
   function reserveForestPonds(L, B) {
+    const Z = L.Z, id = Z.id, N = Z.rooms, ar = L.rooms[N - 1], plan = B.fz = { waters: [], marks: [] };
+    const outside = (x, z, r) => satCount(L, x - r, z - r, x + r, z + r) === 0;
     const noCover = (x, z, sx, sz) => {
       for (let j = Math.max(0, Math.floor(z - sz)); j < Math.min(L.H, z + sz); j++) for (let i = Math.max(0, Math.floor(x - sx)); i < Math.min(L.W, x + sx); i++)
         if (((i + .5 - x) / sx) ** 2 + ((j + .5 - z) / sz) ** 2 < 1) B.noDec[j * L.W + i] = 1;
     };
-    for (const rm of L.rooms) if (rm.forestDistrict === 1 || rm.forestDistrict === 2 || rm.kind === 'boss') {
-      for (const sd of [-1, 1]) {
-        B.noTree.push({ x: rm.x + sd * (rm.r + 2.8), z: rm.z + 1.7, r: 4.1 });
-        noCover(rm.x + sd * (rm.r + 2.8), rm.z + 1.7, 2.65, 3.85);
-        if (rm.kind === 'boss') noCover(rm.x + sd * 8.2, rm.z + 1, 3.2, 4.5);
-      }
-    }
-  }
-  function buildForestAdventure(L, B) {
-    const counts = L.forestDecor = { ponds: 0, reeds: 0, willows: 0, hollows: 0, logs: 0, bridges: 0 };
-    const put = (kind, x, z, scale = 1, yaw = 0, material = 'decor') => dec(B, material, forestExpGeo(kind), mat4(x, kind === 'lily' ? .09 : 0, z, yaw, scale), null);
-    const outside = (x, z, r) => satCount(L, x - r, z - r, x + r, z + r) === 0;
-    const waterChunks = new Map(), waterMat = forestWaterMat();
-    const addWater = (x, z, sx, sz, shallow = false) => {
-      const key = Math.floor(x / CHUNK) + '|' + Math.floor(z / CHUNK); let kit = waterChunks.get(key);
-      if (!kit) { kit = new Kit(); waterChunks.set(key, kit); }
-      kit.add(G.cyl(1, 1, 48), 0xffffff, [x, shallow ? .004 : .055, z], 0, [sx, shallow ? .006 : .024, sz]); counts.ponds++;
-      const shore = R.geo.expShore || (R.geo.expShore = keep(G.torus(TAU, .025, 48).clone()));
-      dec(B, 'soil', shore, mat4(x, shallow ? .013 : .045, z, 0, sx + .02, sz + .02, .12, -Math.PI / 2), lin(0xc5b997));
-      for (let j = 0; j < 12; j++) {
-        const a = j * TAU / 12, xx = x + Math.sin(a) * (sx + .16), zz = z + Math.cos(a) * (sz + .16);
-        if (isFloor(L, xx, zz)) continue;
-        inst(B, 'rockS', mat4(xx, .025, zz, a, .23 + (j % 3) * .04, .14, .23), lin(0xb1bd9b));
-      }
+    const water = (x, z, sx, sz, o = {}) => {
+      if (!o.shallow && !o.carved && !outside(x, z, Math.min(sx, sz) * .75)) return false;
+      plan.waters.push(Object.assign({ x, z, sx, sz }, o)); B.noTree.push({ x, z, r: Math.max(sx, sz) + 1.3 }); noCover(x, z, sx + .05, sz + .05); return true;
     };
-    for (let ri = 0; ri < L.rooms.length; ri++) {
-      const rm = L.rooms[ri], marsh = rm.forestDistrict === 2 || rm.kind === 'boss';
-      const side = ri % 2 ? -1 : 1;
-      // Vignettes stay outside floor and corridor mouths. The southern side stays low.
-      for (let n = 0; n < 12; n++) {
-        const a = n * TAU / 12, x = rm.x + Math.sin(a) * (rm.r + 2.0), z = rm.z + Math.cos(a) * (rm.r + 2.0);
-        if (!outside(x, z, 1.65)) continue;
-        if (marsh) { put('reeds', x, z, .9, a); counts.reeds++; }
-        else if (n % 3 === 0) { put('log', x, z, .8, a, 'foliage'); counts.logs++; }
-        else { dec(B, 'decor', fernGeo(), mat4(x, 0, z, a, 1.15), lin(0xe2f0c5)); }
+    // a landmark: the first of the candidate spots that is clear of the floor (radius r) and hides nothing (height h)
+    const mark = (kind, cands, r, h, o = {}) => {
+      for (const [x, z] of cands) {
+        if (!outside(x, z, r) || hides(L, x, z, r, .3, h) || plan.marks.some(m => hyp(m.x - x, m.z - z) < m.r + r + .5) || plan.waters.some(w => hyp(w.x - x, w.z - z) < Math.max(w.sx, w.sz) + r)) continue;
+        const m = Object.assign({ kind, x, z, r }, o); plan.marks.push(m); B.noTree.push({ x, z, r: r + 1.2 }); noCover(x, z, r, r); return m;
       }
-      if (marsh || rm.forestDistrict === 1) {
-        for (const sd of [-1, 1]) {
-          const x = rm.x + sd * (rm.r + 2.8), z = rm.z + 1.7;
-          if (!outside(x, z, 2.0)) continue;
-          addWater(x, z, 2.6, 3.8);
-          B.noTree.push({ x, z, r: 4.1 });
-          for (let n = 0; n < 5; n++) { const a = n * 2.4; put('lily', x + Math.sin(a) * 1.9, z + Math.cos(a) * 3.0, .6 + n * .04, a); }
-          for (let n = 0; n < 7; n++) { const a = n * TAU / 7; put('reeds', x + Math.sin(a) * 2.45, z + Math.cos(a) * 3.65, .9, a); counts.reeds++; }
+      return null;
+    };
+    const sides = rm => [-1, 1].map(sd => [rm.x + sd * (rm.r + 2.8), rm.z + 1.7]);
+    const besides = (rm, d, dz = 0) => [[rm.x + d, rm.z + dz], [rm.x - d, rm.z + dz], [rm.x + d, rm.z + dz - 3], [rm.x - d, rm.z + dz - 3], [rm.x + d * .7, rm.z - rm.r - 3], [rm.x - d * .7, rm.z - rm.r - 3]];
+    for (const rm of L.rooms) if (rm.lake) {   // the lake cut out of the clearing (generate): water, lily steps, reeds, a jetty, ducks
+      const k = rm.lake, swamp = id === 'bataklik';
+      water(k.x, k.z, k.sx + .35, k.sz + .35, { carved: true, lily: swamp ? 8 : 14, reeds: swamp ? 10 : 9, ducks: !swamp, marsh: swamp ? 1 : 0,
+        pier: swamp ? null : { x: k.x + k.ux * (k.sx + .2), z: k.z + k.uz * (k.sz + .2), ux: -k.ux, uz: -k.uz }, steps: !swamp });
+    }
+    for (let ri = 1; ri < L.rooms.length; ri++) {
+      const rm = L.rooms[ri];
+      if (rm.kind === 'boss') continue;
+      if (id === 'kamp' && ri % 2 === 1) for (const [x, z] of sides(rm)) water(x, z, 2.6, 3.8, { lily: 3, reeds: 5 });
+      if (id === 'gol') {
+        const sd = ri % 2 ? 1 : -1;
+        for (const [k, dd] of [[sd, 3.4], [-sd, 3.4], [sd, 4.6], [-sd, 4.6]]) if (water(rm.x + k * (rm.r + dd), rm.z + .6, 4.6, 5.6, { lily: 12, reeds: 9, ducks: 1, pier: k })) break;
+        water(rm.x - sd * (rm.r + 2.4), rm.z + 2.4, 2.4, 2.9, { lily: 5, reeds: 4 });
+      }
+      if (id === 'bataklik') {
+        for (const [x, z] of sides(rm)) water(x, z, 2.8, 4.0, { lily: 3, reeds: 7, marsh: 1 });
+        // shallow lily channels right in the clearing (walkable: ankle-deep), off the trail
+        for (let t = 0; t < 14; t++) {
+          const a = t * 2.39996 + ri, d = rm.r * (.42 + (t % 3) * .12), x = rm.x + Math.sin(a) * d, z = rm.z + Math.cos(a) * d;
+          if (linkDist(L, x, z) < 3.4 || !isFloor(L, x, z) || plan.waters.some(w => w.shallow && hyp(w.x - x, w.z - z) < 4)) continue;
+          plan.waters.push({ x, z, sx: 1.5, sz: 2.4, shallow: true, inside: true, lily: 3, reeds: 0, marsh: 1 });
+          if (plan.waters.filter(w => w.inside && hyp(w.x - rm.x, w.z - rm.z) < rm.r * 1.2).length >= 3) break;
         }
       }
-      if (ri % 4 === 2 || rm.kind === 'boss') {
-        const x = rm.x + side * (rm.r + 3.6), z = rm.z - rm.r * .50;
-        if (outside(x, z, 2.3) && !hides(L, x, z, 2.4, .5, 4.3)) { put('willow', x, z, 1.1, ri, 'foliage'); counts.willows++; }
+    }
+    if (id === 'kamp') {   // Huysuz Kunduz's dam: the stream pooled up behind a wall of logs, north-east of its arena
+      dam: for (const dd of [3.6, 4.6, 5.8]) for (const dz of [-2.5, -5, 0]) for (const sd of [1, -1]) {
+        const x = ar.x + sd * (ar.r + dd), z = ar.z + dz;
+        if (!outside(x, z, 3.2)) continue;
+        if (mark('dam', [[x - sd * 3.0, z + .4]], 1.0, 1.6, { sd }) && water(x + sd * .6, z, 3.0, 4.2, { lily: 3, reeds: 6 })) break dam;
       }
-      if (rm.forestDistrict === 3 && ri % 2 === 0) {
-        const x = rm.x + side * (rm.r + 2.8), z = rm.z - 4;
-        if (outside(x, z, 2) && !hides(L, x, z, 2, .5, 4.3)) { put('hollow', x, z, 1.05, -.2 * side, 'foliage'); counts.hollows++; }
+      for (const sd of [-1, 1]) water(ar.x + sd * 8.2, ar.z + 1, 3.2, 4.5, { shallow: true, reeds: 6 });
+    }
+    if (id === 'gol') for (const sd of [-1, 1]) water(ar.x + sd * 8.0, ar.z + .5, 3.4, 4.6, { shallow: true, lily: 7, reeds: 6 });
+    if (id === 'bataklik') for (const sd of [-1, 1]) water(ar.x + sd * 8.2, ar.z + 1, 3.2, 4.5, { shallow: true, reeds: 8, marsh: 1 });
+    if (id === 'selale') {   // waterfalls tumble off rocky cliffs beside the trail (and behind the goat's arena), each with a pool and a rainbow
+      for (let ri = 1; ri < N; ri++) {
+        const rm = L.rooms[ri], boss = rm.kind === 'boss', d = rm.r + (boss ? 5.5 : 5);
+        const m = mark('fall', boss ? [[rm.x, rm.z - rm.r - 4.5], ...besides(rm, d, -1)] : besides(rm, d, -1).slice(ri % 2 ? 0 : 1), 2.6, 5.6, { boss });
+        if (m) water(m.x, m.z + 2.4, 2.2, 1.7, { lily: 0, reeds: 0, fallPool: 1 });
       }
-      // Foot-level flowers give each district a different palette without another material.
-      const colors = [0, 2, 3, 1, 4, 0], fi = colors[rm.forestDistrict] || 0;
+      mark('nest', besides(ar, ar.r + 3.6, 2).concat(besides(ar, ar.r + 5, -2)), 1.6, 4.4);
+    }
+    if (id === 'mese') {
+      mark('treehouse', besides(L.rooms[2], L.rooms[2].r + 4.2, -1).concat(besides(L.rooms[1], L.rooms[1].r + 4.2, -1)), 2.6, 7.2);
+      mark('den', [[ar.x, ar.z - ar.r - 3.2], [ar.x + 4, ar.z - ar.r - 2.5], [ar.x - 4, ar.z - ar.r - 2.5]].concat(besides(ar, ar.r + 3.5, -2)), 2.4, 3.2);
+      for (let ri = 1; ri < N - 1; ri++) mark('hollow', besides(L.rooms[ri], L.rooms[ri].r + 2.8, -3).slice(ri % 2 ? 0 : 1), 2.0, 4.3);
+    }
+    if (id === 'gece') mark('owltree', [[ar.x, ar.z - ar.r - 3.4], [ar.x + 5, ar.z - ar.r - 2.6], [ar.x - 5, ar.z - ar.r - 2.6]].concat(besides(ar, ar.r + 3.5, -2)), 2.0, 5.2);
+    if (id === 'kamp' || id === 'gol') for (let ri = 2; ri < Z.rooms - 1; ri++) {   // (CEVRE) keep the bushes off the bridge pools and the camp stream
+      const link = L.links.find(q => q.main && q.b === ri), pts = link && link.curve;
+      if (!pts || (id === 'gol' && ri % 2)) continue;
+      const q = pts[Math.floor(pts.length / 2)], a = pts[Math.floor(pts.length / 2) - 1], b = pts[Math.floor(pts.length / 2) + 1];
+      if (!q || !a || !b || L.rooms.some(r => hyp(r.x - q[0], r.z - q[1]) < r.r + .7)) continue;
+      const yaw = Math.atan2(b[0] - a[0], b[1] - a[1]), sx = Math.cos(yaw), sz = -Math.sin(yaw);
+      for (let d = -5.6; d <= 5.6; d += 1.2) {
+        const x = q[0] + sx * d, z = q[1] + sz * d, far = Math.abs(d) > 3.4;
+        B.noTree.push({ x, z, r: far ? 2.6 : 1.1 });
+        if (id === 'kamp' || far) noCover(x, z, far ? 2.6 : 1.0, far ? 3.2 : 1.0);
+      }
+    }
+    const st = L.rooms[0];
+    B.noTree.push({ x: st.x, z: st.z, r: 7 });
+  }
+  function treeHouseGeo() {
+    if (R.geo.fzTreeHouse) return R.geo.fzTreeHouse;
+    const k = new Kit(), wood = 0xc89a64, dark = 0x7a5232, roof = 0xd0644a;
+    k.seg([0, -.1, 0], [.1, 3.6, -.05], .62, BARK, .46, 14); roots(k, .62, 8, BARK, .32);
+    forestBarkDetail(k, [0, 0, 0], [.1, 3.4, -.05], .55);
+    k.add(G.cyl(1, 1, 18), wood, [0, 2.55, 0], 0, [1.75, .14, 1.55]);                                   // the platform
+    for (let i = 0; i < 12; i++) { const a = i / 12 * TAU; k.seg([Math.sin(a) * 1.7, 2.6, Math.cos(a) * 1.5], [Math.sin(a) * 1.7, 3.15, Math.cos(a) * 1.5], .035, dark, .03, 6); }
+    k.add(G.torus(TAU, .03, 24), dark, [0, 3.12, 0], [Math.PI / 2, 0, 0], [1.7, 1.5, 1]);                // the rail
+    k.add(G.rbox(2), 0xe8c48a, [.25, 3.35, -.35], 0, [1.5, 1.3, 1.25]);                                   // the little house
+    k.add(G.box(), 0x5a3c26, [.25, 3.2, .28], 0, [.42, .78, .04]);                                       // its door
+    k.add(G.box(), 0xfff0b0, [.8, 3.55, .28], 0, [.3, .3, .04]);                                         // a warm window
+    const rf = new THREE.ConeGeometry(1, 1, 4); k.add(rf, roof, [.25, 4.3, -.35], [0, Math.PI / 4, 0], [1.25, .75, 1.15]); rf.dispose();
+    for (let i = 0; i < 7; i++) k.add(G.box(), wood, [-1.0, .35 + i * .33, .9], [.25, 0, 0], [.48, .05, .07]);   // the ladder
+    for (const sd of [-1, 1]) k.seg([-1.0 + sd * .24, 0, 1.05], [-1.0 + sd * .24, 2.55, .5], .04, dark, .035, 6);
+    canopy(k, [[-1.1, 5.0, -.6, 1.3], [1.3, 5.2, -.7, 1.25], [.1, 5.8, -.4, 1.5]], 4.2, 6.9);
+    for (let i = 0; i < 6; i++) k.add(G.sphere(8, 6), i % 2 ? 0xffd25a : 0xff8a5a, [-1.3 + i * .5, 2.42, 1.5], 0, .07);   // bunting
+    k.seg([-1.6, 2.5, 1.45], [1.6, 2.5, 1.45], .008, 0xf0e0c0, .008, 4);
+    return (R.geo.fzTreeHouse = keep(k.build()));
+  }
+  function nestGeo() {   // Kartal Tepesi: a tall rock spire with a big twig nest and two speckled eggs
+    if (R.geo.fzNest) return R.geo.fzNest;
+    const k = new Kit(), twig = 0x9a7048;
+    for (let i = 0; i < 9; i++) { const a = i * 2.4; k.add(G.torus(TAU, .16, 18), i % 2 ? twig : 0x86603c, [Math.sin(a) * .05, 3.85 + i * .03, Math.cos(a) * .05], [Math.PI / 2 + Math.sin(a) * .15, 0, Math.cos(a) * .15], [.78 - i * .02, .78 - i * .02, .9]); }
+    for (let i = 0; i < 2; i++) k.add(G.sphere(12, 10), 0xf6eedc, [-.16 + i * .3, 3.98, .05 - i * .1], [0, 0, .3 - i * .5], [.15, .2, .15]);
+    for (let i = 0; i < 12; i++) k.seg([Math.sin(i) * .8, 3.9, Math.cos(i) * .8], [Math.sin(i + .7) * 1.0, 4.1, Math.cos(i + .7) * 1.0], .025, twig, .015, 5);
+    return (R.geo.fzNest = keep(k.build()));
+  }
+  function denGeo() {   // the sleepy bear's den: a mossy hill with a round dark doorway, a honey-pot or two in front
+    if (R.geo.fzDen) return R.geo.fzDen;
+    const k = new Kit();
+    k.add(lumpy(2, .14, 7711), 0x8f8a78, [0, 0, 0], 0, [2.6, 2.0, 2.1]);
+    k.add(G.sphere(16, 10), 0x2a1e18, [0, .55, 1.62], 0, [.95, .95, .5]);
+    k.add(lumpy(1, .2, 7712), 0x6a9a4a, [-.9, 1.8, .3], 0, [1.2, .45, 1.0]);
+    k.add(lumpy(1, .2, 7713), 0x7aa852, [.9, 1.65, .6], 0, [1.0, .4, .9]);
+    return (R.geo.fzDen = keep(k.build()));
+  }
+  function acornGeo() {
+    if (R.geo.fzAcorn) return R.geo.fzAcorn;
+    const k = new Kit();
+    for (let i = 0; i < 3; i++) { const x = (i - 1) * .16, z = (i % 2) * .1; k.add(G.sphere(10, 8), 0xc08a44, [x, .07, z], 0, [.07, .085, .07]); k.add(G.hemi(10), 0x7a5232, [x, .12, z], 0, [.075, .05, .075]); }
+    return (R.geo.fzAcorn = keep(k.build()));
+  }
+  function lanternGeo() {
+    if (R.geo.fzLantern) return R.geo.fzLantern;
+    const k = new Kit(), g = new Kit();
+    k.seg([0, 0, 0], [0, 1.55, 0], .05, 0x7a5232, .04, 8); k.seg([0, 1.5, 0], [.32, 1.62, 0], .03, 0x7a5232, .025, 6);
+    k.add(G.cyl(.6, 1, 8), 0x3a3a40, [.34, 1.62, 0], 0, [.1, .05, .1]);
+    g.add(G.sphere(12, 10), 0xffd28a, [.34, 1.47, 0], 0, [.11, .14, .11]);
+    return (R.geo.fzLantern = { pole: keep(k.build()), glow: keep(g.build()) });
+  }
+  function buildForestAdventure(L, B) {
+    const Z = L.Z, id = Z.id, zl = zlook(L), plan = B.fz || { waters: [], marks: [] }, rnd = B.rnd;
+    L.sesKaynak = [];   // (CEVRE) sound sources for SES: { tur: 'selale' | 'dere', x, z, r } (see LEVEL.ortamSes)
+    const counts = L.forestDecor = { ponds: 0, reeds: 0, willows: 0, hollows: 0, logs: 0, bridges: 0, lilies: 0, marks: plan.marks.map(m => m.kind), lights: 0 };
+    const put = (kind, x, z, scale = 1, yaw = 0, material = 'decor') => { const h = dec(B, material, forestExpGeo(kind), mat4(x, kind === 'lily' ? .07 : 0, z, yaw, scale), null); if (kind === 'lily') h.item.uy = x * 1.7 + z * 2.3; return h; };
+    const outside = (x, z, r) => satCount(L, x - r, z - r, x + r, z + r) === 0;
+    const waterChunks = new Map(), waterMat = waterLook(id);
+    const addWater = (x, z, sx, sz, shallow = false, inside = false, o = {}) => {
+      const key = Math.floor(x / CHUNK) + '|' + Math.floor(z / CHUNK); let wb = waterChunks.get(key);
+      if (!wb) { wb = new WaterBuf(); waterChunks.set(key, wb); }
+      wb.pond(x, z, sx, sz, shallow ? .012 : .05, Object.assign({ shallow }, o)); counts.ponds++;
+      for (let j = 0; j < (inside ? 0 : 12); j++) {
+        const a = j * TAU / 12, xx = x + Math.sin(a) * (sx + .22), zz = z + Math.cos(a) * (sz + .22);
+        if (isFloor(L, xx, zz) || (j % 3 === 1)) continue;
+        inst(B, 'rockS', mat4(xx, .02, zz, a, .2 + (j % 3) * .05, .12 + (j % 2) * .04, .22), lin(id === 'gece' ? 0x8a94b0 : id === 'bataklik' ? 0x9a9878 : 0xb6bca4, .85 + (j % 4) * .06));
+      }
+    };
+    // the chapter's ponds, lakes and wading pools (lilies on the water, reeds round the shore, ducks on the big lake)
+    for (const w of plan.waters) {
+      addWater(w.x, w.z, w.sx, w.sz, !!w.shallow, !!w.inside, w.fallPool ? { turb: 1, tx: 0, tz: -w.sz * .95 } : {});
+      for (let n = 0; n < (w.lily || 0); n++) { const a = n * 2.4 + w.x, r = .35 + (n % 3) * .22; put('lily', w.x + Math.sin(a) * w.sx * r * 1.4, w.z + Math.cos(a) * w.sz * r * 1.4, .55 + (n % 4) * .06, a); counts.lilies++; }
+      for (let n = 0; n < (w.reeds || 0); n++) {
+        const a = n * TAU / w.reeds + .3, x = w.x + Math.sin(a) * (w.sx + .3), z = w.z + Math.cos(a) * (w.sz + .3);
+        if (w.shallow ? hyp(x - L.rooms[Z.rooms - 1].x, z - L.rooms[Z.rooms - 1].z) < 5.5 || linkDist(L, x, z) < 2.6 : w.carved ? linkDist(L, x, z) < 3.2 : isFloor(L, x, z)) continue;
+        put('reeds', x, z, w.marsh ? 1.0 : .9, a); counts.reeds++;
+      }
+      if (w.pier) {   // a little wooden jetty from the shore out over the lake
+        const pr = typeof w.pier === 'object' ? w.pier : { x: w.x - w.pier * (w.sx + .6), z: w.z + .9, ux: w.pier, uz: 0 };
+        const plank = R.geo.expPlank || (R.geo.expPlank = keep(G.box().clone())), yaw = Math.atan2(pr.ux, pr.uz), cx = Math.cos(yaw), cz = -Math.sin(yaw);
+        for (let n = 0; n < 9; n++) dec(B, 'prop', plank, mat4(pr.x + pr.ux * n * .34, .2, pr.z + pr.uz * n * .34, yaw, 1.5, .07, .3), lin(n & 1 ? 0xe0bc91 : 0xd2a878));
+        for (const sd of [-.6, .6]) for (const k of [1, 4, 8]) dec(B, 'prop', G.cyl(1, 1, 8), mat4(pr.x + pr.ux * k * .34 + cx * sd, .05, pr.z + pr.uz * k * .34 + cz * sd, 0, .07, .45, .07), lin(0x8a6040));
+      }
+      if (w.steps) for (let n = 0; n < 6; n++) {   // big lily pads hopping across the lake (nilüfer basamakları)
+        const t = n / 5 - .5, x = w.x + t * w.sx * 1.3, z = w.z + Math.sin(n * 1.7) * w.sz * .25;
+        put('lily', x, z, 1.25 + (n % 2) * .2, n * 1.3); counts.lilies++;
+      }
+      if (w.ducks) {
+        const ph = rnd() * 60, x = w.x + w.sx * .2, z = w.z - w.sz * .1, yaw = rnd() * TAU;
+        dec(B, 'gloss', duckGeo(0), mat4(x, .07, z, yaw, 1.2), null).item.uy = ph;
+        for (let i = 1; i <= 3; i++) dec(B, 'gloss', duckGeo(1), mat4(x - Math.sin(yaw) * i * .5, .07, z - Math.cos(yaw) * i * .5, yaw, .7), null).item.uy = ph + i * .9;
+      }
+      if (id === 'gol' || w.marsh) for (let n = 0, nm = w.marsh ? (w.inside ? 0 : 2) : w.inside ? 2 : 6; n < nm; n++)   // low mist drifting off the water (the swamp: only a wisp)
+        B.pts.norm.push({ x: w.x + (rnd() - .5) * w.sx * 1.4, y: .1, z: w.z + (rnd() - .5) * w.sz * 1.4, kind: 7, ph: rnd(), size: w.marsh ? 1.8 + rnd() * .8 : 3.2 + rnd() * 1.6, prm: .025 + rnd() * .015, col: lin(id === 'bataklik' ? 0xe8f0dc : 0xf4f8fc, 1.0) });
+    }
+    // room rims: reeds by the marsh and the lake, logs and ferns elsewhere (the southern side stays low)
+    for (let ri = 0; ri < L.rooms.length; ri++) {
+      const rm = L.rooms[ri], wet = id === 'bataklik' || id === 'gol' || (rm.kind === 'boss' && id === 'kamp');
+      for (let n = 0; n < 12; n++) {
+        const a = n * TAU / 12, x = rm.x + Math.sin(a) * (rm.r + 2.0), z = rm.z + Math.cos(a) * (rm.r + 2.0);
+        if (!outside(x, z, 1.65) || B.noTree.some(o => hyp(o.x - x, o.z - z) < o.r - .6)) continue;
+        if (wet && n % 2) { put('reeds', x, z, .9, a); counts.reeds++; }
+        else if (n % 3 === 0) { put('log', x, z, .8, a, 'foliage'); counts.logs++; }
+        else if (id === 'selale') inst(B, 'rock' + (n % 3), mat4(x, 0, z, a, 1.0 + (n % 2) * .5, .8 + (n % 3) * .25, 1.0), lin(0xc8c8c4));
+        else dec(B, 'decor', fernGeo(), mat4(x, 0, z, a, 1.15), lin(id === 'gece' ? 0x9ab0d0 : id === 'mese' ? 0xf0d090 : 0xe2f0c5));
+      }
+      if ((id === 'gol' || id === 'bataklik') && (ri % 2 === 0 || rm.kind === 'boss')) {
+        const sd = ri % 2 ? -1 : 1, x = rm.x + sd * (rm.r + 3.6), z = rm.z - rm.r * .5;
+        if (outside(x, z, 2.3) && !hides(L, x, z, 2.4, .5, 4.3) && !B.noTree.some(o => hyp(o.x - x, o.z - z) < o.r)) { put('willow', x, z, 1.1, ri, 'foliage'); counts.willows++; }
+      }
+      // Foot-level flowers give each chapter its own palette without another material.
+      const fi = { kamp: 0, gol: 4, mese: 1, selale: 2, gece: 3, bataklik: 4 }[id] || 0;
       for (let n = 0; n < 9; n++) {
         const a = n * 2.39996, x = rm.x + Math.sin(a) * (rm.r - .7), z = rm.z + Math.cos(a) * (rm.r - .7);
         if (!isFloor(L, x, z) || linkDist(L, x, z) < 2.5) continue;
         for (let j = 0; j < 4; j++) dec(B, 'decor', flowerGeo(fi), mat4(x + Math.sin(j * 2.4) * .30, .02, z + Math.cos(j * 2.4) * .30, j, .75), null);
       }
     }
-    // The crocodile arena has shallow wading pools, leaving the central trail and warning circles clear.
-    const ar = L.rooms[L.Z.rooms - 1];
-    for (const sd of [-1, 1]) {
-      addWater(ar.x + sd * 8.2, ar.z + 1, 3.2, 4.5, true);
-      for (let j = 0; j < 8; j++) {
-        const a = j * TAU / 8, x = ar.x + sd * 8.2 + Math.sin(a) * 3.05, z = ar.z + 1 + Math.cos(a) * 4.25;
-        if (hyp(x - ar.x, z - ar.z) < 5.5 || linkDist(L, x, z) < 2.6) continue;
-        put('reeds', x, z, .7, a); counts.reeds++;
+    // landmarks
+    for (const m of plan.marks) {
+      if (m.kind === 'hollow') { put('hollow', m.x, m.z, 1.05, -.2 * Math.sign(m.x - L.W / 2 || 1), 'foliage'); counts.hollows++; }
+      else if (m.kind === 'treehouse') { dec(B, 'foliage', treeHouseGeo(), mat4(m.x, 0, m.z, Math.atan2(L.rooms[2].x - m.x, L.rooms[2].z - m.z) * .3, 1), null); B.lights.push({ x: m.x + .8, y: 3.6, z: m.z + .6, col: new THREE.Color(0xffc070), int: 1.6, dist: 6, fl: .2, ph: 1 }); }
+      else if (m.kind === 'den') {
+        dec(B, 'rock', denGeo(), mat4(m.x, 0, m.z, 0, 1), lin(0xb8b0a0));
+        const H = honeyData();
+        for (const sd of [-1, 1]) for (const k in H) dec(B, k, H[k], mat4(m.x + sd * 1.6, 0, m.z + 1.7, sd * .6, 1.05), null);
+      }
+      else if (m.kind === 'dam') {
+        for (let i = 0; i < 6; i++) put('log', m.x + (i % 2) * .25, m.z - 2.4 + i * .95, .62 + (i % 3) * .06, Math.PI / 2 + (i % 2) * .2, 'foliage');
+        for (let i = 0; i < 4; i++) put('log', m.x + .35, m.z - 1.9 + i * 1.1, .5, Math.PI / 2 - .3, 'foliage');
+        for (let i = 0; i < 8; i++) dec(B, 'decor', G.cyl(.5, 1, 6), mat4(m.x + (rnd() - .5) * .6, .55 + rnd() * .3, m.z + (rnd() - .5) * 4, rnd() * TAU, .05, .6, .05, rnd() - .5, rnd() - .5), lin(0x8a6040));
+        counts.logs += 10;
+      }
+      else if (m.kind === 'nest') {
+        for (let i = 0; i < 4; i++) inst(B, 'rock' + (i % 3), mat4(m.x + (i % 2 - .5) * .7, i * .95, m.z + (i > 1 ? .2 : -.2), i * 1.3, 1.25 - i * .17, 1.25, 1.2 - i * .17), lin(0xc8c2b6));
+        dec(B, 'foliage', nestGeo(), mat4(m.x, 0, m.z, .4, 1), null);
+      }
+      else if (m.kind === 'owltree') {
+        put('hollow', m.x, m.z, 1.3, 0, 'foliage'); counts.hollows++;
+        dec(B, 'glow', G.sphere(12, 8), mat4(m.x, 2.2, m.z + .55, 0, .38, .55, .2), lin(0xffd890, .9));   // a warm glow inside the hollow
+        B.lights.push({ x: m.x, y: 2.2, z: m.z + 1, col: new THREE.Color(0xffc880), int: 2.6, dist: 7, fl: .15, ph: 2 }); glowAt(B, m.x, m.z + 1.2, 3, 0xffc880, .4);
+      }
+      else if (m.kind === 'fall') {   // cliff + falling water + foam + rainbow
+        const h = m.boss ? 6.2 : 5.2;
+        for (let i = 0; i < 7; i++) { const a = (i - 3) * .42; inst(B, 'rock' + (i % 3), mat4(m.x + Math.sin(a) * 2.2, i % 2 ? 1.6 : 0, m.z - Math.cos(a) * .8 - .4, i * 1.7, 1.5 + (i % 2) * .4, i % 2 ? 2.4 : 2.9, 1.4), lin(0xd0ccc4)); }
+        inst(B, 'rock1', mat4(m.x, h - 1.4, m.z - 1.2, .3, 2.0, 1.4, 1.6), lin(0xc8c4bc));
+        (B.fzFalls || (B.fzFalls = [])).push({ x: m.x, z: m.z, h });   // (CEVRE) the falling water: one merged mesh for all the falls, see fallSheets
+        (L.sesKaynak || (L.sesKaynak = [])).push({ tur: 'selale', x: m.x, z: m.z + 1.5, r: m.boss ? 13 : 11 });
+        for (let i = 0; i < 10; i++) B.pts.norm.push({ x: m.x + (rnd() - .5) * 1.6, y: .1, z: m.z + 1.4 + rnd() * .8, kind: 7, ph: rnd(), size: .9 + rnd() * .6, prm: .5 + rnd() * .3, col: lin(0xffffff, .9) });
+        for (let i = 0; i < 6; i++) B.pts.add.push({ x: m.x + (rnd() - .5) * 1.4, y: .4 + rnd() * h * .7, z: m.z + .7, kind: 8, ph: rnd(), size: .12, prm: .8 + rnd(), col: lin(0xe8f8ff, 1.6) });
+        (B.fzArcs || (B.fzArcs = [])).push({ x: m.x + 1.3, y: -.1, z: m.z + 2.6, r: 2.1, bw: .55, lean: -.25 });
       }
     }
-    // Picnic blankets and a log bench welcome all four friends at the clear starting clearing.
-    const st = L.rooms[0];
-    put('tent', st.x - 3.0, st.z - 1.4, 1, -.20, 'decor');
-    put('smallTent', st.x + 3.1, st.z - 1.2, 1, .18, 'decor');
-    put('campfire', st.x, st.z + 2.2, .85, 0, 'decor');
-    put('dogBed', st.x + 3.4, st.z + 1.0, 1, .2, 'decor');
-    put('perch', st.x - 4.7, st.z + .5, 1, .2, 'foliage');
-    // Camp objects occupy their visible space; neither Feza nor companions walk through canvas.
-    propSolid(L, st.x - 3.0, st.z - 1.4, 1.30, 'camp');
-    propSolid(L, st.x + 3.1, st.z - 1.2, 1.04, 'camp');
-    propSolid(L, st.x, st.z + 2.2, .38, 'camp');
-    L._sh = null;
-    B.noTree.push({x:st.x,z:st.z,r:7});
-    counts.camp = { tents: 2, fire: 1, dogBed: 1, perch: 1 };
-    // Warm camp embers use the existing GPU point batch: no new lights or draw calls.
-    for (let i=0;i<8;i++) B.pts.add.push({x:st.x+Math.sin(i*2.4)*.10,y:.28,z:st.z+2.2+Math.cos(i*2.4)*.10,kind:0,ph:i/8,size:.048,prm:.43+(i%3)*.08,col:lin(0xffb66e,1.6)});
-    for (let i=0;i<3;i++) B.pts.norm.push({x:st.x,y:.43,z:st.z+2.2,kind:7,ph:i/3,size:.20,prm:.16,col:lin(0xd9dbca,.75)});
-    put('picnic', st.x - 2.3, st.z + 2.7, 1.10, .15, 'shiny');
-    put('log', st.x + 3.2, st.z + 2.5, .75, .3, 'foliage'); counts.logs++;
-    // Stream bridges: the existing walkable floor remains authoritative under the timber deck.
-    for (const ri of [5, 6, 9, 11, 20]) {
+    if (B.fzFalls) fallSheets(L, B);
+    if (B.fzArcs && B.fzArcs.length) {
+      const g = rainbowGeo(B.fzArcs), mt = R.mat.rainbow || (R.mat.rainbow = keep(new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.55, depthWrite: false, fog: true, side: THREE.DoubleSide })));
+      const mesh = new THREE.Mesh(g, mt); mesh.name = 'selale-gokkusagi'; mesh.renderOrder = 2; B.g.add(mesh); B.dispose.push(g);
+    }
+    // chapter extras along the rooms
+    for (let ri = 1; ri < L.rooms.length; ri++) {
+      const rm = L.rooms[ri];
+      if (id === 'mese') for (let n = 0; n < 6; n++) {   // acorns at the foot of the walkable edge
+        const a = n * 1.9 + ri, x = rm.x + Math.sin(a) * (rm.r - .5), z = rm.z + Math.cos(a) * (rm.r - .5);
+        if (isFloor(L, x, z) && linkDist(L, x, z) > 2.2) dec(B, 'gloss', acornGeo(), mat4(x, 0, z, a, 1.1), null);
+      }
+      if (id === 'bataklik' && rm.kind !== 'boss') for (const [sd, zk] of [[-1, .55], [1, .55], [-1, -.1], [1, -.1]]) {   // big friendly roots arching out of the mud
+        const x = rm.x + sd * (rm.r + 1.6), z = rm.z - rm.r * zk;
+        if (!outside(x, z, 1.3) || hides(L, x, z, 1.4, .3, 2.6) || B.noTree.some(o => hyp(o.x - x, o.z - z) < o.r)) continue;
+        const D = rootArchData(ri % 3); dec(B, 'decor', D.root, mat4(x, 0, z, sd * 1.2, 1.1), null); dec(B, 'glow', D.caps, mat4(x, 0, z, sd * 1.2, 1.1), lin(0xffffff, .5));
+      }
+      if (id === 'gece') {   // glowing mushrooms round the rims (soft coloured pools of light) and a lantern by the trail
+        for (let n = 0; n < 5; n++) {
+          const a = n * 1.31 + ri * .7, x = rm.x + Math.sin(a) * (rm.r + .9), z = rm.z + Math.cos(a) * (rm.r + .9);
+          if (isFloor(L, x, z) || hides(L, x, z, .5, 0, 1)) continue;
+          const v = (n + ri) % 3, sc = 1.1 + (n % 2) * .5, col = [0x6ae8ff, 0x9a8cff, 0x6affc0][v];
+          dec(B, 'glow', glowCapGeo(v), mat4(x, 0, z, a, sc), lin(0xffffff, .85)); dec(B, 'decor', glowStemGeo(), mat4(x, 0, z, a, sc), null);
+          glowAt(B, x, z, 1.8 * sc, col, .42);
+          if (n % 2 === 0) { B.lights.push({ x, y: .7, z: z + .2, col: new THREE.Color(col), int: 2.4, dist: 5.5, fl: 0, ph: rnd() * 10 }); counts.lights++; }
+        }
+        const lk = L.links.find(q => q.main && q.b === ri), pts = lk && lk.curve;
+        if (pts) {
+          const q = pts[Math.floor(pts.length * .5)], a = pts[Math.floor(pts.length * .5) - 1] || q, b = pts[Math.floor(pts.length * .5) + 1] || q;
+          const yaw = Math.atan2(b[0] - a[0], b[1] - a[1]), x = q[0] + Math.cos(yaw) * (lk.w + .9), z = q[1] - Math.sin(yaw) * (lk.w + .9);
+          if (!isFloor(L, x, z) && !hides(L, x, z, .4, 0, 1.8)) {
+            const D = lanternGeo(); dec(B, 'prop', D.pole, mat4(x, 0, z, 0, 1), null); dec(B, 'glow', D.glow, mat4(x, 0, z, 0, 1), lin(0xffffff, 1.2));
+            B.lights.push({ x: x + .34, y: 1.45, z: z + .2, col: new THREE.Color(0xffc070), int: 3.2, dist: 7.5, fl: .25, ph: rnd() * 9 }); glowAt(B, x, z + .3, 2.6, 0xffb860, .55); counts.lights++;
+          }
+        }
+      }
+    }
+    if (id === 'gece') {   // fireflies everywhere over the floor
+      for (let n = 0; n < 220; n++) {
+        const x = rnd() * L.W, z = rnd() * L.H, c = Math.floor(z) * L.W + Math.floor(x);
+        if (!L.grid[c] && rnd() < .7) continue;
+        B.pts.add.push({ x, y: .4 + rnd() * 2.2, z, kind: 4, ph: rnd(), size: .1 + rnd() * .06, prm: .6 + rnd() * .8, col: lin(rnd() < .7 ? 0xd8ff7a : 0xffe27a, 2.2) });
+      }
+    }
+    // Stream bridges (the camp chapter and the lake): timber decks where a trail crosses between ponds; the floor stays authoritative.
+    if (id === 'kamp' || id === 'gol') for (let ri = 2; ri < Z.rooms - 1; ri += 1) {
       const link = L.links.find(q => q.main && q.b === ri), pts = link && link.curve;
-      if (!pts) continue;
+      if (!pts || (id === 'gol' && ri % 2)) continue;
       const q = pts[Math.floor(pts.length / 2)], a = pts[Math.floor(pts.length / 2) - 1], b = pts[Math.floor(pts.length / 2) + 1];
       if (!q || !a || !b || L.rooms.some(r => hyp(r.x - q[0], r.z - q[1]) < r.r + .7)) continue;
       const yaw = Math.atan2(b[0] - a[0], b[1] - a[1]), sx = Math.cos(yaw), sz = -Math.sin(yaw);
@@ -3211,15 +3936,48 @@ const LEVEL = (function () {
         const x = q[0] + Math.sin(yaw) * n * .32, z = q[1] + Math.cos(yaw) * n * .32;
         dec(B, 'prop', plank, mat4(x, .038, z, yaw, 4.1, .07, .30), lin(n & 1 ? 0xe0bc91 : 0xd9af81));
       }
+      const pond = [];
       for (const sd of [-1, 1]) {
         const x = q[0] + sx * sd * 4.4, z = q[1] + sz * sd * 4.4;
-        if (outside(x, z, 1.3)) addWater(x, z, 2.0, 2.8);
+        pond.push(outside(x, z, 1.3) && !plan.waters.some(w => hyp(w.x - x, w.z - z) < Math.max(w.sx, w.sz) + 2.2));
+        if (pond[pond.length - 1]) addWater(x, z, 2.0, 2.8);
+      }
+      if (id === 'kamp') {   // (CEVRE) the camp stream: it runs under the bridge from one pool to the other, the current carrying its ripples
+        const sp = [], ph = q[0] * .7;
+        for (let n = -12; n <= 12; n++) {
+          const t = n / 12, e = Math.abs(t), d = t * 5.4, wob = Math.sin(t * 5 + ph) * .35 * e;
+          sp.push([q[0] + sx * d + Math.sin(yaw) * wob, q[1] + sz * d + Math.cos(yaw) * wob]);
+        }
+        const key = Math.floor(q[0] / CHUNK) + '|' + Math.floor(q[1] / CHUNK); let wb = waterChunks.get(key);
+        if (!wb) { wb = new WaterBuf(); waterChunks.set(key, wb); }
+        wb.ribbon(pond[0] && pond[1] ? sp : pond[1] ? sp.slice(9) : pond[0] ? sp.slice(0, 16) : sp.slice(7, 18), .78, .022, .55);
+        L.sesKaynak.push({ tur: 'dere', x: q[0], z: q[1], r: 9 });
       }
       counts.bridges++;
     }
-    for (const [key, kit] of waterChunks) {
-      const o = new THREE.Mesh(kit.build(), waterMat); o.name = 'orman-gölet-' + key; o.receiveShadow = true; B.g.add(o);
+    for (const [key, wb] of waterChunks) {
+      const geo = wb.build(), o = new THREE.Mesh(geo, waterMat); o.name = 'orman-gölet-' + key; o.receiveShadow = true; o.renderOrder = 1; B.g.add(o); B.dispose.push(geo);
     }
+    // The four friends' camp at every chapter's start: the full camp at the first one, a tent and a fire on the way.
+    const st = L.rooms[0], full = id === 'kamp';
+    put('tent', st.x - 3.0, st.z - 1.4, 1, -.20, 'decor');
+    propSolid(L, st.x - 3.0, st.z - 1.4, 1.30, 'camp');
+    put('campfire', st.x, st.z + 2.2, .85, 0, 'decor');
+    propSolid(L, st.x, st.z + 2.2, .38, 'camp');
+    put('dogBed', st.x + 3.4, st.z + 1.0, 1, .2, 'decor');
+    if (full) {
+      put('smallTent', st.x + 3.1, st.z - 1.2, 1, .18, 'decor');
+      put('perch', st.x - 4.7, st.z + .5, 1, .2, 'foliage');
+      propSolid(L, st.x + 3.1, st.z - 1.2, 1.04, 'camp');
+      put('picnic', st.x - 2.3, st.z + 2.7, 1.10, .15, 'shiny');
+    }
+    put('log', st.x + 3.2, st.z + 2.5, .75, .3, 'foliage'); counts.logs++;
+    L._sh = null;
+    counts.camp = { tents: full ? 2 : 1, fire: 1, dogBed: 1, perch: full ? 1 : 0 };
+    // Warm camp embers use the existing GPU point batch (the night camp's fire also lights its clearing).
+    for (let i = 0; i < 8; i++) B.pts.add.push({ x: st.x + Math.sin(i * 2.4) * .10, y: .28, z: st.z + 2.2 + Math.cos(i * 2.4) * .10, kind: 0, ph: i / 8, size: .048, prm: .43 + (i % 3) * .08, col: lin(0xffb66e, 1.6) });
+    for (let i = 0; i < 3; i++) B.pts.norm.push({ x: st.x, y: .43, z: st.z + 2.2, kind: 7, ph: i / 3, size: .20, prm: .16, col: lin(0xd9dbca, .75) });
+    if (zl && zl.night) { addFlame(B, st.x, .2, st.z + 2.2, .7, 4.5); glowAt(B, st.x, st.z + 2.2, 5, 0xffa050, .7); counts.lights++; }
   }
 
   // ── GPU-animated points: embers, motes, sparkles, portal swirl, glowing light motes, twinkles (additive) · petals, drifting blossoms, smoke (normal) ──
@@ -3247,6 +4005,25 @@ const LEVEL = (function () {
         a = smoothstep(0.0, 0.08, f) * smoothstep(1.0, 0.85, f); vF = f * 25.0 + ph * 6.0;
       } else if (kind < 6.5) { float an = t * 0.45 * prm + ph * 6.28;   // blossom drifting in lazy loops on the breeze, slowly turning
         p += vec3(cos(an) * 1.3 + sin(an * 2.3) * 0.3, sin(t * 0.9 + ph * 9.0) * 0.2 + sin(an * 1.7) * 0.3, sin(an) * 0.9); vF = t * 0.8 * (prm - 0.4) * sign(ph - 0.5) + ph * 6.28;
+      } else if (kind > 10.5) {   // (CEVRE) 11 butterfly · 12 darting light dot · 13 tumbling leaf · 14 creeping fog · 15 spray droplet
+        if (kind < 11.5) { float an = t * 0.32 * prm + ph * 6.28;
+          p += vec3(sin(an) * 2.2 + sin(an * 2.7 + ph * 4.0) * 0.6, sin(t * 1.3 * prm + ph * 9.0) * 0.35 + sin(an * 1.9) * 0.25, cos(an * 0.8 + ph) * 1.6);
+          vF = t * (11.0 + prm * 4.0) + ph * 30.0;
+        } else if (kind < 12.5) { float tt = t * prm * 0.55 + ph * 17.0, sg = floor(tt), f = fract(tt), e = smoothstep(0.0, 0.22, f);
+          vec3 r0 = vec3(fract(sin(sg * 12.9 + ph * 78.2) * 43758.5) - 0.5, fract(sin(sg * 4.1 + ph * 19.7) * 23421.6), fract(sin(sg * 7.7 + ph * 31.3) * 34567.1) - 0.5);
+          vec3 r1 = vec3(fract(sin((sg + 1.0) * 12.9 + ph * 78.2) * 43758.5) - 0.5, fract(sin((sg + 1.0) * 4.1 + ph * 19.7) * 23421.6), fract(sin((sg + 1.0) * 7.7 + ph * 31.3) * 34567.1) - 0.5);
+          p += mix(r0, r1, e) * vec3(4.0, 0.6, 3.0) + vec3(sin(t * 7.0 + ph * 50.0), sin(t * 9.0 + ph * 30.0), cos(t * 8.0 + ph * 40.0)) * 0.03;
+          a = 0.65 + 0.35 * sin(t * 6.0 + ph * 20.0); vF = 1.0;
+        } else if (kind < 13.5) { float f = fract(t * prm + ph), sw = sin(f * 7.0 + ph * 9.0);
+          p += vec3(sw * 0.7 + f * 1.8, -position.y * f + 0.02, cos(f * 5.0 + ph * 3.0) * 0.5 + f * 0.4);
+          a = smoothstep(0.0, 0.06, f) * (1.0 - smoothstep(0.9, 1.0, f)); vF = f * 18.0 + ph * 6.28;
+        } else if (kind < 14.5) { float an = t * 0.05 * prm + ph * 6.28;
+          p += vec3(sin(an) * 3.0 + t * 0.0, sin(t * 0.3 + ph * 5.0) * 0.08, cos(an * 0.7) * 2.0);
+          a = 0.55 + 0.45 * sin(t * 0.21 * prm + ph * 9.0); s *= 0.85 + 0.15 * sin(t * 0.17 + ph * 3.0);
+        } else { float f = fract(t * prm + ph), an = ph * 37.0;
+          p += vec3(cos(an) * f * 1.3, sin(f * 3.14159) * (1.0 + fract(ph * 7.3) * 1.2) - f * 0.3, sin(an) * f * 0.9 + f * 0.5);
+          a = smoothstep(0.0, 0.08, f) * (1.0 - f); s *= 1.0 - f * 0.4;
+        }
       } else if (kind > 9.5) {   // fizzy kefir bubble: wobbles up ~1.2 m, grows a little, pops (normal blending)
         float f = fract(t * prm + ph);
         p += vec3(sin(f * 7.0 + ph * 30.0) * 0.07, f * 1.25, cos(f * 6.0 + ph * 20.0) * 0.07);
@@ -3280,6 +4057,26 @@ const LEVEL = (function () {
         vec3 hc = vCol.g > 0.5 && vCol.b < 0.3 ? vec3(1.0, 0.5, 0.16) : vec3(1.0, 0.8, 0.26);   // yellow blossoms get an orange heart
         col = mix(col, hc, heart);
         gl_FragColor = vec4(col, max(petal, heart) * vA);
+      } else if (vK > 10.5 && vK < 11.5) {   // butterfly: two pairs of round wings flapping (their width follows the beat), a dark body
+        float fl = 0.25 + 0.75 * abs(sin(vF)); vec2 q = vec2(c.x / max(fl, 0.15), c.y);
+        float up = smoothstep(0.24, 0.2, length((vec2(abs(q.x), q.y) - vec2(0.2, 0.09)) * vec2(1.0, 1.15)));
+        float lo = smoothstep(0.16, 0.12, length(vec2(abs(q.x), q.y) - vec2(0.15, -0.12)));
+        float body = smoothstep(0.035, 0.02, abs(c.x)) * smoothstep(0.3, 0.24, abs(c.y));
+        float al = max(max(up, lo), body);
+        if (al < 0.05) discard;
+        vec3 col = mix(vCol, vCol * 0.55 + 0.45, smoothstep(0.1, 0.0, length(vec2(abs(q.x), q.y) - vec2(0.24, 0.12))));   // a pale spot on each wing
+        col = mix(col, vec3(0.16, 0.12, 0.1), body);
+        gl_FragColor = vec4(col, al * vA);
+      } else if (vK > 12.5 && vK < 13.5) {   // tumbling oak leaf: a pointed leaf with a vein, flipping as it falls
+        float r = vF; vec2 q = mat2(cos(r), sin(r), -sin(r), cos(r)) * c; q.x /= max(0.25, abs(cos(r * 0.6)));
+        float lf = smoothstep(0.42, 0.38, length(q - vec2(0.27, 0.0))) * smoothstep(0.42, 0.38, length(q + vec2(0.27, 0.0)));
+        if (lf < 0.05) discard;
+        float vn = smoothstep(0.03, 0.0, abs(q.y)) * smoothstep(0.4, 0.2, abs(q.x));
+        gl_FragColor = vec4(vCol * (0.8 + 0.4 * smoothstep(-0.2, 0.2, q.y)) * (1.0 - vn * 0.3), lf * vA);
+      } else if (vK > 13.5 && vK < 14.5) {   // creeping fog: a very soft wide puff
+        float al = smoothstep(0.5, 0.0, d); al = al * al * 0.12;
+        if (al * vA < 0.004) discard;
+        gl_FragColor = vec4(vCol, al * vA);
       } else if (vK > 9.5) {   // fizzy bubble: a thin bright rim, a faint film, a glint
         float rim = smoothstep(0.5, 0.43, d) * smoothstep(0.3, 0.41, d), film = smoothstep(0.5, 0.4, d) * 0.16;
         float gl = smoothstep(0.12, 0.03, length(c - vec2(-0.15, 0.16)));
@@ -8557,7 +9354,7 @@ const LEVEL = (function () {
     if (!spot) return;
     L.merchant = spot;
     L.solids.push({ x: spot.x, z: spot.z, r: 1.65, kind: 'merchant' }); L._sh = null;
-    L.spawns = L.spawns.filter(e => e.type === L.Z.boss || hyp(e.x - spot.x, e.z - spot.z) > 9);
+    L.spawns = L.spawns.filter(e => e.type === L.bossType || hyp(e.x - spot.x, e.z - spot.z) > 9);
     if (!L.checkpoints.some(c => hyp(c.x - st.x, c.z - st.z) < 7)) {
       const a = Math.atan2(st.z - spot.z, st.x - spot.x);
       for (const da of [-0.8, 0.8, -1.2, 1.2, 0]) {
@@ -9061,7 +9858,8 @@ const LEVEL = (function () {
     ensureRes();
     const g = L.group = new THREE.Group(); g.name = 'level'; scene.add(g);
     if (L.solids.some(s => s.built)) { L.solids = L.solids.filter(s => !s.built); L._sh = null; }   // rebuilding the same L
-    const th = THEME[L.theme] || THEME.forest;
+    const zl = zlook(L), th = zl ? Object.assign({}, THEME[L.theme] || THEME.forest, zl.light) : THEME[L.theme] || THEME.forest;
+    if (zl && !zl.light.fezaLight) th.fezaLight = THEME.forest.fezaLight;
     setLighting(th); POST.saturation = th.sat; POST.vignette = th.vig ?? 0.32;   // (Kefir Vadisi: a lighter vignette, the others keep 0.32)
     const ru = R.mat.rock.userData.u, mc = lin(th.moss[0]);
     ru.uMoss.value.set(mc.r, mc.g, mc.b, th.moss[1]);
@@ -9202,5 +10000,11 @@ const LEVEL = (function () {
   return {
     generate, build, update, dispose, isFloor, circleFree, move, los, flowTo, flowDir, randomFloorNear,
     satCount: (L, x0, z0, x1, z1) => satCount(L, x0, z0, x1, z1),
+    // (CEVRE) how loud each ambient water sound should be at (x, z): { selale: 0..1, dere: 0..1 } (nearest source, 1 at it, 0 beyond its r)
+    ortamSes(L, x, z) {
+      const o = { selale: 0, dere: 0 };
+      for (const s of (L && L.sesKaynak) || []) { const k = 1 - hyp(s.x - x, s.z - z) / s.r; if (k > (o[s.tur] || 0)) o[s.tur] = Math.min(1, k * k * (3 - 2 * k)); }
+      return o;
+    },
   };
 })();
