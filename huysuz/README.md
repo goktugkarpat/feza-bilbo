@@ -10,7 +10,7 @@ onlar sevinçten kocaman gülümseyip kalpler saçarak kayboluyorlar. Bütün ya
 ## Nasıl açılır
 
 - **Bilgisayarda:** `index.html` dosyasına çift tıklamanız yeterli. Kurulum ya da internet gerekmez.
-- **iPad'de:** Oyun GitHub Pages'ta yayınlanınca iPad'de Safari ile https://goktugkarpat.github.io/feza-huysuzlara-karsi/ adresini açıp
+- **iPad'de:** Oyun GitHub Pages'ta yayınlanınca iPad'de Safari ile https://goktugkarpat.github.io/feza-bilbo/ (ev ekranında ortadaki kale kapısı) adresini açıp
   Paylaş › **Ana Ekrana Ekle** deyin. Oyun kendi simgesiyle, tam ekran bir uygulama gibi açılır.
   İlk açılıştan sonra **internet olmadan da** çalışır (ana oyunun `../sw.js` dosyası bu macerayı da cihaza kaydeder).
 - Aynı Wi-Fi'daki iPad'de denemek için Mac'te `python3 serve.py` çalıştırıp yazdığı adresi iPad'de açabilirsiniz.
@@ -169,7 +169,7 @@ Mola menüsünde **Devam Et**, **Zorluk**, **Kaydet** ve **Baştan Başla** bulu
 | `sesler.js` | Türkçe kadın sesiyle kaydedilmiş anlatıcı cümleleri (dosyaya gömülü) |
 | `gen_voice.py` | Cümle değişirse sesleri yeniden kaydeder |
 | `ev-dugmesi.js` | Sol üstteki ev düğmesi (basılı tut → Feza ile Bilbo'nun evine dön) |
-| `yayinla.command` | Çift tıklayınca değişiklikleri GitHub'a gönderir |
+| `../yayinla.command` | Kökte; çift tıklayınca bütün oyunu GitHub'a gönderir |
 | `serve.py` | İsteğe bağlı yerel sunucu (iPad'i aynı Wi-Fi'dan bağlamak için) |
 
 ## Oyunu bitirdikten sonra devam etmek

@@ -7,7 +7,7 @@ Her şey sevimlidir; kan veya korkutucu görüntüler yoktur.
 
 ## Nasıl açılır
 
-- **İnternette:** https://goktugkarpat.github.io/feza-bilbo-orman-macerasi/
+- **İnternette:** https://goktugkarpat.github.io/feza-bilbo/ (ev ekranında orman kapısı)
 - **Bilgisayarda:** `index.html` dosyasına çift tıkla. Mac'te `OYNA.command` da oyunu tarayıcıda açar.
 - **iPad'de:** Safari ile oyun adresini açıp Paylaş › **Ana Ekrana Ekle** de. İlk açılıştan sonra internet olmadan da oynanır.
 - **Yerel deneme:** `python3 serve.py` çalıştır; yazdığı adres aynı Wi-Fi'daki tablette de açılır.

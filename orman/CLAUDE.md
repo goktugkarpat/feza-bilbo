@@ -6,7 +6,7 @@ Feza, Bilbo, Baba ve Kartal ile geçen bağımsız, çocuklara uygun orman macer
 - Test only with ?sessiz and muted browsers. Turkish narrator Emel is prerecorded; this adventure is Turkish-only; do not substitute browser TTS.
 - Contracts are in src/SPEC.md. Keep cached/batched models, chunked world visibility and current frame pacing.
 - Independent saves and preferences must not overwrite the other adventures (keys are prefixed).
-- Publish only when the user explicitly requests it, to the separate feza-bilbo-orman-macerasi repository. Never push to feza-huysuzlara-karsi.
+- Bu klasör "Feza ve Bilbo'nun Maceraları" (kök: ../) oyununun bir macerasıdır. GitHub'a yalnız ebeveyn "gönder" deyince, kökten goktugkarpat/feza-bilbo deposuna gönderilir.
 - **Feza ve Bilbo'nun Maceraları içinde (orman/):** kendi `sw.js`, `manifest.webmanifest`, `icons/` yok; kökteki `../sw.js` her şeyi önbelleğe alır,
   `index.html` `../manifest.webmanifest` ve `../icons/` kullanır. `ev-dugmesi.js` (üç macerada aynı dosya) sol üstte basılı tutulan ev düğmesi
   (→ `../index.html` + sorgu) ve `FEZA_BILBO_TAMAM(id)`; `victory()` bunu `'orman'` ile çağırır (localStorage `fezaBilboTamam`).

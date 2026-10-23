@@ -4,7 +4,7 @@
 
 Oyun: "Feza, Bilbo ve Aytuğ Hala: Dev Ev Macerası" (kısa: "Dev Ev Macerası"). Yalnız Türkçe (`src/00_i18n.js` artık metni
 olduğu gibi döndüren zararsız bir kalıntı; `FEZA_LANG.t/html` çağrıları kalabilir). Kayıt anahtarı `fezaAytugHala.v1`, ayarlar
-`fezaAytugHala.ayar`. Önbellek `sw.js` CACHE `feza-aytug-hala-vN` (yeni dosya → `SRC` listesine ekle, sürümü artır).
+`fezaAytugHala.ayar`. Önbellek kökteki `../sw.js` (`feza-bilbo-vN`; `../tools/liste.py` ile güncellenir).
 
 ### Dosyalar ve yükleme sırası (hepsi klasik `<script>`, index.html'deki sırayla)
 ```

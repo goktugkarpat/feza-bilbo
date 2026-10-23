@@ -10,8 +10,7 @@
   `python3 gen_voice.py` → `sesler.js` (tr-TR-EmelNeural; `.ses_onbellek/` git'e girmez). Ajan/konu cümleleri ayrı dosyalarda:
   `src/02l_*.js` → `Object.assign(AUD.LINES, {...})` (gen_voice.py bunları da okur; `--liste` ağsız listeler). Hikâye: `src/02l_hikaye.js`.
 - Kontrol sırasında oyunu `?sessiz` ile aç. `?hepsiacik` Pasta Krallığı kilidini açar (test). `?kam=uzaklık,eğim`, `?basit`, `?hd`, `?ikon`.
-- GitHub'a SADECE kullanıcı "yükle / GitHub'a gönder" dediğinde gönder (depo: github.com/goktugkarpat/feza-aytug-hala, `main`'e doğrudan).
-  Kullanıcı `yayinla.command` ile de gönderebilir (ilk seferde depoyu oluşturup GitHub Pages'ı açar).
+- Bu klasör "Feza ve Bilbo'nun Maceraları" (kök: ../) oyununun bir macerasıdır. GitHub'a SADECE ebeveyn "gönder" deyince, kökten goktugkarpat/feza-bilbo deposuna (`main`) gönderilir (`../yayinla.command`).
 - **Feza ve Bilbo'nun Maceraları içinde (hala/):** kendi `sw.js`, `manifest.webmanifest`, `icons/` yok; kökteki `../sw.js` her şeyi önbelleğe alır,
   `index.html` `../manifest.webmanifest` ve `../icons/` kullanır. `ev-dugmesi.js` (üç macerada aynı dosya) sol üstte basılı tutulan ev düğmesi
   (→ `../index.html` + sorgu) ve `FEZA_BILBO_TAMAM(id)`; `victory()` bunu `'hala'` ile çağırır (localStorage `fezaBilboTamam`).

@@ -2,6 +2,7 @@
 
 Feza (5 yaş) için tek oyun: önce Feza ile köpeği Bilbo'nun **evi** açılır, evden üç maceraya gidilir.
 Okuma gerekmez: her macera resimli bir kapıdır, yönlendirmeler sesli (Türkçe kadın sesi).
+Eskiden ayrı oyunlar olan Saklı Toplar Ormanı, Dev Ev Macerası ve Huysuzlara Karşı artık bu tek oyunun içinde; eski ayrı oyunlar kaldırıldı.
 
 ## Evde neler var?
 Feza ile Bilbo'nun sıcak, 3D oyun odası (gün batımı ışığı, pencere, kitap rafı, oyuncak treni, küp kalesi, oyuncak sandığı,
