@@ -1,0 +1,20 @@
+.DS_Store
+.claude/
+__pycache__/
+.ses_onbellek/
+tools/*
+!tools/gen_english_voices.py
+.tools-python/
+test/
+
+.english-voice-cache/
+
+# Geçici dosyalar ve test çıktıları
+*.py[cod]
+*.tmp
+*.bak
+*~
+Thumbs.db
+/test-results/
+/playwright-report/
+/blob-report/

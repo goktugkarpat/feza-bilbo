@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dev Ev Macerası">
+<meta name="theme-color" content="#f6a48c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<title>Feza, Bilbo ve Aytuğ Hala: Dev Ev Macerası</title>
+<script>
+// Update old cached scripts before accepting the first play tap.
+(async function () {
+  if (!/^https?:$/.test(location.protocol) || !('serviceWorker' in navigator) || !navigator.serviceWorker.controller) return;
+  const previous = navigator.serviceWorker.controller;
+  let reloading = false;
+  document.documentElement.setAttribute('data-updating', '');
+  const block = e => { if (!(e.ctrlKey || e.metaKey)) { e.preventDefault(); e.stopImmediatePropagation(); } };
+  const events = ['pointerdown', 'pointerup', 'click', 'touchstart', 'keydown'];
+  events.forEach(n => window.addEventListener(n, block, { capture: true, passive: false }));
+  const changed = () => {
+    if (!reloading && navigator.serviceWorker.controller && navigator.serviceWorker.controller !== previous) {
+      reloading = true; location.reload();
+    }
+  };
+  navigator.serviceWorker.addEventListener('controllerchange', changed);
+  try {
+    const reg = await navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' });
+    try { await reg.update(); } catch (_) { /* An update may already be installing. */ }
+    const worker = reg.installing || reg.waiting;
+    if (worker && worker.state !== 'activated' && worker.state !== 'redundant') {
+      await new Promise(resolve => {
+        const done = () => { if (worker.state === 'activated' || worker.state === 'redundant') { worker.removeEventListener('statechange', done); resolve(); } };
+        worker.addEventListener('statechange', done); done();
+      });
+    }
+    changed();
+  } catch (_) { /* Offline: keep the installed game playable. */ }
+  finally {
+    if (!reloading) {
+      navigator.serviceWorker.removeEventListener('controllerchange', changed);
+      document.documentElement.removeAttribute('data-updating');
+      events.forEach(n => window.removeEventListener(n, block, true));
+    }
+  }
+})();
+</script>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #f3c9b0; touch-action: none; overscroll-behavior: none; }
+  canvas#c { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  #loading { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+    background: radial-gradient(circle at 50% 45%, #fbe3cf, #e9967f); color: #fff; font: 800 26px "Avenir Next", system-ui, sans-serif; z-index: 50; }
+  #loading .ld { width: 64px; height: 64px; border-radius: 50%; border: 8px solid #ffffff33; border-top-color: #ffd66b; animation: ldspin 0.9s linear infinite; }
+  html[data-updating] #loading { display: flex !important; }
+  @keyframes ldspin { to { transform: rotate(360deg); } }
+</style>
+<link rel="stylesheet" href="src/ui.css">
+<link rel="stylesheet" href="src/hub.css">
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="loading"><div class="ld"></div><div>Yükleniyor…</div></div>
+<script src="vendor/three.js"></script>
+<script src="src/00_i18n.js"></script>
+<script src="sesler.js"></script>
+<script src="bilbo-ses.js"></script>
+<script src="src/00_core.js"></script>
+<script src="src/01_textures.js"></script>
+<script src="src/02_audio.js"></script>
+<script src="src/02l_huysuz.js"></script>
+<script src="src/02l_feza.js"></script>
+<script src="src/02l_his.js"></script>
+<script src="src/02l_mini.js"></script>
+<script src="src/02l_boss.js"></script>
+<script src="src/02l_hikaye.js"></script>
+<script src="src/02l_masa.js"></script>
+<script src="src/02l_odalarA.js"></script>
+<script src="src/02l_balkon.js"></script>
+<script src="src/02l_hala.js"></script>
+<script src="src/02l_odalarB.js"></script>
+<script src="src/03_fx.js"></script>
+<script src="src/04_feza.js"></script>
+<script src="src/04_esyalar.js"></script>
+<script src="src/04_bilbo.js"></script>
+<script src="src/04_bilbo_follow.js"></script>
+<script src="src/04_bilbo_fun.js"></script>
+<script src="src/04_hala.js"></script>
+<script src="src/05_enemies.js"></script>
+<script src="src/05a_huysuz_kayit.js"></script>
+<script src="src/05h_huysuzlar.js"></script>
+<script src="src/05b_bosslar.js"></script>
+<script src="src/05c_boss_davranis.js"></script>
+<script src="src/05h_balkon.js"></script>
+<script src="src/06a_bolum_kayit.js"></script>
+<script src="src/06y_odakit.js"></script>
+<script src="src/06z_oturma.js"></script>
+<script src="src/06z_mutfak.js"></script>
+<script src="src/06z_buzdolabi.js"></script>
+<script src="src/06z_pasta.js"></script>
+<script src="src/06z_masa.js"></script>
+<script src="src/06z_balkon.js"></script>
+<script src="src/06_level.js"></script>
+<script src="src/07_game.js"></script>
+<script src="src/08_skills.js"></script>
+<script src="src/08m_minigame.js"></script>
+<script src="src/08j_his.js"></script>
+<script src="src/08n_mini_oyunlar.js"></script>
+<script src="src/10_story.js"></script>
+<script src="src/09_ui.js"></script>
+<script src="src/09h_hub.js"></script>
+</body>
+</html>

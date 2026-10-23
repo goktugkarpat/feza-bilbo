@@ -1,0 +1,72 @@
+/* ── Hikâye cümleleri (Aytuğ Hala anlatır, ilk ağızdan) ──
+   Başlık, giriş sinematiği, oda/alan girişleri, malzeme kutlamaları, kayıp eşyalar, Pasta Krallığı ve final.
+   Kayıt: `python3 gen_voice.py` (bu dosyayı da okur) → sesler.js. Cümleler kısa, sıcak; "Aa/Oo" yok. */
+Object.assign(AUD.LINES, {
+  // ── Giriş sinematiği (~35 s) ──
+  intro_1: 'Bugün Feza için kocaman bir sürpriz pasta yapıyorum!',
+  intro_2: 'Şimdi üstüne sihirli renkli şekerler serpelim.',
+  intro_3: 'Bilbo, un torbasında ne arıyorsun öyle?',
+  intro_4: 'Çok yaşa Bilbo! Eyvah, şekerler havaya uçtu!',
+  intro_5: 'Bak bak, her şey kocaman oluyor! Yoksa biz mi küçüldük?',
+  intro_6: 'Minicik olduk! Şekerler evin dört bir yanına dağıldı.',
+  intro_7: 'Şekerlerin değdiği eşyalar canlandı, biraz da huysuzlandı.',
+  intro_8: 'Hiç merak etme, onları oyunla neşelendiririz.',
+  intro_9: 'Hadi Feza, birlikte toplayalım!',
+  // ── Merkez: mutfak masası ──
+  masa_ilk: 'Burası benim mutfak masam. Pastamız da burada bekliyor!',
+  masa_ilk2: 'Renkli kapılardan odalara gideriz. Önce oturma odası!',
+  masa_donus1: 'Masaya döndük! Bak, pastamız büyüyor.',
+  masa_donus2: 'Evdeyiz! Pastaya bir bakalım mı?',
+  masa_donus3: 'Hoş geldin Feza! Sıradaki kapı bizi bekliyor.',
+  // ── Odalara giriş + görev ──
+  oda_oturma: 'Oturma odasına geldik! Halı burada orman gibi kocaman.',
+  gorev_oturma: 'Uykucu Süpürge unumuzu yutmuş. Hadi onu neşelendirelim!',
+  oda_mutfak: 'Mutfaktayız! Tezgâhlar dağ gibi, lavabo kocaman bir göl.',
+  gorev_mutfak: 'Düdüklü Tencere yumurtamızı saklıyor. Hadi bulalım!',
+  oda_buzdolabi: 'Buzdolabının içi buz gibi! Üşüdün mü Feza?',
+  gorev_buzdolabi: 'Dondurma Kralı çileklerimizi almış. Hadi gidelim!',
+  oda_pasta: 'Pasta Krallığı! Krema nehirleri, çilek ağaçları, şeker dağları!',
+  gorev_pasta: 'Koca Huysuz Pasta seni bekliyor. Büyüyü birlikte çözelim!',
+  // ── Alan girişleri (her odada üç alan) ──
+  alan_oturma_1: 'Halı ormanındayız. Toz tavşanları zıplıyor, bak bak!',
+  alan_oturma_2: 'Kitaplar kule gibi! Birine dokunursan domino gibi devrilir.',
+  alan_oturma_3: 'Koltuğun altı! Bilbo, yarışalım mı?',
+  alan_mutfak_1: 'Tezgâhın üstündeyiz. Ne kadar da yüksek!',
+  alan_mutfak_2: 'Lavabo gölü! Bir kaba binip yüzelim.',
+  alan_mutfak_3: 'Dolabın içi gizli bir geçit gibi. Sessizce yürüyelim!',
+  alan_buzdolabi_1: 'Buz pisti! Kayarak gidelim, vay be!',
+  alan_buzdolabi_2: 'Raflara tırmanalım. Elimi tut Feza!',
+  alan_buzdolabi_3: 'Dondurma kaydırağı! Hazır mısın? Kayıyoruz!',
+  alan_pasta_1: 'Krema nehri! Kurabiye köprüsünden geçelim.',
+  alan_pasta_2: 'Çilek ormanı! Ne güzel kokuyor burası.',
+  alan_pasta_3: 'Şeker dağına tırmanıyoruz. Az kaldı Feza!',
+  alan_genel1: 'Yeni bir yere geldik. Bakalım burada neler var?',
+  alan_genel2: 'Vay, burası da çok güzel! Hadi keşfedelim.',
+  // ── Malzeme kutlaması ──
+  malzeme_un: 'Un bulduk! Pastamız kabaracak, yaşasın!',
+  malzeme_yumurta: 'Yumurta da tamam! Pastamız yumuşacık olacak.',
+  malzeme_cilek: 'Kıpkırmızı çilekler! Pastaya çok yakışacak.',
+  malzeme_krema: 'Krema da geldi! Pastamız bembeyaz, pofuduk olacak.',
+  dans_1: 'Hadi, sevinç dansı yapalım!',
+  dans_2: 'Bilbo da dans ediyor, bak bak!',
+  dans_3: 'Sağa dön, sola dön, zıpla!',
+  // ── Bilbo kayıp eşya buldu ──
+  kayip_gozluk: 'Gözlüğüm! Teşekkürler Bilbo, seni çok seviyorum!',
+  kayip_anahtar: 'Anahtarım burada mıymış! Aferin sana Bilbo!',
+  kayip_toka: 'Tokam! Bilbo, sen dünyanın en iyi köpeğisin!',
+  kayip_genel1: 'Bunu her yerde aramıştım! Sağ ol Bilbo!',
+  kayip_genel2: 'Bilbo yine buldu! Burnu ne kadar akıllı!',
+  // ── Pasta Krallığı ──
+  pasta_kilitli: 'Pasta Krallığı için önce üç malzemeyi bulalım!',
+  pasta_acildi: 'Üç malzeme tamam! Pasta Krallığı açıldı, bak bak!',
+  balkon_acildi: 'Bak bak, balkon kapısı da açık! Güneşte çiçeklerle oynayalım mı?',
+  pasta_acildi2: 'Pembe kapıya gidelim. Son macera bizi bekliyor!',
+  // ── Final ──
+  son_1: 'Koca Pasta neşelendi! Bak bak, büyü çözülüyor!',
+  son_2: 'Şekerler geri dönüyor. Hepimiz yeniden büyüyoruz!',
+  son_3: 'Mumları yaktım. İyi ki varsın Feza!',
+  son_ufle: 'Hadi Feza, mumları üfle! Ekrana dokun!',
+  son_4: 'Yaşasın! Bilbo kremayı yalıyor, bak bak!',
+  son_5: 'Seni çok seviyorum Feza. Gel, sarılalım!',
+  son_6: 'Hadi masaya dönelim. Yeni bir şeker oyunu başlıyor!',
+});
