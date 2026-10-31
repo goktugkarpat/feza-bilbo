@@ -188,8 +188,15 @@ const MANTAR = (() => {
           float n1 = mzN(p * 0.18), n2 = mzN(p * 0.9 + 3.1), n3 = mzN(p * 3.3 + 7.7);
           // yosun: turkuaz ↔ mor lekeler, ince tüylü doku, yumuşak tümsekler
           // GÜZEL: lekeler yok — düz, sakin koyu mor-mavi zemin; yalnız çok yumuşak geniş ton dalgası ve ince doku
-          vec3 moss = mix(vec3(0.075, 0.085, 0.2), vec3(0.085, 0.1, 0.22), n1);
-          moss *= 0.94 + 0.06 * n3;
+          vec3 moss = mix(vec3(0.066, 0.077, 0.185), vec3(0.094, 0.11, 0.235), smoothstep(0.2, 0.8, n1));   // ZEMİN2: iki tonlu geniş dalga (±%8)
+          // ZEMİN2: yosun benekleri ≈%18 açık, yeşil-turkuaz; ara ara küçük yosun öbekleri; ince toprak lifleri ≈%14 koyu (hareketsiz, parıltısız)
+          float mzSpk = smoothstep(0.55, 0.72, mzN(p * 3.2 + 1.7));
+          moss = mix(moss, moss * vec3(0.95, 1.3, 1.2), mzSpk);
+          float mzClu = smoothstep(0.72, 0.86, mzN(p * 0.55 + 9.3)) * smoothstep(0.45, 0.7, mzN(p * 5.5 + 3.1));   // seyrek yosun öbekleri
+          moss = mix(moss, vec3(0.07, 0.16, 0.15), mzClu * 0.85);
+          float mzFib = smoothstep(0.86, 1.0, abs(sin(dot(p, vec2(0.6, 1.1)) * 7.0 + n2 * 5.0)));
+          moss *= 1.0 - 0.14 * mzFib;
+          moss *= 0.93 + 0.08 * n3;
           // yol: lavanta çakıl (yuvarlak taşçıklar)
           vec2 cg = p * 2.6, ci = floor(cg); vec2 co = fract(cg) - 0.5 - (vec2(mzH(ci + 1.3), mzH(ci + 5.1)) - 0.5) * 0.5;
           float peb = smoothstep(0.42, 0.18, length(co));

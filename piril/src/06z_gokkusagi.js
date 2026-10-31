@@ -191,6 +191,11 @@ const GOKKUSAGI = (() => {
           gc *= mix(0.6, 1.0, smoothstep(0.3, 0.85, gA.a));
           gc *= mix(0.94, 1.03, gB.g);
           gc = mix(gc, mix(vec3(0.7, 0.63, 0.86), gA.rgb * 0.92, 0.42), 0.78 * smoothstep(0.5, 0.9, gB.g) * (1.0 - gkP) * (1.0 - gB.a) * (1.0 - gkE));   // yol dışı yürünür alan biraz koyu lila: krem yol öne çıksın
+          // ZEMİN: bulut pofudukluğu (yumuşak iki tonlu lekeler, ±%7) yürünen zeminde; yolda ince şeker-taş kaplama (±%6). Hareket yok.
+          float gkPuf = gkN(vGkW.xz * 0.5) * 0.6 + gkN(vGkW.xz * 1.6 + 4.0) * 0.4;
+          float gkCl = smoothstep(0.42, 0.68, gkN(vGkW.xz * 0.32) * 0.7 + gkN(vGkW.xz * 1.1 + 2.0) * 0.3);   // pofuduk bulut kümeleri
+          gc *= mix(1.0, 0.87 + 0.13 * gkPuf + 0.12 * gkCl, (1.0 - gkP) * max(smoothstep(0.5, 0.9, gB.g), gB.a));   // ZEMİN2: ±%13, arenada tam
+          gc *= mix(1.0, 0.93 + 0.1 * cob, gkP);
           if (uGkB.z > 0.01) { float bd = length(vGkW.xz - uGkB.xy) / uGkB.z; gc *= 1.0 - 0.4 * smoothstep(1.0, 0.2, bd); }   // boss temas gölgesi   // SADE: yürünen zemin sakin, açık-nötr (kirli beyaz-lila)
           diffuseColor.rgb *= gc;
           float gkStar = 0.0;

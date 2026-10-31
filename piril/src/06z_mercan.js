@@ -405,12 +405,15 @@ const MERCAN = (() => {
   let PATHTEX = null;
   function pathTex() {
     if (PATHTEX) return PATHTEX;
-    const c = document.createElement('canvas'); c.width = 64; c.height = 8; const x = c.getContext('2d');
+    const c = document.createElement('canvas'); c.width = 64; c.height = 64; const x = c.getContext('2d');
     const g = x.createLinearGradient(0, 0, 64, 0);
     g.addColorStop(0, 'rgba(120,206,204,0)'); g.addColorStop(0.07, 'rgba(120,206,204,0.7)'); g.addColorStop(0.12, 'rgba(255,248,232,0.95)');
     g.addColorStop(0.88, 'rgba(255,248,232,0.95)'); g.addColorStop(0.93, 'rgba(120,206,204,0.7)'); g.addColorStop(1, 'rgba(120,206,204,0)');
-    x.fillStyle = g; x.fillRect(0, 0, 64, 8);
-    PATHTEX = new THREE.CanvasTexture(c); PATHTEX.colorSpace = THREE.SRGBColorSpace; PATHTEX.userData.keep = true;
+    x.fillStyle = g; x.fillRect(0, 0, 64, 64);
+    // ZEMİN: yolda ince çakıl/kabuk kırıntısı dokusu (düşük kontrast; kenar şeridine dokunmaz)
+    let sd = 11; const rn = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
+    for (let i = 0; i < 260; i++) { const px = 9 + rn() * 46, py = rn() * 64, r = 0.6 + rn() * 1.4; x.fillStyle = rn() < 0.5 ? 'rgba(190,160,120,0.24)' : 'rgba(255,255,255,0.32)'; x.beginPath(); x.ellipse(px, py, r * 1.3, r, rn() * 3, 0, TAU); x.fill(); }
+    PATHTEX = new THREE.CanvasTexture(c); PATHTEX.colorSpace = THREE.SRGBColorSpace; PATHTEX.wrapT = THREE.RepeatWrapping; PATHTEX.userData.keep = true;
     return PATHTEX;
   }
   function pathStrip(api, B, L, rnd) {
@@ -421,7 +424,7 @@ const MERCAN = (() => {
     const pos = [], uv = [], idx = [];
     for (let i = 0; i <= N; i++) {
       const a = sp[Math.max(0, i - 1)], b = sp[Math.min(N, i + 1)], dx = b.x - a.x, dz = b.z - a.z, l = hyp(dx, dz) || 1, nx = -dz / l, nz = dx / l;
-      pos.push(sp[i].x + nx * w, 0.03, sp[i].z + nz * w, sp[i].x - nx * w, 0.03, sp[i].z - nz * w); uv.push(0, i * 0.5, 1, i * 0.5);
+      pos.push(sp[i].x + nx * w, 0.03, sp[i].z + nz * w, sp[i].x - nx * w, 0.03, sp[i].z - nz * w); uv.push(0, i * 0.25, 1, i * 0.25);
       if (i < N) { const q = i * 2; idx.push(q, q + 2, q + 1, q + 1, q + 2, q + 3); }
       if (i % 4 === 2) for (const sd of [-1, 1]) {   // kenar kabukları (yassı, üstünden geçilir)
         const x = sp[i].x + nx * sd * (w + 0.12), z = sp[i].z + nz * sd * (w + 0.12);
@@ -970,15 +973,16 @@ const MERCAN = (() => {
     let seed = 7; const rr = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
     for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
       const k = j * N + i, h = hgt[k], o = k * 4;
-      const v = 0.9 + 0.08 * h - (rr() < 0.03 ? 0.05 : 0);
+      const uu = i / N, vv = j / N, big = 0.5 + 0.5 * Math.sin(TAU * (uu + 0.3 * Math.sin(TAU * vv))) * Math.sin(TAU * (vv + 0.2));   // ZEMİN: iki tonlu yumuşak dalgalanma (±%5)
+      const v = 0.885 + 0.07 * h + 0.075 * big - (rr() < 0.06 ? 0.05 : 0) + (rr() < 0.05 ? 0.04 : 0);   // + ince kum taneleri
       ic.data[o] = 255 * v; ic.data[o + 1] = 236 * v; ic.data[o + 2] = 204 * v; ic.data[o + 3] = 255;   // SADE5: sıcak altın-şeftali kum
       const dx = hgt[j * N + ((i + 1) % N)] - hgt[j * N + ((i + N - 1) % N)], dy = hgt[((j + 1) % N) * N + i] - hgt[((j + N - 1) % N) * N + i];
       let nx = -dx * 0.5, ny = -dy * 0.5, nzz = 1;   // SADE: dalgacıklar yumuşak const l = Math.hypot(nx, ny, nzz); nx /= l; ny /= l; nzz /= l;
       inn.data[o] = (nx * 0.5 + 0.5) * 255; inn.data[o + 1] = (ny * 0.5 + 0.5) * 255; inn.data[o + 2] = (nzz * 0.5 + 0.5) * 255; inn.data[o + 3] = 255;
     }
     // minik kabuk kırıntıları (pembe / beyaz)
-    for (let q = 0; q < 70; q++) {
-      const x = rr() * N, y = rr() * N, r = 1 + rr() * 1.6, o = ((y | 0) * N + (x | 0)) * 4, pink = rr() < 0.5;
+    for (let q = 0; q < 110; q++) {
+      const x = rr() * N, y = rr() * N, r = 0.8 + rr() * 1.1, o = ((y | 0) * N + (x | 0)) * 4, pink = rr() < 0.5;
       for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) if (dx * dx + dy * dy <= r * r) { const oo = ((((y + dy) | 0) + N) % N * N + (((x + dx) | 0) + N) % N) * 4; ic.data[oo] = 255; ic.data[oo + 1] = pink ? 214 : 250; ic.data[oo + 2] = pink ? 226 : 246; }
       void o;
     }

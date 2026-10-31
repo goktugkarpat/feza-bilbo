@@ -351,6 +351,20 @@ const YUVA = (() => {
   function mats() {
     if (MAT.ok) return MAT;
     MAT.floor = keepMat(new THREE.MeshStandardMaterial({ map: floorTex(), roughness: 0.94, metalness: 0 }));
+    // ZEMİN: ince, düşük kontrastlı yorgan dokusu (dünya uzayında, gölgelendiricide): 45° baklava dikiş izleri (≈%7 koyu), her baklavanın
+    // ortası hafif kabarık (≈%4 açık) ve iki tonlu çok geniş yumuşak dalga (±%4). Hareket yok, parıltı yok; tek ucuz gürültü.
+    MAT.floor.onBeforeCompile = sh => {
+      sh.vertexShader = 'varying vec3 vYgW;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvYgW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+      sh.fragmentShader = 'varying vec3 vYgW;\nfloat ygN(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); float a = fract(sin(dot(i, vec2(127.1, 311.7))) * 43758.5); float b = fract(sin(dot(i + vec2(1.0, 0.0), vec2(127.1, 311.7))) * 43758.5); float c = fract(sin(dot(i + vec2(0.0, 1.0), vec2(127.1, 311.7))) * 43758.5); float d = fract(sin(dot(i + vec2(1.0, 1.0), vec2(127.1, 311.7))) * 43758.5); return mix(mix(a, b, f.x), mix(c, d, f.x), f.y); }\n' +
+        sh.fragmentShader.replace('#include <map_fragment>', `#include <map_fragment>
+          vec2 yq = mat2(0.7071, -0.7071, 0.7071, 0.7071) * vYgW.xz * 0.85;
+          vec2 yf = fract(yq) - 0.5;
+          float seam = smoothstep(0.38, 0.5, max(abs(yf.x), abs(yf.y)));
+          float puff = 1.0 - smoothstep(0.0, 0.45, length(yf));
+          float wave = ygN(vYgW.xz * 0.07);
+          diffuseColor.rgb *= (1.0 - 0.1 * seam) * (1.0 + 0.056 * puff) * (0.944 + 0.112 * wave);   // ZEMİN2: ~1,4×`);
+    };
+    MAT.floor.customProgramCacheKey = () => 'yuva-yorgan';
     MAT.sky = keepMat(new THREE.MeshBasicMaterial({ map: skyTex(), side: THREE.BackSide, fog: false, depthWrite: false, toneMapped: false }));
     MAT.stars = keepMat(new THREE.PointsMaterial({ map: starDotTex(), size: 9, sizeAttenuation: false, transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending, color: 0xfff6e0 }));
     MAT.stars2 = keepMat(MAT.stars.clone()); MAT.stars2.size = 6; MAT.stars2.color.set(0xd8e6ff);

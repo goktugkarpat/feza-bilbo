@@ -253,6 +253,27 @@ const ATOLYE = (() => {
       else { g.beginPath(); g.moveTo(cx, cy + s * 0.16); g.bezierCurveTo(cx - s * 0.3, cy - s * 0.05, cx - s * 0.1, cy - s * 0.25, cx, cy - s * 0.08); g.bezierCurveTo(cx + s * 0.1, cy - s * 0.25, cx + s * 0.3, cy - s * 0.05, cx, cy + s * 0.16); g.fill(); }
     }
   });
+  // ZEMİN turu: ince keçe/lif dokusu (gri 128 çevresinde, düşük kontrast; R = ince lif/benek, G = yumuşak büyük leke). Tek doku, kalıcı.
+  const feltTex = () => canvasTex('atFelt', 256, (g, S) => {
+    g.fillStyle = 'rgb(128,128,128)'; g.fillRect(0, 0, S, S);
+    let seed = 11; const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    g.globalCompositeOperation = 'source-over'; g.lineCap = 'round';
+    // R kanalı: kısa, rastgele yönlü keçe lifleri (açık/koyu), kenarlarda sarılarak döşenir
+    for (let k = 0; k < 1400; k++) {
+      const x = r() * S, y = r() * S, a = r() * TAU, l = 2 + r() * 6, v = r() < 0.5 ? 255 : 0;
+      g.strokeStyle = `rgba(${v},128,128,${0.08 + r() * 0.1})`; g.lineWidth = 0.8 + r() * 0.8;
+      for (const ox of [0, -S, S]) for (const oy of [0, -S, S]) { g.beginPath(); g.moveTo(x + ox, y + oy); g.lineTo(x + ox + Math.cos(a) * l, y + oy + Math.sin(a) * l); g.stroke(); }
+    }
+    // G kanalı: yumuşak büyük lekeler (iki tonlu renk dalgalanması için)
+    for (let k = 0; k < 26; k++) {
+      const x = r() * S, y = r() * S, rr = S * (0.1 + r() * 0.18), v = r() < 0.5 ? 255 : 0;
+      for (const ox of [0, -S, S]) for (const oy of [0, -S, S]) {
+        const gr = g.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, rr);
+        gr.addColorStop(0, `rgba(128,${v},128,0.22)`); gr.addColorStop(1, 'rgba(128,128,128,0)');
+        g.fillStyle = gr; g.fillRect(x + ox - rr, y + oy - rr, rr * 2, rr * 2);
+      }
+    }
+  });
   // müzik halısı: lacivert, altın yıldızlar ve nota desenleri
   const starRug = () => canvasTex('atRug', 512, (g, S) => {
     const gr = g.createLinearGradient(0, 0, S, S); gr.addColorStop(0, '#2f4a8f'); gr.addColorStop(1, '#2c4486');   // ATOLYE2: gece mavisi (mor yalnız Pırıl'ın) g.fillStyle = gr; g.fillRect(0, 0, S, S);
@@ -285,16 +306,23 @@ const ATOLYE = (() => {
     const lay = new THREE.DataTexture(data, tw, th, THREE.RGBAFormat);
     lay.magFilter = lay.minFilter = THREE.LinearFilter; lay.needsUpdate = true; api.dispose(lay);
     const m0 = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.7, metalness: 0 });
-    const U = { tLay: { value: lay }, tM0: { value: planks() }, tM1: { value: puzzle() }, tM2: { value: starRug() }, uLay: { value: new THREE.Vector4(pad, pad, 1 / W, 1 / H) } };
+    const U = { tLay: { value: lay }, tM0: { value: planks() }, tM1: { value: puzzle() }, tM2: { value: starRug() }, uLay: { value: new THREE.Vector4(pad, pad, 1 / W, 1 / H) }, tFelt: { value: feltTex() } };
     m0.onBeforeCompile = sh => {
       Object.assign(sh.uniforms, U);
       sh.vertexShader = 'varying vec3 vAtW;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvAtW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
-      sh.fragmentShader = 'varying vec3 vAtW; uniform sampler2D tLay, tM0, tM1, tM2; uniform vec4 uLay;\n' + sh.fragmentShader
+      sh.fragmentShader = 'varying vec3 vAtW; uniform sampler2D tLay, tM0, tM1, tM2, tFelt; uniform vec4 uLay;\n' + sh.fragmentShader
         .replace('#include <map_fragment>', `vec4 atL = texture2D(tLay, (vAtW.xz + uLay.xy) * uLay.zw);
           vec3 atC = texture2D(tM0, vAtW.xz / 6.0).rgb;
           vec3 atP = texture2D(tM1, vAtW.xz / 4.0).rgb; atP = mix(atP, vec3(dot(atP, vec3(0.3, 0.59, 0.11))), 0.24); atP = mix(atP, vec3(0.96, 0.88, 0.78), 0.1) * 0.9;   // ATOLYE2: yapboz net ve sıcak, ama karakterlerden sakin (sis/bej perde yok)
           float atIn = smoothstep(0.42, 0.5, atL.r), atRim = smoothstep(0.3, 0.36, atL.r) - atIn;   // halının keskin kenarı + krem bordür
+          // ZEMİN turu: ince doku (±%8–10): parkede boyuna uzayan tahta damarı, yapbozda keçe lifi; üstüne büyük ölçekli iki ton dalgalanma
+          float atFw = texture2D(tFelt, vAtW.xz * vec2(0.1, 0.8)).r - 0.5;    // parke damarı (tahtalar x boyunca)
+          float atFf = texture2D(tFelt, vAtW.xz * 0.35).r - 0.5;                // keçe lifi
+          float atMac = texture2D(tFelt, vAtW.xz * 0.045).g - 0.5;             // büyük yumuşak leke
+          atC *= 1.0 + atFw * 0.72;
+          atP *= 1.0 + atFf * 1.12;
           atC = mix(atC, atP, atIn);
+          atC *= 1.0 + atMac * 0.4;
           atC = mix(atC, vec3(0.97, 0.9, 0.78), atRim * 0.9);
           atC *= 1.0 - 0.28 * (smoothstep(0.36, 0.42, atL.r) - atIn);
           vec3 atR = texture2D(tM2, vAtW.xz / 3.0).rgb; atR = mix(atR, vec3(0.24, 0.32, 0.52), 0.45);   // SADE: yıldızlı halı sönük

@@ -67,17 +67,18 @@ const COL = (() => {
     return (TEXC[key] = t);
   }
   const rgb = h => [(h >> 16) & 255, (h >> 8) & 255, h & 255];
-  function sandTex() {   // kum dalgacıkları (8 m): yumuşak sırtlar + ince tane + ara sıra pembe/beyaz parıltı tanesi
+  function sandTex() {   // ZEMİN: ince rüzgâr dalgacıkları (açık sırt / koyu çukur, ±%5) + kum tanesi (±%3) + seyrek koyu minik çakıl; parıltı yok
     const b = rgb(0xf4d3a2);
-    return pixTex('colSand', 512, (u, v, out, x, y) => {
-      const w = Math.sin((v * 9 + Math.sin(u * TAU * 2) * 0.35 + Math.sin(u * TAU * 5 + v * TAU) * 0.06) * TAU);
-      let s = 0.97 + 0.022 * w + 0.015 * Math.sin(u * TAU * 3 + v * TAU * 2);
-      const h = hash(x, y, 1); s += (h - 0.5) * 0.05;
-      let r = b[0] * s, g = b[1] * s, bb = b[2] * s;
-      if (h > 0.997) { r = 255; g = 236; bb = 240; } else if (h > 0.994) { r = 255; g = 200; bb = 210; }
-      out[0] = r; out[1] = g; out[2] = bb;
+    return pixTex('colSand2', 512, (u, v, out, x, y) => {
+      const ph = v * 14 + Math.sin(u * TAU * 2) * 0.45 + Math.sin(u * TAU * 5 + v * TAU) * 0.08;   // (döşenebilir: tam sayılı frekanslar)
+      const w = Math.sin(ph * TAU), rp = w > 0 ? Math.pow(w, 0.6) : -Math.pow(-w, 1.7);   // keskin sırt, yayvan çukur
+      let s = 0.97 + 0.045 * rp + 0.012 * Math.sin(u * TAU * 3 + v * TAU * 2);
+      const h = hash(x, y, 1); s += (h - 0.5) * 0.06;
+      if (h > 0.994) s *= 0.9;   // seyrek, küçük koyu kum taneleri
+      out[0] = b[0] * s; out[1] = b[1] * s; out[2] = b[2] * s;
     });
   }
+
   function pathTex() {   // açık, sıkışık kum yol (6 m): yuvarlak pastel çakıllar
     const b = rgb(0xfff1dc), P = [rgb(0xf8d8c8), rgb(0xe0e8ee), rgb(0xfbe6c8), rgb(0xece0ee)];   // (zeminden belirgin açık: yol okunsun)
     return pixTex('colPath', 512, (u, v, out, x, y) => {
@@ -189,7 +190,9 @@ const COL = (() => {
           coC = mix(coC, texture2D(tM2, vCoW.xz * uRep.z).rgb, coL.b);
           float coDune = 0.5 + 0.5 * sin(vCoW.x * 0.21 + sin(vCoW.z * 0.17) * 1.7) * sin(vCoW.z * 0.13 + 1.3);
           float coWind = 0.6 * smoothstep(0.86, 1.0, sin(vCoW.x * 0.55 + vCoW.z * 0.22 + sin(vCoW.z * 0.31 + vCoW.x * 0.07) * 2.6)) * (1.0 - coL.b);
-          coC *= (0.96 + 0.06 * coDune) * (1.0 + 0.05 * coWind);   // büyük, yumuşak kum tepecikleri + rüzgâr izleri
+          coC *= (0.95 + 0.08 * coDune) * (1.0 + 0.05 * coWind);   // büyük, yumuşak kum tepecikleri + rüzgâr izleri
+          float coTone = 0.5 + 0.5 * sin(vCoW.x * 0.09 + vCoW.z * 0.06 + sin(vCoW.z * 0.11) * 1.3);   // iki tonlu büyük ölçek renk dalgalanması (sıcak ↔ biraz pembe)
+          coC *= mix(vec3(1.0), vec3(1.02, 0.965, 0.95), coTone * (1.0 - coL.b * 0.6));
           coC *= mix(uOut * (0.92 + 0.12 * coDune), vec3(1.0), coL.g);
           diffuseColor.rgb *= coC;`);
     };
