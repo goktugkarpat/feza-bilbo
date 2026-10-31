@@ -1,6 +1,6 @@
 /* Yazısız yükleme örtüsü (ev + üç macera ortak). Sayfanın <head>'inde EN BAŞTA, diğer her şeyden önce yüklenir:
-   <script src="yukleme.js" data-tema="ev"></script>   (maceralarda: src="../yukleme.js" data-tema="orman|hala|huysuz")
-   Sıcak arka plan, küçük simge (evde logo), sırayla beliren Bilbo pati izleri + önlerinde zıplayan Bilbo'nun topu.
+   <script src="yukleme.js" data-tema="ev"></script>   (maceralarda: src="../yukleme.js" data-tema="orman|hala|huysuz|piril")
+   Sıcak arka plan, küçük simge (evde logo), sırayla beliren Bilbo pati izleri + önlerinde zıplayan Bilbo'nun topu (piril: yıldız izleri + ejderha ışığı).
    Evden kapıyla gelince evin beyaz parlamasıyla aynı sıcak beyazdan başlar, maceranın rengine yumuşakça geçer.
    İlerleme: yüklenen script dosyaları (kendiliğinden) + YUKLEME.ilerle(0..1). Kapanış: YUKLEME.bitir();
    maceralarda oyunun kendi hazır sözü (UI.ready: başlık ekranının ilk karesi çizilince) beklenir. En geç 15 sn'de kendiliğinden kalkar. */
@@ -11,7 +11,8 @@
     ev: ['#fff3dc', '#f6b97c', '#b8643a'],
     orman: ['#effbe2', '#8fd36f', '#2f7a3c'],
     hala: ['#fff1f6', '#f7a6c6', '#c8507e'],
-    huysuz: ['#f1e9ff', '#a88cf2', '#45298f']
+    huysuz: ['#f1e9ff', '#a88cf2', '#45298f'],
+    piril: ['#f6f0ff', '#cdb8f6', '#7458c2']
   }[tema] || ['#fff3dc', '#f6b97c', '#b8643a'];
   var kok = (bu && bu.src) ? bu.src.replace(/yukleme\.js(\?.*)?$/, '') : '';
   var SIMGE = {
@@ -36,11 +37,17 @@
     huysuz: '<svg viewBox="0 0 160 160" width="160" height="160"><defs><linearGradient id="ykb" x1="0" x2="1"><stop offset="0" stop-color="#8fe6ff"/><stop offset=".5" stop-color="#fff"/><stop offset="1" stop-color="#8fe6ff"/></linearGradient></defs>' +
       '<g transform="rotate(35 80 80)"><rect class="yk-isin" x="68" y="6" width="24" height="104" rx="12" fill="#5fd0ff" opacity=".45"/><rect x="73" y="10" width="14" height="98" rx="7" fill="url(#ykb)"/>' +
       '<rect x="68" y="106" width="24" height="44" rx="6" fill="#c9d0da"/><rect x="66" y="108" width="28" height="8" rx="3" fill="#3d4a5c"/><rect x="66" y="128" width="28" height="6" rx="3" fill="#3d4a5c"/></g>' +
-      '<path d="M128 18 l6 13 l14 2 l-10 10 l2 14 l-12 -7 l-12 7 l2 -14 l-10 -10 l14 -2z" fill="#ffd34a"/></svg>'
+      '<path d="M128 18 l6 13 l14 2 l-10 10 l2 14 l-12 -7 l-12 7 l2 -14 l-10 -10 l14 -2z" fill="#ffd34a"/></svg>',
+    // Pırıl: hilal ay + parlayan ejderha ışığı
+    piril: '<svg viewBox="0 0 160 160" width="160" height="160"><path d="M96 20 A56 56 0 1 0 140 104 A44 44 0 1 1 96 20Z" fill="#fff3b8"/>' +
+      '<circle class="yk-isin" cx="112" cy="56" r="20" fill="#ffd6f4" opacity=".55"/><circle cx="112" cy="56" r="11" fill="#fff"/>' +
+      '<path d="M40 30 l3 7 l8 1 l-6 5 l2 8 l-7 -4 l-7 4 l2 -8 l-6 -5 l8 -1z" fill="#ffd34a"/><circle cx="132" cy="128" r="4" fill="#bfe0ff"/></svg>'
   }[tema] || '';
   // pati izi (yukarı bakar; döndürülerek sağa yürür)
   var PATI = '<svg viewBox="0 0 40 40" width="100%" height="100%"><ellipse cx="20" cy="27" rx="10" ry="8.5"/><ellipse cx="8" cy="15" rx="4.2" ry="5.4" transform="rotate(-20 8 15)"/>' +
     '<ellipse cx="16" cy="9" rx="4.2" ry="5.6"/><ellipse cx="24.5" cy="9" rx="4.2" ry="5.6"/><ellipse cx="32" cy="15" rx="4.2" ry="5.4" transform="rotate(20 32 15)"/></svg>';
+  // Pırıl macerasında köpek patisi yerine yıldız izi (ışık kırıntıları), top yerine parlayan ejderha ışığı
+  if (tema === 'piril') PATI = '<svg viewBox="0 0 40 40" width="100%" height="100%"><path d="M20 3 L24.5 14.5 L37 15.5 L27.5 23.5 L30.5 36 L20 29.5 L9.5 36 L12.5 23.5 L3 15.5 L15.5 14.5Z" fill="#fff3a6" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>';
   var N = 7, iz = '';
   for (var i = 0; i < N; i++) iz += '<i style="left:' + (4 + i * 13) + '%;top:' + (i % 2 ? 58 : 14) + '%">' + PATI + '</i>';
   var css = '#yk{position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4vh;' +
@@ -63,6 +70,7 @@
     'box-shadow:inset 0 0 0 3px rgba(255,255,255,.15),0 4px 8px rgba(0,0,0,.25);animation:ykDon .9s linear infinite;position:relative}' +
     '#yk .yk-top b:after{content:"";position:absolute;left:-4%;right:-4%;top:42%;height:16%;background:#fff1c9;border-radius:40%}' +
     '@keyframes ykDon{to{transform:rotate(360deg)}}' +
+    (tema === 'piril' ? '#yk .yk-yol i{fill:#fff3a6}#yk .yk-top b{background:radial-gradient(circle at 45% 40%,#fff 0%,#ffd6f4 35%,#c49bff 70%,rgba(196,155,255,0) 72%);box-shadow:0 0 18px 6px rgba(255,214,244,.7);animation:none}#yk .yk-top b:after{display:none}' : '') +
     '#yk .yk-alev{animation:ykAlev .35s ease-in-out infinite alternate;transform-origin:center bottom;transform-box:fill-box}' +
     '@keyframes ykAlev{from{transform:scaleY(.85)}to{transform:scaleY(1.15)}}' +
     '#yk .yk-isin{animation:ykIsin .5s ease-in-out infinite alternate}@keyframes ykIsin{from{opacity:.25}to{opacity:.6}}' +

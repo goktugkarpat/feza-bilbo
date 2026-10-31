@@ -19,13 +19,23 @@
   var TAMAM = tamamOku();
   function bitti(id) { return TAMAM.indexOf(id) >= 0; }
 
-  // Portallar: soldan sağa orman · huysuz (ortada, en büyük: en büyük macera) · hala
+  // Portallar: soldan sağa orman · huysuz · piril · hala (ortadaki iki büyük kapı: en büyük maceralar).
+  // Çerçeveler (dış yarı genişlik w/2 + 0.25) birbirine değmesin: aralarında ~0.1 boşluk kalır.
+  // cw/derin: portal dünyasının kendi ölçüsündeki genişlik/derinlik; s: o dünyanın odaya göre ölçeği (kutu genişliği = cw × s).
   var PORTAL = [
-    { id: 'orman', yol: 'orman/index.html', x: -3.35, w: 2.2, h: 3.1, cw: 2.8, derin: 4.6, renk: 0x3f9b4a, acik: 0x9be08a, isik: 0xbaff8a },
-    { id: 'huysuz', yol: 'huysuz/index.html', x: 0, w: 2.9, h: 3.75, cw: 3.3, derin: 7.5, renk: 0x5a46c8, acik: 0xb6a8ff, isik: 0xc9b4ff },
-    { id: 'hala', yol: 'hala/index.html', x: 3.35, w: 2.2, h: 3.1, cw: 2.8, derin: 3.6, renk: 0xe0609a, acik: 0xffb3d1, isik: 0xffb6dc }
+    { id: 'orman', yol: 'orman/index.html', x: -4.0, w: 1.8, h: 2.85, cw: 2.8, derin: 4.6, s: 0.86, renk: 0x3f9b4a, acik: 0x9be08a, isik: 0xbaff8a },
+    { id: 'huysuz', yol: 'huysuz/index.html', x: -1.42, w: 2.2, h: 3.45, cw: 3.3, derin: 7.5, s: 0.8, renk: 0x5a46c8, acik: 0xb6a8ff, isik: 0xc9b4ff },
+    { id: 'piril', yol: 'piril/index.html', x: 1.42, w: 2.2, h: 3.45, cw: 2.56, derin: 6.2, s: 1, renk: 0xa77fe0, acik: 0xd6c2ff, isik: 0xffe9a0 },
+    { id: 'hala', yol: 'hala/index.html', x: 4.0, w: 1.8, h: 2.85, cw: 2.8, derin: 3.6, s: 0.86, renk: 0xe0609a, acik: 0xffb3d1, isik: 0xffb6dc }
   ];
-  var DUVAR_Z = -3.5, ODA_X = 6.6, PEN_X = -5.35, RAF_X = 5.35;
+  function portalNo(id) { for (var i = 0; i < PORTAL.length; i++) if (PORTAL[i].id === id) return i; return -1; }
+  function araliklar(pay) {   // duvarda portal aralarındaki boşluklar (soldan sağa): [[x0, x1], ...]
+    var a = [], x0 = -ODA_X;
+    PORTAL.forEach(function (p) { a.push([x0, p.x - p.w / 2 - pay]); x0 = p.x + p.w / 2 + pay; });
+    a.push([x0, ODA_X]); return a;
+  }
+  var PIRIL_OLCEK = 1.9, PIRIL_EGIM = 0, PIRIL_BAS = -0.15, PIRIL_V = 0.12, PIRIL_KANAT = 1.2;   // EGIM: kabın öne yatışı (model binişte sırtını kendisi yataya getirir)   // gerçek Pırıl modelinin Feza'yı taşıyacak büyüklüğe ölçeği (piril/src/04_piril.js)
+  var DUVAR_Z = -3.5, ODA_X = 7.4, PEN_X = -6.3, RAF_X = 6.35;
 
   // ---------- yardımcılar ----------
   function std(o) { return new THREE.MeshStandardMaterial(Object.assign({ roughness: 0.6, metalness: 0 }, o || {})); }
@@ -116,9 +126,7 @@
     var duvar = mesh(dg, duvarMat, [0, 0, DUVAR_Z - 0.3], null, null, scene); duvar.receiveShadow = true;
     // duvar kağıdı bandı (alt kısım) ve süpürgelik
     var supMat = std({ color: 0xc98b55, roughness: 0.5 });
-    var aralik = [[-ODA_X, PORTAL[0].x - PORTAL[0].w / 2], [PORTAL[0].x + PORTAL[0].w / 2, PORTAL[1].x - PORTAL[1].w / 2],
-      [PORTAL[1].x + PORTAL[1].w / 2, PORTAL[2].x - PORTAL[2].w / 2], [PORTAL[2].x + PORTAL[2].w / 2, ODA_X]];
-    aralik.forEach(function (a) {
+    araliklar(0).forEach(function (a) {
       var w = a[1] - a[0] - 0.36; if (w <= 0) return;
       golge(mesh(new THREE.BoxGeometry(w, 0.16, 0.06), supMat, [(a[0] + a[1]) / 2, 0.08, DUVAR_Z + 0.03], null, null, scene), false, true);
     });
@@ -136,8 +144,8 @@
     hali();
     minderler();
     oyuncaklar();
-    bitki(-4.55, -2.95, 1.05); bitki(4.45, -2.95, 1.0); bitki(-5.6, 3.6, 1.0);
-    lamba(5.6, 3.4);
+    bitki(-5.55, -2.95, 0.9); bitki(5.42, -2.95, 0.82); bitki(-6.2, 3.6, 1.0);
+    lamba(6.2, 3.4);
   }
   function parke() {   // ince, açık bal rengi tahtalar; hafif cilalı
     var t = tuvalDoku(512, 512, function (c, w, h) {
@@ -175,7 +183,7 @@
     }, [1.4, 1.4]);
   }
   function pencere() {   // arka duvarda (sol köşe) gün batımı penceresi: dışarıda ağaçlar; perde dalgalanır; sıcak ışık hüzmesi girer
-    var PW = 1.3, PH = 1.85, PY = 2.55;
+    var PW = 1.15, PH = 1.85, PY = 2.55;
     var g = new THREE.Group(); g.position.set(PEN_X, 0, DUVAR_Z + 0.02); scene.add(g);
     var gok = tuvalDoku(256, 360, function (c, w, h) {
       var gr = c.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#8a6ad0'); gr.addColorStop(0.35, '#e98aa8'); gr.addColorStop(0.62, '#ffb35c'); gr.addColorStop(1, '#ffd9a0');
@@ -236,7 +244,7 @@
       return m;
     });
     var ip = std({ color: 0x9a6a40 }), bayraklar = [];
-    [[-ODA_X + 0.2, -1.75], [-1.45, 1.45], [1.75, ODA_X - 0.2]].forEach(function (a, s) {
+    [[-ODA_X + 0.2, -2.05], [-1.95, 1.95], [2.05, ODA_X - 0.2]].forEach(function (a, s) {
       var n = Math.max(3, Math.round((a[1] - a[0]) / 0.5)), y0 = 5.55, sag = 0.4, pts = [];
       for (var i = 0; i <= 24; i++) { var u = i / 24; pts.push(V(a[0] + (a[1] - a[0]) * u, y0 - sag * 4 * u * (1 - u), DUVAR_Z + 0.2)); }
       mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 24, 0.014, 5), ip, null, null, null, scene);
@@ -360,9 +368,7 @@
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
     var lm = function (w) { var m = std({ map: t.clone(), roughness: 0.5 }); m.map.needsUpdate = true; m.map.repeat.set(w / 0.5, 1); return m; };
     var H = 1.05, ust = std({ color: 0xc98b55, roughness: 0.45 });
-    var aralik = [[-ODA_X, PORTAL[0].x - PORTAL[0].w / 2 - 0.22], [PORTAL[0].x + PORTAL[0].w / 2 + 0.22, PORTAL[1].x - PORTAL[1].w / 2 - 0.22],
-      [PORTAL[1].x + PORTAL[1].w / 2 + 0.22, PORTAL[2].x - PORTAL[2].w / 2 - 0.22], [PORTAL[2].x + PORTAL[2].w / 2 + 0.22, ODA_X]];
-    aralik.forEach(function (a) {
+    araliklar(0.22).forEach(function (a) {
       var w = a[1] - a[0]; if (w <= 0.05) return;
       golge(mesh(new THREE.BoxGeometry(w, H, 0.05), lm(w), [(a[0] + a[1]) / 2, H / 2, DUVAR_Z + 0.03], null, null, scene), false, true);
       golge(mesh(new THREE.BoxGeometry(w, 0.06, 0.1), ust, [(a[0] + a[1]) / 2, H, DUVAR_Z + 0.05], null, null, scene), true, true);
@@ -458,7 +464,7 @@
       cam.position.set(0.1, 1.2, 1.9); cam.lookAt(0, 1.0, 0.3);
       return function () { try { b.root.removeFromParent(); b.dispose && b.dispose(); } catch (e) {} };
     });
-    [[PORTAL[0].x, 4.25, 0.85, 0.7, t1, 0xe8a05a, 0.04], [PORTAL[2].x, 4.25, 0.7, 0.7, t2, 0x6fbf8a, -0.05]].forEach(function (c) {
+    [[PORTAL[0].x, 4.25, 0.85, 0.7, t1, 0xe8a05a, 0.04], [PORTAL[portalNo('hala')].x, 4.25, 0.7, 0.7, t2, 0x6fbf8a, -0.05]].forEach(function (c) {
       var g = new THREE.Group(); g.position.set(c[0], c[1], DUVAR_Z + 0.06); g.rotation.z = c[6]; scene.add(g);
       golge(mesh(G.rbox(2), std({ color: c[5], roughness: 0.45 }), [0, 0, 0], [c[2] + 0.14, c[3] + 0.14, 0.06], null, g), true, true);
       mesh(new THREE.PlaneGeometry(c[2], c[3]), c[4] ? new THREE.MeshBasicMaterial({ map: c[4] }) : std({ color: 0xffffff }), [0, 0, 0.035], null, null, g);
@@ -604,8 +610,8 @@
     // eşyaların altına sabit temas gölgeleri (zemine otursunlar)
     var k = ON_Z ? 0.85 : 1;
     [[-2.7 * k, 1.0 + ON_Z, 0.5, 0.45], [-2.2 * k, 3.6 + ON_Z, 0.8, 0.8], [3.4 * k, 3.0 + ON_Z, 0.8, 0.8], [-3.25, 2.45 + ON_Z, 0.95, 0.95],
-     [2.85, 1.05 + ON_Z, 0.65, 0.4], [4.5, 0.6 + ON_Z * 0.5, 0.8, 0.6], [-4.5, -0.9, 0.95, 0.6], [-4.55, -2.95, 0.5, 0.5], [4.45, -2.95, 0.5, 0.5],
-     [RAF_X, DUVAR_Z + 0.35, 0.9, 0.35], [3.7 * (ON_Z ? 0.75 : 1), 2.0 + ON_Z, 0.5, 0.35], [5.6, 3.4, 0.4, 0.4]].forEach(function (q) {
+     [2.85, 1.05 + ON_Z, 0.65, 0.4], [4.5, 0.6 + ON_Z * 0.5, 0.8, 0.6], [DOLAP[0], DOLAP[1], 0.95, 0.6], [-5.55, -2.95, 0.45, 0.45], [5.42, -2.95, 0.42, 0.42],
+     [RAF_X, DUVAR_Z + 0.35, 0.9, 0.35], [3.7 * (ON_Z ? 0.75 : 1), 2.0 + ON_Z, 0.5, 0.35], [6.2, 3.4, 0.4, 0.4]].forEach(function (q) {
       mesh(new THREE.PlaneGeometry(q[2] * 2, q[3] * 2), tm, [q[0], 0.035, q[1]], null, [-PI / 2, 0, 0], scene);
     });
   }
@@ -649,8 +655,8 @@
     var ph = []; for (var k = 0; k < N; k++) ph.push(Math.random());
     // süs: her maceranın kendi çerçeve işareti
     var sus = new THREE.Group(); sus.position.set(0, p.id === 'huysuz' ? p.h - 0.12 : p.h + kal * 0.5, 0.3); if (p.id === 'huysuz') sus.scale.setScalar(0.85); g.add(sus);
-    if (p.id === 'huysuz') kalkan(sus, tamam); else if (p.id === 'orman') yapraklar(g, p, tamam); else kremalar(g, p, tamam);
-    if (tamam) { var yz = yildiz3(0.3, 0xffd34a, 0.9); yz.position.set(0, p.id === 'huysuz' ? 0.75 : 0.32, 0.05); sus.add(yz); anims.push(function (dt, t) { yz.rotation.y = t * 1.5; }); }
+    if (p.id === 'huysuz') kalkan(sus, tamam); else if (p.id === 'orman') yapraklar(g, p, tamam); else if (p.id === 'piril') isikKanatlari(g, sus, p, tamam); else kremalar(g, p, tamam);
+    if (tamam) { var yz = yildiz3(0.3, 0xffd34a, 0.9); yz.position.set(0, p.id === 'huysuz' ? 0.75 : p.id === 'piril' ? 0.5 : 0.32, 0.05); sus.add(yz); anims.push(function (dt, t) { yz.rotation.y = t * 1.5; }); }
     var o = { p: p, g: g, zarMat: zarMat, kenarMat: kenarMat, pts: pts, ph: ph, tamam: tamam, vurgu: 0, tc: new THREE.Color(p.isik) };
     portallar.push(o);
     // ışık halesi (biten portal altın)
@@ -701,11 +707,48 @@
     mesh(new THREE.SphereGeometry(0.12, 18, 14), std({ color: 0xe8283f, roughness: 0.2 }), [0, p.h + 0.3, 0.35], null, null, g);
     golge(g, true, false);
   }
+  function hilalSekli(R) {   // sağa açılan hilal ay
+    var s = new THREE.Shape(), i, a, cx = R * 0.38, uc = 50 * PI / 180;
+    var tx = Math.cos(uc) * R, ty = Math.sin(uc) * R, rr = Math.hypot(tx - cx, ty), ia = Math.atan2(ty, tx - cx);
+    for (i = 0; i <= 24; i++) { a = uc + (2 * PI - 2 * uc) * i / 24; if (i) s.lineTo(Math.cos(a) * R, Math.sin(a) * R); else s.moveTo(Math.cos(a) * R, Math.sin(a) * R); }
+    for (i = 1; i < 24; i++) { a = (2 * PI - ia) - (2 * PI - 2 * ia) * i / 24; s.lineTo(cx + Math.cos(a) * rr, Math.sin(a) * rr); }
+    return s;
+  }
+  function kanatSekli(L) {   // ışık kanadı: omuzdan dışa açılan, alt kenarı dalgalı ejderha kanadı
+    var s = new THREE.Shape();
+    s.moveTo(0, 0); s.bezierCurveTo(L * 0.25, L * 0.55, L * 0.7, L * 0.75, L, L * 0.62);
+    s.quadraticCurveTo(L * 0.92, L * 0.3, L * 0.8, L * 0.12); s.quadraticCurveTo(L * 0.68, L * 0.22, L * 0.56, L * 0.02);
+    s.quadraticCurveTo(L * 0.42, L * 0.12, L * 0.3, -L * 0.06); s.quadraticCurveTo(L * 0.16, L * 0.04, 0, 0);
+    return s;
+  }
+  function isikKanatlari(g, sus, p, tamam) {   // Pırıl portalı: altın hilal + ejderha ışığı + iki fıstık yeşili ışık kanadı + kemerde yıldızlar
+    var altin = std({ color: 0xffd25a, metalness: 0.7, roughness: 0.25, emissive: 0x8a5a00, emissiveIntensity: 0.35 });
+    var hil = mesh(new THREE.ExtrudeGeometry(hilalSekli(0.3), { depth: 0.08, bevelEnabled: true, bevelThickness: 0.03, bevelSize: 0.03, bevelSegments: 2, curveSegments: 16 }), altin, [-0.04, 0.2, -0.04], null, [0, 0, 0.55], sus);
+    var isik = mesh(new THREE.SphereGeometry(0.1, 18, 14), parlak(0xd8ff9a, 1.6), [0.07, 0.25, 0.04], null, null, sus);
+    hale(0xe8ffb0, 0.75, [0.07, 0.25, 0.08], sus, 0.9);
+    var km = new THREE.MeshStandardMaterial({ color: 0xd8f5a8, emissive: 0xa8e070, emissiveIntensity: 0.55, roughness: 0.4, transparent: true, opacity: 0.92, side: THREE.DoubleSide });
+    var ic = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xfff0a0).multiplyScalar(1.5), transparent: true, opacity: 0.85, side: THREE.DoubleSide, toneMapped: false });
+    var kanatlar = [];
+    [-1, 1].forEach(function (sd) {
+      var k = new THREE.Group(); k.position.set(sd * 0.3, 0.08, 0); k.scale.set(sd, 1, 1); sus.add(k);
+      mesh(new THREE.ExtrudeGeometry(kanatSekli(0.78), { depth: 0.03, bevelEnabled: true, bevelThickness: 0.015, bevelSize: 0.015, bevelSegments: 1 }), km, [0, 0, 0], null, null, k);
+      mesh(new THREE.ShapeGeometry(kanatSekli(0.5)), ic, [0.06, 0.06, 0.06], null, null, k);
+      kanatlar.push(k);
+    });
+    // kemer boyunca küçük altın yıldızlar
+    var yol = kemerYolu(p.w + 0.2, p.h + 0.1, 30);
+    [0.2, 0.32, 0.68, 0.8].forEach(function (u, i) { var q = yol.getPointAt(u), y = yildiz3(0.09, 0xffe27a, 0.6); y.position.set(q.x, q.y, 0.34); y.rotation.z = i; g.add(y); });
+    anims.push(function (dt, t) {
+      for (var i = 0; i < kanatlar.length; i++) kanatlar[i].rotation.z = (i ? -1 : 1) * (0.06 + 0.1 * Math.sin(t * 2.2));
+      isik.scale.setScalar(1 + 0.12 * Math.sin(t * 3));
+    });
+    golge(sus, true, false);
+  }
 
   // ---------- portalların arkasındaki dünyalar ----------
   function bolme(p, gok, zeminMat) {   // portalın arkasında içi görünen kutu (gök duvarları + zemin)
-    var g = new THREE.Group(); g.position.set(p.x, 0, DUVAR_Z - 0.3); scene.add(g);
-    var w = p.cw, d = p.derin, h = 7.5;
+    var g = new THREE.Group(); g.position.set(p.x, 0, DUVAR_Z - 0.3); g.scale.setScalar(p.s || 1); scene.add(g);
+    var w = p.cw, d = p.derin, h = 7.5 / (p.s || 1);
     var gm = new THREE.MeshBasicMaterial({ map: gok, side: THREE.BackSide, toneMapped: true, fog: false });
     var tm = new THREE.MeshBasicMaterial({ color: gok.image ? 0xffffff : 0xffffff, side: THREE.BackSide });
     var kutu = mesh(new THREE.BoxGeometry(w, h, d), [gm, gm, new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.BackSide, visible: false }), new THREE.MeshBasicMaterial({ visible: false }), new THREE.MeshBasicMaterial({ visible: false }), gm], [0, h / 2 - 0.05, -d / 2], null, null, g);
@@ -746,7 +789,7 @@
     mesh(new THREE.SphereGeometry(1, 24, 12), std({ color: 0x5aac4c, roughness: 0.9 }), [-1.0, -0.2, D + 0.4], [1.8, 1.3, 0.6], null, g);
     mesh(new THREE.SphereGeometry(1, 24, 12), std({ color: 0x4e9e44, roughness: 0.9 }), [1.2, -0.3, D + 0.5], [1.6, 1.1, 0.6], null, g);
     var ym = TX('leaves', 1, 1, { color: 0x5ea548 });
-    agac(g, -1.25, D + 0.5, 0.6, 0, ym); agac(g, 1.3, D + 0.6, 0.65, 0, ym);
+    agac(g, -0.85, D + 0.5, 0.6, 0, ym); agac(g, 0.8, D + 0.6, 0.65, 0, ym);
     // dere (timsahın arkasında) + birkaç saz
     var su = std({ color: 0x2f9be0, roughness: 0.1, metalness: 0.1, emissive: 0x0a3a60, emissiveIntensity: 0.2 });
     var sg = new THREE.PlaneGeometry(p.cw, 0.8, 30, 4), sp = sg.attributes.position;
@@ -787,8 +830,8 @@
       }
     } catch (e) { console.warn('baba', e); baba = null; kartal = null; }
     // yüzü aydınlatan sıcak ışık (havuzdaki boş meşale ışığı: yeni ışık eklemez, gölgelendirici değişmez)
-    var yl = LIGHTS.torches[0]; yl.color.set(0xffe2b8); yl.intensity = 2.2; yl.distance = 3.4; yl.decay = 1.4;
-    yl.position.set(p.x - 0.1, 2.25, DUVAR_Z - 0.3 - 1.0 + 1.25);
+    var yl = LIGHTS.torches[0], S = p.s || 1; yl.color.set(0xffe2b8); yl.intensity = 2.2; yl.distance = 3.4 * S; yl.decay = 1.4;
+    yl.position.set(p.x - 0.1 * S, 2.25 * S, DUVAR_Z - 0.3 + 0.25 * S);
     var ust = kol['father upper arm -1'], on = kol['father forearm -1'], el = kol['father hand -1'];
     anims.push(function (dt, t) {
       dere.material.emissiveIntensity = 0.18 + 0.05 * Math.sin(t * 2);
@@ -823,7 +866,7 @@
     // ay
     mesh(new THREE.SphereGeometry(0.42, 32, 20), new THREE.MeshStandardMaterial({ color: 0xfff3c8, emissive: 0xfff0b0, emissiveIntensity: 0.9, roughness: 0.9 }), [-1.15, 4.4, D + 1.0], null, null, g);
     // tepe + BÜYÜK Ejderhanın Kalesi (yakın, ortada)
-    mesh(new THREE.SphereGeometry(1, 28, 14), std({ color: 0x5a3a8a, roughness: 0.9 }), [0.1, -0.75, -4.2], [2.3, 1.2, 1.3], null, g);
+    mesh(new THREE.SphereGeometry(1, 28, 14), std({ color: 0x5a3a8a, roughness: 0.9 }), [0.1, -0.75, -4.2], [1.55, 1.2, 1.3], null, g);   // kutudan taşmasın
     var kale = new THREE.Group(); kale.position.set(0.1, 0.2, -4.1); kale.scale.setScalar(1.12); g.add(kale);
     var tas = TX('castleFloor', 1, 1, { color: 0xe4d8ff }), cat = std({ color: 0xe0405a, roughness: 0.45 });
     [[-0.6, 0.95, 0.21], [0.6, 0.9, 0.21], [0, 1.45, 0.28], [-0.3, 0.7, 0.17], [0.32, 0.75, 0.17]].forEach(function (t) {
@@ -838,14 +881,14 @@
     var ejd = modelYap('ejderha', 0.15);
     if (ejd) { ejd.root.position.set(0.05, 0.95, 0.55); ejd.root.rotation.y = 0.25; kale.add(ejd.root); }
     // yan ağaçlar (sade)
-    agac(g, -1.35, -3.0, 0.55, 0x4a9a5a); agac(g, 1.4, -3.2, 0.55, 0x6a5ab0);
+    agac(g, -0.88, -3.0, 0.55, 0x4a9a5a); agac(g, 0.85, -3.2, 0.55, 0x6a5ab0);   // kutunun içinde kalsın (yan kapıların dünyasına taşmasın)
     // ön planda: Feza'nın büyük ışın kılıcı (yere saplı)
     var kl = new THREE.Group(); kl.position.set(-0.78, 0, -1.15); kl.rotation.z = 0.16; kl.rotation.x = -0.08; kl.scale.setScalar(1.25); g.add(kl);
     mesh(new THREE.CylinderGeometry(0.05, 0.055, 0.36, 12), std({ color: 0xc9d0da, metalness: 0.85, roughness: 0.2 }), [0, 1.25, 0], null, null, kl);
     mesh(new THREE.CylinderGeometry(0.065, 0.065, 0.05, 12), std({ color: 0x3d4a5c }), [0, 1.08, 0], null, null, kl);
     var bicak = mesh(new THREE.CylinderGeometry(0.045, 0.045, 1.1, 12), parlak(0x6fd0ff, 1.6), [0, 0.5, 0], null, null, kl);
     var kh = mesh(new THREE.CylinderGeometry(0.075, 0.075, 1.12, 12, 1, true), new THREE.MeshBasicMaterial({ color: new THREE.Color(0x3aa0ff), transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }), [0, 0.5, 0], null, null, kl);
-    var tl = LIGHTS.torches[1]; tl.color.set(0x7ac8ff); tl.intensity = 1.6; tl.distance = 3; tl.decay = 1.6;
+    var tl = LIGHTS.torches[1]; tl.color.set(0x7ac8ff); tl.intensity = 1.6; tl.distance = 3 * (p.s || 1); tl.decay = 1.6;
     var kp = V();
     // sevimli huysuz (jöle), büyük, sağ önde
     var jole = modelYap('jole', 1.35);
@@ -918,6 +961,218 @@
     golge(g, false, false);
     return g;
   }
+  // Pırıl portalı: gün batımından geceye pastel gökyüzü, bulut denizi, uçan adalar, gökkuşağı köprüsü;
+  // ışık kanatlı Pırıl'ın sırtında Feza uçuyor (Pırıl modeli piril/src/04_piril.js'ten; yoksa evin kendi yavru ejderhası).
+  function dunyaPiril(p) {
+    var gok = tuvalDoku(256, 512, function (c, w, h) {
+      var gr = c.createLinearGradient(0, 0, 0, h);
+      [[0, '#1d1a52'], [0.3, '#33297e'], [0.48, '#5d44a8'], [0.62, '#9a63c6'], [0.74, '#df86c4'], [0.85, '#ffa9b8'], [0.94, '#ffc9a2'], [1, '#ffe2b4']].forEach(function (q) { gr.addColorStop(q[0], q[1]); });
+      c.fillStyle = gr; c.fillRect(0, 0, w, h);
+      for (var k = 0; k < 120; k++) {   // yıldızlar (aşağı indikçe seyrek, sönük)
+        var y = Math.pow(Math.random(), 1.6) * h * 0.72, x = Math.random() * w, r = Math.random() * 1.5 + 0.5;
+        c.fillStyle = 'rgba(255,248,220,' + (0.9 - y / h) + ')'; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill();
+      }
+      c.fillStyle = 'rgba(255,220,235,0.35)';   // ince pembe bulut şeritleri
+      [[60, 0.8, 70], [190, 0.84, 60], [120, 0.9, 90]].forEach(function (q) { c.beginPath(); c.ellipse(q[0], h * q[1], q[2], 6, 0, 0, 7); c.fill(); });
+    });
+    var deniz = tuvalDoku(256, 256, function (c, w, h) {   // bulut denizi
+      c.fillStyle = '#f3c6e0'; c.fillRect(0, 0, w, h);
+      for (var k = 0; k < 60; k++) { var x = Math.random() * w, y = Math.random() * h, r = 12 + Math.random() * 26, gr = c.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, 'rgba(255,250,255,0.9)'); gr.addColorStop(1, 'rgba(255,250,255,0)'); c.fillStyle = gr; c.fillRect(x - r, y - r, r * 2, r * 2); }
+    }, [2, 3]);
+    var g = bolme(p, gok, new THREE.MeshBasicMaterial({ map: deniz, color: new THREE.Color(1.0, 0.95, 1.0) })), D = -p.derin;
+    // ay + halesi
+    mesh(new THREE.SphereGeometry(0.3, 28, 18), new THREE.MeshStandardMaterial({ color: 0xfff6d8, emissive: 0xfff0c0, emissiveIntensity: 1.0, roughness: 0.9 }), [-0.72, 3.15, D + 0.5], null, null, g);
+    hale(0xfff0c8, 1.5, [-0.72, 3.15, D + 0.6], g, 0.45);
+    // bulutlar (paylaşılan geometri/malzeme)
+    var bg = new THREE.SphereGeometry(1, 18, 12), bm = std({ color: 0xfff4fb, roughness: 1, emissive: 0xffd8ec, emissiveIntensity: 0.32 });
+    function bulut(x, y, z, s) {
+      var b = new THREE.Group(); b.position.set(x, y, z); b.scale.setScalar(s); g.add(b);
+      [[0, 0, 0, 0.55], [0.5, -0.08, 0.05, 0.42], [-0.5, -0.1, 0, 0.4], [0.2, 0.25, -0.05, 0.42], [-0.22, 0.2, 0.05, 0.36], [0.85, -0.18, 0, 0.26], [-0.85, -0.2, 0, 0.24]].forEach(function (q) {
+        mesh(bg, bm, [q[0], q[1], q[2]], [q[3], q[3] * 0.82, q[3] * 0.8], null, b);
+      });
+      return b;
+    }
+    var bulutlar = [bulut(-0.95, -0.02, -1.0, 0.5), bulut(0.95, -0.05, -1.4, 0.55), bulut(0.1, 0.0, -2.9, 0.75), bulut(-0.9, 0.2, D + 0.9, 0.7), bulut(0.95, 0.4, D + 1.2, 0.6), bulut(0.75, 2.45, D + 0.7, 0.35)];
+    // uçan adalar: aşağı sivrilen kaya + fıstık yeşili çimen + pembe ağaç + ejderha ışığı
+    var kaya = std({ color: 0xa48cc8, roughness: 0.85, flatShading: true }), cim = std({ color: 0xb6e68a, roughness: 0.7 }), cimK = std({ color: 0x8fd070, roughness: 0.7 });
+    var tac = std({ color: 0xff9ec8, roughness: 0.6 }), govde = std({ color: 0x9a6a50, roughness: 0.8 });
+    var kg = new THREE.ConeGeometry(1, 1.4, 9, 2), cg = new THREE.CylinderGeometry(1.04, 0.98, 0.16, 18), tg = new THREE.IcosahedronGeometry(1, 2);
+    var isiklar = [], adalar = [];
+    function ada(x, y, z, s, agacVar, isikRenk) {
+      var a = new THREE.Group(); a.position.set(x, y, z); a.scale.setScalar(s); g.add(a);
+      mesh(kg, kaya, [0, -0.7, 0], [1, 1, 1], [PI, 0.3, 0], a);
+      mesh(cg, cim, [0, 0.02, 0], null, null, a);
+      for (var i = 0; i < 6; i++) mesh(bg, cimK, [Math.cos(i * 1.05) * 0.95, 0.04, Math.sin(i * 1.05) * 0.95], [0.18, 0.1, 0.18], null, a);
+      if (agacVar) {
+        mesh(new THREE.CylinderGeometry(0.06, 0.09, 0.6, 8), govde, [-0.35, 0.38, -0.1], null, null, a);
+        mesh(tg, tac, [-0.35, 0.82, -0.1], 0.36, null, a); mesh(tg, tac, [-0.12, 0.7, 0.05], 0.24, null, a); mesh(tg, tac, [-0.56, 0.68, 0.02], 0.22, null, a);
+      }
+      if (isikRenk) {   // kayıp ejderha ışıklarından biri: süzülen parlak küre
+        var k = mesh(new THREE.SphereGeometry(0.13, 18, 14), parlak(isikRenk, 1.9), [0.32, 0.55, 0.1], null, null, a);
+        hale(isikRenk, 0.9, [0.32, 0.55, 0.12], a, 0.8); isiklar.push(k);
+      }
+      adalar.push({ a: a, y: y, ph: x * 3 + z });
+      return a;
+    }
+    ada(-0.85, 0.55, -3.7, 0.55, true, 0xffd27a);
+    ada(0.9, 0.85, -4.3, 0.5, false, 0x9ef0ff);
+    ada(0.55, 2.0, D + 1.0, 0.36, true, 0xffa0d8);
+    // gökkuşağı köprüsü: iki ada arasında pastel kemer
+    var kopru = new THREE.Group(); kopru.position.set(0.02, 0.7, -4.0); kopru.rotation.set(0, 0.22, 0.1); g.add(kopru);
+    ['#ff9aa8', '#ffc58a', '#fff09a', '#b6f0a0', '#9fd6ff', '#c6a8ff'].forEach(function (r, i) {
+      mesh(new THREE.TorusGeometry(0.98 - i * 0.055, 0.03, 8, 48, PI), new THREE.MeshBasicMaterial({ color: new THREE.Color(r).multiplyScalar(1.15), toneMapped: false }), [0, 0, 0], null, null, kopru);
+    });
+    // PIRIL + FEZA: sırtında Feza, ışık kanatlarıyla süzülür
+    var ucus = new THREE.Group(); ucus.scale.setScalar(0.8); g.add(ucus);
+    var ejd = pirilModeli(), fz2 = null; pirilTest = { ucus: ucus, ejd: ejd };
+    var FS2 = { move: 0, attack: -1, swingDir: 1, cast: -1, spin: false, hurt: 0, dead: false, cheer: false, idleT: 0 };
+    ucus.add(ejd.root);
+    try {
+      fz2 = FEZA.create(); fz2.root.position.copy(ejd.sirt); fz2.root.rotation.y = 0; fz2.root.scale.setScalar(1.1);   // sırtta net seçilsin
+      ejd.root.add(fz2.root); golge(fz2.root, false, false);
+    } catch (e) { console.warn('piril feza', e); fz2 = null; }
+    // ışık izi (kanatlardan dökülen parıltılar)
+    var N = 34, ip = new Float32Array(N * 3), igeo = new THREE.BufferGeometry(); igeo.setAttribute('position', new THREE.BufferAttribute(ip, 3));
+    var iz = new THREE.Points(igeo, new THREE.PointsMaterial({ map: noktaDoku(), size: 0.12, color: new THREE.Color(0xfff0a8).multiplyScalar(2.0), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false }));
+    g.add(iz);
+    // bulut denizinden süzülerek yükselen küçük ejderha ışıkları (altın, fıstık yeşili, pembe)
+    var YN = 16, yu = new Float32Array(YN * 3), yr = new Float32Array(YN * 3), yph = [], ygeo = new THREE.BufferGeometry(), renkler = [0xffe08a, 0xc8f59a, 0xffb0dc, 0xa8e8ff];
+    for (var yi = 0; yi < YN; yi++) { yph.push([Math.random(), (Math.random() - 0.5) * 2.1, -1.0 - Math.random() * 4.2, 0.6 + Math.random() * 0.5]); var cc = new THREE.Color(renkler[yi % 4]).multiplyScalar(2); yr[yi * 3] = cc.r; yr[yi * 3 + 1] = cc.g; yr[yi * 3 + 2] = cc.b; }
+    ygeo.setAttribute('position', new THREE.BufferAttribute(yu, 3)); ygeo.setAttribute('color', new THREE.BufferAttribute(yr, 3));
+    g.add(new THREE.Points(ygeo, new THREE.PointsMaterial({ map: noktaDoku(), size: 0.2, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false })));
+    function yol(t, o) {   // uçuş yolu (yerel): yumuşak sekiz
+      o.set(0.2 + Math.sin(t * 0.45) * 0.24, 1.42 + Math.sin(t * 0.9) * 0.1 + Math.sin(t * 1.7) * 0.04, -2.35 + Math.sin(t * 0.9) * 0.15); return o;
+    }
+    var yp = V(), yp2 = V();
+    anims.push(function (dt, t) {
+      yol(t, yp); ucus.position.copy(yp); yol(t + 0.05, yp2);
+      var vx = yp2.x - yp.x;
+      ucus.rotation.y = -0.78 + vx * 5;                 // yana dönük (Feza sırtta görünsün); Pırıl başını odaya çevirir
+      ucus.rotation.z = -vx * 5; ucus.rotation.x = (yp2.y - yp.y) * -3;
+      ejd.guncelle(dt, t);
+      if (fz2) {
+        FS2.idleT = 0;
+        fz2.update(dt, FS2);
+        var B2 = fz2.bones;   // ata biner gibi otur: bacaklar açık ve bükük; kameraya bakan el çoğu zaman sevinçle sallanır
+        if (B2 && B2.thighL) {
+          B2.root.position.y = 0;
+          B2.thighL.rotation.set(-1.3, 0, 0.62); B2.thighR.rotation.set(-1.3, 0, -0.62);
+          B2.shinL.rotation.set(1.35, 0, 0); B2.shinR.rotation.set(1.35, 0, 0);
+          B2.armR.rotation.set(-0.95, 0, -0.3); B2.foreR.rotation.set(-0.6, 0, 0);   // sağ el Pırıl'a tutunur; kameraya bakan sol el sallanır
+          var sw = smooth01(clamp(Math.min((t % 4.5) / 0.4, (3.6 - t % 4.5) / 0.4), 0, 1));   // çoğu zaman el sallar
+          B2.armL.rotation.set(lerp(-0.95, -0.2, sw), 0, lerp(0.3, 2.75, sw)); B2.foreL.rotation.set(lerp(-0.6, 0, sw), 0, -sw * (0.3 + Math.sin(t * 9) * 0.4));
+          B2.head.rotation.y += 0.45; B2.head.rotation.x += -0.05;
+        }
+        fz2.root.position.copy(ejd.sirt);
+      }
+      for (var k = 0; k < N; k++) {   // iz: geçmiş yol noktaları, kuyruktan geriye
+        yol(t - 0.06 - k * 0.045, yp2);
+        ip[k * 3] = yp2.x + Math.sin(t * 3 + k) * 0.05 + 0.5 * (k / N); ip[k * 3 + 1] = yp2.y - 0.1 + Math.cos(t * 2.5 + k * 1.7) * 0.06; ip[k * 3 + 2] = yp2.z - 0.25 - k * 0.012;
+      }
+      igeo.attributes.position.needsUpdate = true;
+      for (k = 0; k < YN; k++) {   // yükselen ışıklar: alttan doğar, yukarıda söner (boyut sabit, tepede kutunun dışında kaybolur)
+        var q = yph[k], u = (q[0] + t * 0.05 * q[3]) % 1;
+        yu[k * 3] = q[1] + Math.sin(t * 0.9 + k) * 0.12; yu[k * 3 + 1] = -0.1 + u * 4.2; yu[k * 3 + 2] = q[2];
+      }
+      ygeo.attributes.position.needsUpdate = true;
+      for (k = 0; k < adalar.length; k++) adalar[k].a.position.y = adalar[k].y + Math.sin(t * 0.8 + adalar[k].ph) * 0.06;
+      for (k = 0; k < isiklar.length; k++) { isiklar[k].position.y = 0.55 + Math.sin(t * 1.6 + k * 2) * 0.08; }
+      for (k = 0; k < bulutlar.length; k++) bulutlar[k].position.x += Math.sin(t * 0.2 + k) * 0.0008;
+    });
+    golge(g, false, false);
+    return g;
+  }
+  // Pırıl modeli: piril/src/04_piril.js (PIRIL.yap) varsa o; yoksa evin kendi sevimli yavru ejderhası.
+  // Dönen nesne: { root, sirt (Feza'nın oturacağı nokta, root'a göre), guncelle(dt, t) }
+  function pirilModeli() {
+    try {
+      if (typeof PIRIL !== 'undefined' && PIRIL.yap) {
+        var m = PIRIL.yap({ isik: 5, ucus: true }), kok = m.root || m.group;
+        if (m.durum) { m.durum.ride = true; m.durum.happy = 0; }   // happy 0: gözler açık, ağız kapalı gülümseme
+        try { if (m.bak) m.bak(V(0, 3.2, 9)); } catch (e) {}   // odaya (Feza'ya) bakar
+        var kap = new THREE.Group(), ol = new THREE.Group(); kap.add(ol); ol.add(kok);
+        ol.scale.setScalar(PIRIL_OLCEK); ol.rotation.x = PIRIL_EGIM;   // uçarken öne yatık (sırtı yataya yakın); model kendi uçuş yüksekliğini taşır; ilk karede eyer kabın merkezine alınır
+        for (var k = 0; k < 40; k++) { try { if (m.guncelle) m.guncelle(0.05); else m.update(0.05, m.durum); } catch (e) {} }   // biniş pozuna otursun
+        var sw = V(), sirt = V(0, 0.2, 0), ilk = true, ortala = function () {
+          kap.updateMatrixWorld(true);
+          if (m.saddle) { m.saddle.getWorldPosition(sw); kap.worldToLocal(sw); }
+          return sw;
+        };
+        golge(kap, false, false);
+        // Kapıdaki ifade sabit: baş kalkık (yüz odaya dönük, göz kapağı çizgisi kaş gibi okunmasın), iri açık gözler,
+        // büyük gülümseme; ışık kanatları daha geniş ve V biçiminde (yandan bakınca ince "böcek kanadı" gibi görünmesin).
+        // Model her kare bu kemikleri yeniden kurar; burada yalnız üstüne eklenir (birikmez).
+        var kemik = {}; kok.traverse(function (o) { if (o.isBone) kemik[o.name] = o; });
+        function yuzSabitle() {
+          if (m.head) m.head.rotation.x -= PIRIL_BAS;
+          ['eye-1', 'eye1'].forEach(function (n) { var e = kemik[n]; if (e) { e.scale.set(1.12, 1.12, 1.12); } });   // göz kırpma yok: hep açık
+          if (kemik.smile) kemik.smile.scale.setScalar(1.3);
+          if (kemik.agizO) kemik.agizO.scale.setScalar(0.001);
+          [-1, 1].forEach(function (sd) { var w = kemik['wing' + sd]; if (w) { w.rotation.y += sd * PIRIL_V; w.scale.multiplyScalar(PIRIL_KANAT); } });
+          kok.updateMatrixWorld(true);
+        }
+        return { root: kap, sirt: sirt, gercek: true, guncelle: function (dt, t) {
+          try { if (m.guncelle) m.guncelle(dt); else m.update(dt, m.durum); } catch (e) {}
+          yuzSabitle();
+          if (ilk) {   // gövde (eyer) kabın merkezine gelsin: Feza ile birlikte uçuş yolunda dursun
+            ilk = false; ortala(); ol.position.y -= sw.y; ol.position.z -= sw.z * 0.5;
+          }
+          ortala(); sirt.set(sw.x, sw.y - 0.4, sw.z - 0.04);   // Feza'nın kalçası eyerde
+        } };
+      }
+    } catch (e) { console.warn('PIRIL', e); }
+    return yavruEjderha();
+  }
+  function yavruEjderha() {   // yer tutucu: leylak yavru ejderha, fıstık yeşili/altın ışık kanatları
+    var dis = new THREE.Group(), g = new THREE.Group(), BUY = 1.45; g.scale.setScalar(BUY); dis.add(g);   // Feza'yı taşıyacak kadar büyük
+    var sg = new THREE.SphereGeometry(1, 28, 20);
+    var ten = std({ color: 0xc4a6f2, roughness: 0.45 }), karin = std({ color: 0xffeaf2, roughness: 0.55, emissive: 0x6a4a5a, emissiveIntensity: 0.35 }), boynuz = std({ color: 0xffd25a, metalness: 0.5, roughness: 0.3 });
+    var siyah = std({ color: 0x1a1430, roughness: 0.15 }), beyaz = basic({ color: 0xffffff }), pembe = std({ color: 0xff9ec0, roughness: 0.6 }), sirtM = std({ color: 0xb6e68a, roughness: 0.5 });
+    mesh(sg, ten, [0, 0, 0], [0.42, 0.36, 0.62], null, g);                         // gövde
+    mesh(sg, karin, [0, -0.13, 0.14], [0.3, 0.24, 0.44], null, g);
+    mesh(sg, ten, [0, 0.24, 0.48], [0.17, 0.22, 0.2], [0.5, 0, 0], g);               // boyun
+    var bas = new THREE.Group(); bas.position.set(0, 0.48, 0.66); g.add(bas);
+    mesh(sg, ten, [0, 0, 0], [0.32, 0.29, 0.3], null, bas);
+    mesh(sg, ten, [0, -0.07, 0.22], [0.2, 0.15, 0.17], null, bas);                // burun
+    [-1, 1].forEach(function (s) {
+      mesh(sg, siyah, [s * 0.12, 0.05, 0.24], [0.075, 0.09, 0.05], null, bas);     // gözler
+      mesh(sg, beyaz, [s * 0.12 + 0.02, 0.09, 0.28], 0.025, null, bas);
+      mesh(sg, pembe, [s * 0.2, -0.06, 0.2], [0.06, 0.035, 0.03], null, bas);     // yanaklar
+      mesh(sg, siyah, [s * 0.05, -0.04, 0.38], 0.014, null, bas);                 // burun delikleri
+      mesh(new THREE.ConeGeometry(0.05, 0.2, 10), boynuz, [s * 0.12, 0.3, -0.06], null, [-0.4, 0, s * -0.25], bas);
+      mesh(sg, ten, [s * 0.27, 0.12, -0.06], [0.04, 0.1, 0.07], [0, 0, s * -0.8], bas);   // kulak yüzgeci
+      mesh(sg, ten, [s * 0.22, -0.3, 0.32], [0.09, 0.12, 0.1], null, g);           // ön ayaklar
+      mesh(sg, ten, [s * 0.24, -0.28, -0.3], [0.1, 0.13, 0.12], null, g);          // arka ayaklar
+    });
+    var gulus = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.012, 6, 16, PI), siyah); gulus.position.set(0, -0.1, 0.36); gulus.rotation.z = PI; bas.add(gulus);
+    var kuyruk = [], kuyrukG = new THREE.Group(); kuyrukG.position.set(0, -0.02, -0.5); g.add(kuyrukG);
+    for (var i = 0; i < 6; i++) { var r = 0.16 - i * 0.022; kuyruk.push(mesh(sg, ten, [0, i * 0.04, -i * 0.15], r, null, kuyrukG)); }
+    var uc = mesh(new THREE.OctahedronGeometry(0.1, 0), parlak(0xffe27a, 1.4), [0, 0.25, -0.95], [0.8, 1, 1.4], null, kuyrukG);
+    for (i = 0; i < 4; i++) mesh(new THREE.ConeGeometry(0.05, 0.11, 8), sirtM, [0, 0.36 - i * 0.02, -0.22 - i * 0.14], null, [-0.3, 0, 0], g);
+    // ışık kanatları
+    var km = new THREE.MeshStandardMaterial({ color: 0xd8f5a8, emissive: 0xa8e070, emissiveIntensity: 0.7, roughness: 0.4, transparent: true, opacity: 0.85, side: THREE.DoubleSide });
+    var ic = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xfff0a0).multiplyScalar(1.6), transparent: true, opacity: 0.8, side: THREE.DoubleSide, toneMapped: false, depthWrite: false });
+    var kanat = [];
+    [-1, 1].forEach(function (s) {
+      var k = new THREE.Group(); k.position.set(s * 0.24, 0.26, 0.12); g.add(k);
+      var ic2 = new THREE.Group(); ic2.rotation.set(-PI / 2 + 0.35, 0, 0); ic2.scale.set(s, 1, 1); k.add(ic2);   // kanat dışa ve hafif geriye açılır
+      mesh(new THREE.ShapeGeometry(kanatSekli(0.85)), km, [0, 0, 0], null, [0, 0, -0.1], ic2);
+      mesh(new THREE.ShapeGeometry(kanatSekli(0.56)), ic, [0.07, 0.05, 0.01], null, [0, 0, -0.1], ic2);
+      mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(kanatSekli(0.85).getPoints(6).slice(0, 7).map(function (q) { return V(q.x, q.y, 0.01); })), 20, 0.018, 5), parlak(0xffe27a, 1.5), [0, 0, 0], null, [0, 0, -0.1], ic2);
+      kanat.push(k);
+    });
+    golge(g, false, false);
+    return {
+      root: dis, sirt: V(0, 0.36 * BUY - 0.43, -0.08), gercek: false,
+      guncelle: function (dt, t) {
+        var c = Math.sin(t * 5.2);
+        kanat[0].rotation.z = 0.75 + c * 0.45; kanat[1].rotation.z = -0.75 - c * 0.45;
+        for (var i = 0; i < kuyruk.length; i++) kuyruk[i].position.x = Math.sin(t * 2.4 - i * 0.6) * 0.04 * i;
+        uc.position.x = Math.sin(t * 2.4 - 3.6) * 0.25; uc.rotation.y = t * 2;
+        bas.rotation.x = Math.sin(t * 1.3) * 0.06; bas.rotation.z = Math.sin(t * 0.9) * 0.05;
+      }
+    };
+  }
   function halaCtx() {   // Hala'yı sahnede tutmak için küçük, oyunsuz bir bağlam (yerinde durur, Feza'ya bakar, el sallar)
     var P = { pos: V(1.2, 0, 0.8), face: 0, hp: 100, maxHp: 100, dead: false };
     var no = function () {}, api = { isFloor: function () { return true; }, circleFree: function () { return true; }, los: function () { return true; },
@@ -931,6 +1186,7 @@
   var H = null, B = null, FST = { move: 0, attack: -1, swingDir: 1, cast: -1, spin: false, hurt: 0, dead: false, cheer: false, idleT: 0 };
   var BST = { speed: 0, happy: 1, sit: 1, bark: 0, sniff: false };
   var ON_Z = innerHeight > innerWidth * 1.05 ? 2.2 : 0;   // dikey ekranda Feza, Bilbo ve oyuncaklar kameraya biraz yaklaşır
+  var DOLAP = ON_Z ? [-3.9, -0.1] : [-4.95, -0.6];   // hatıra dolabı (dikey ekranda görünsün diye içeride)
   var FEZA_EV = V(-0.6, 0, 1.75 + ON_Z), BILBO_EV = V(0.8, 0, 1.85 + ON_Z);
   var fz = { p: FEZA_EV.clone(), yon: 0.15, el: 0, elT: 1.2, sevinc: 0, hedef: null, hiz: 0 };
   var bb = { p: BILBO_EV.clone(), yon: -0.25, durum: 'otur', sure: 10, hedef: null, hiz: 0, hav: 0 };
@@ -1023,7 +1279,7 @@
   var hatiraNesne = [];
   function hatiralar() {
     // küçük dolap: mum ve hayal baloncuğu bunun üstünde
-    var d = new THREE.Group(); d.position.set(-4.5, 0, -0.9); d.rotation.y = 0.45; scene.add(d);
+    var d = new THREE.Group(); d.position.set(DOLAP[0], 0, DOLAP[1]); d.rotation.y = 0.4; scene.add(d);
     var ah = TX('wood', 1, 1, { color: 0xe8b27a });
     mesh(G.rbox(2), ah, [0, 0.45, 0], [1.3, 0.9, 0.6], null, d);
     mesh(new THREE.BoxGeometry(1.45, 0.07, 0.7), TX('wood', 1, 1, { color: 0xc98a52 }), [0, 0.93, 0], null, null, d);
@@ -1044,8 +1300,21 @@
     if (bitti('huysuz')) {
       var bal = mesh(new THREE.SphereGeometry(0.28, 32, 20), new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.04, transparent: true, opacity: 0.32, iridescence: 1, iridescenceIOR: 1.3, envMapIntensity: 2, depthWrite: false }), [0, 0, 0], null, null, scene);
       var yz = yildiz3(0.09, 0xffd23f, 0.6); bal.add(yz);
-      anims.push(function (dt, t) { bal.position.set(-4.4 + Math.sin(t * 0.7) * 0.15, 1.75 + Math.sin(t * 1.3) * 0.12, -0.8); yz.rotation.y = t; });
+      anims.push(function (dt, t) { bal.position.set(DOLAP[0] + 0.1 + Math.sin(t * 0.7) * 0.15, 1.75 + Math.sin(t * 1.3) * 0.12, DOLAP[1] + 0.1); yz.rotation.y = t; });
       hatiraNesne.push(bal);
+    }
+    if (bitti('piril')) {   // minik ışıklı ejderha yumurtası: yuvasında, içinden fıstık yeşili/altın ışık atar
+      var yu = new THREE.Group(); yu.position.set(-0.3, 0.97, 0.04); yu.scale.setScalar(1.35); d.add(yu);
+      mesh(new THREE.TorusGeometry(0.13, 0.05, 10, 24), TX('fabric', 2, 1, { color: 0xc99a62 }), [0, 0.04, 0], null, [PI / 2, 0, 0], yu);
+      var benek = tuvalDoku(128, 128, function (c) {
+        c.fillStyle = '#efe2ff'; c.fillRect(0, 0, 128, 128);
+        [['#b6e68a', 20, 30, 12], ['#ffd25a', 80, 22, 9], ['#ff9ec8', 54, 70, 11], ['#b6e68a', 104, 88, 10], ['#ffd25a', 30, 100, 8], ['#c6a8ff', 96, 54, 8]].forEach(function (q) { c.fillStyle = q[0]; c.beginPath(); c.arc(q[1], q[2], q[3], 0, 7); c.fill(); });
+      });
+      var yum = mesh(new THREE.SphereGeometry(0.12, 28, 20), new THREE.MeshStandardMaterial({ map: benek, roughness: 0.35, emissive: 0xb8f070, emissiveIntensity: 0.25 }), [0, 0.17, 0], [1, 1.32, 1], null, yu);
+      var yh = hale(0xe8ffa0, 0.6, [0, 0.18, 0.02], yu, 0.6);
+      golge(yu, true, false);
+      anims.push(function (dt, t) { var k = 0.5 + 0.5 * Math.sin(t * 2.2); yum.material.emissiveIntensity = 0.18 + 0.32 * k; yh.material.opacity = 0.5 + 0.5 * k; yum.rotation.z = Math.sin(t * 3.1) * 0.05 * (Math.sin(t * 0.7) > 0.6 ? 1 : 0); });
+      hatiraNesne.push(yu);
     }
     if (bitti('orman')) {
       top = topModel(0.16); top.position.set(1.7, 0.16, 2.3 + ON_Z); scene.add(top);
@@ -1061,14 +1330,15 @@
   var kam = { x: 0, y: 4.4, z: 10.6, hx: 0, hy: 1.72, hz: -1.0, fov: 38, imx: 0, imy: 0 }, gecis = null;
   function kameraAyarla(t, dt) {
     var asp = innerWidth / innerHeight;
-    // yatay görüş en az ~50°: dikey ekranda da üç portal sığsın
-    var hf = 53 * PI / 180, vf = 2 * Math.atan(Math.tan(hf / 2) / asp) * 180 / PI;
+    // yatay görüş en az ~46°: dikey ekranda da dört portal sığsın
+    var hf = 46 * PI / 180, vf = 2 * Math.atan(Math.tan(hf / 2) / asp) * 180 / PI;
     var fov = Math.max(38, vf), dik = asp < 1;
     var bx = Math.sin(t * 0.17) * 0.45 + kam.imx * 0.5, by = Math.sin(t * 0.23) * 0.12 - kam.imy * 0.25;
     if (IKON) { camera.position.set(0.1, 1.2, FEZA_EV.z + 3.9); camera.lookAt(0.08, 0.86, FEZA_EV.z - 0.2); bb.sure = 99; fz.elT = 99; if (camera.fov !== 36) { camera.fov = 36; camera.updateProjectionMatrix(); } return; }
     var px = bx, py = kam.y + by + (dik ? 0.4 : 0), pz = kam.z + (dik ? -0.3 : 0) + Math.sin(t * 0.13) * 0.25;
     var hx = bx * 0.2, hy = kam.hy + (dik ? 0.25 : 0), hz = kam.hz;
-    if (yakin >= 0) { var q = PORTAL[yakin]; camera.position.set(q.x, 1.7, DUVAR_Z + 2.6); camera.lookAt(q.x, 1.25, DUVAR_Z - 1); if (camera.fov !== 40) { camera.fov = 40; camera.updateProjectionMatrix(); } return; }   // yalnız test: portal yakın planı
+    if (testKam) { camera.position.set(testKam[0], testKam[1], testKam[2]); camera.lookAt(testKam[3], testKam[4], testKam[5]); if (camera.fov !== 40) { camera.fov = 40; camera.updateProjectionMatrix(); } return; }
+    if (yakin >= 0) { var q = PORTAL[yakin]; camera.position.set(q.x, 1.75, DUVAR_Z + 2.6 + q.h * 0.22); camera.lookAt(q.x, 1.35, DUVAR_Z - 1); if (camera.fov !== 40) { camera.fov = 40; camera.updateProjectionMatrix(); } return; }   // yalnız test: portal yakın planı
     if (gecis) {   // seçilen portala doğru yaklaş
       var p = PORTAL[gecis.i], u = smooth01((simdi - gecis.t0) / 1.6) * 0.3 + (gecis.gir ? smooth01((simdi - gecis.gir) / GIR) * 0.7 : 0);
       px = lerp(px, p.x, u); py = lerp(py, p.h * 0.5, u); pz = lerp(pz, DUVAR_Z + 1.2, u);
@@ -1202,9 +1472,9 @@
   }
   function selamla() {
     if (!SES.calisiyor()) return;
-    var hepsi = bitti('orman') && bitti('hala') && bitti('huysuz'), kut = false;
-    try { kut = localStorage.getItem('fezaBilboKutlandi') === '1'; } catch (e) {}
-    if (hepsi && !kut) { SES.cal('hepsi'); try { localStorage.setItem('fezaBilboKutlandi', '1'); } catch (e) {} }
+    var hepsi = PORTAL.every(function (p) { return bitti(p.id); }), kut = false;   // dört macera da bitince bir kez kutla
+    try { kut = localStorage.getItem('fezaBilboKutlandi4') === '1'; } catch (e) {}
+    if (hepsi && !kut) { SES.cal('hepsi'); try { localStorage.setItem('fezaBilboKutlandi4', '1'); } catch (e) {} }
     else SES.cal(TAMAM.length ? 'tekrar' : 'giris');
   }
   function dokun(e) {
@@ -1220,7 +1490,7 @@
   function imlec(e) { kam.imx = (e.clientX / innerWidth - 0.5) * 2; kam.imy = (e.clientY / innerHeight - 0.5) * 2; }
 
   // ---------- döngü ----------
-  var once = 0, basla = 0, yakin = -1;
+  var once = 0, basla = 0, yakin = -1, testKam = null, pirilTest = null;
   function kare(ms) {
     requestAnimationFrame(kare);
     var t = ms / 1000, dt = Math.min(0.05, t - (once || t)); once = t; simdi = t;
@@ -1230,7 +1500,7 @@
     fezaGuncelle(dt, t); bilboGuncelle(dt, t); topGuncelle(dt);
     if (temas.length) { temas[0].position.set(fz.p.x, 0.04, fz.p.z); temas[1].position.set(bb.p.x, 0.04, bb.p.z); }
     // portallar: zar dalgası, parıltılar, yardım vurgusu (bir süre dokunulmazsa sırayla parlar)
-    var bos = t - sonDokunus, sira = bos > 7 && !gecis ? Math.floor((bos - 7) / 1.6) % 3 : -1;
+    var bos = t - sonDokunus, sira = bos > 7 && !gecis ? Math.floor((bos - 7) / 1.6) % PORTAL.length : -1;
     for (i = 0; i < portallar.length; i++) {
       var o = portallar[i], p = o.p;
       o.vurgu = gecis && gecis.i === i ? Math.min(1, o.vurgu + dt * 1.5) : damp(o.vurgu, sira === i ? 1 : 0, 4, dt);
@@ -1264,7 +1534,7 @@
     try { TEX.init(); } catch (e) { console.warn('TEX', e); }
     odaKur();
     PORTAL.forEach(portalKur);
-    dunyaOrman(PORTAL[0]); dunyaHuysuz(PORTAL[1]); dunyaHala(PORTAL[2]);
+    dunyaOrman(PORTAL[portalNo('orman')]); dunyaHuysuz(PORTAL[portalNo('huysuz')]); dunyaPiril(PORTAL[portalNo('piril')]); dunyaHala(PORTAL[portalNo('hala')]);
     karakterler();
     hatiralar();
     dekor();
@@ -1273,7 +1543,7 @@
     cv.addEventListener('pointerdown', dokun);
     cv.addEventListener('pointermove', imlec);
     cv.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-    window.addEventListener('keydown', function (e) { var i = '123'.indexOf(e.key); if (i >= 0) { SES.ac(); kapiyaGit(i); } });
+    window.addEventListener('keydown', function (e) { var i = '1234'.indexOf(e.key); if (i >= 0 && e.key) { SES.ac(); kapiyaGit(i); } });
     window.addEventListener('pageshow', function (e) { if (e.persisted) location.reload(); });
     kameraAyarla(0, 0);
     try { renderer.compile(scene, camera); } catch (e) {}
@@ -1282,7 +1552,8 @@
     requestAnimationFrame(function () { requestAnimationFrame(function () { if (window.YUKLEME) YUKLEME.bitir(); }); });
     window.__ev = {
       kapiyaGit: kapiyaGit, tamam: TAMAM, mod: '3d', ses: function () { return SES.durum(); },
-      gecis: function () { return gecis ? { i: gecis.i, t0: gecis.t0, bitis: gecis.bitis, gir: gecis.gir, simdi: simdi } : null; }, salla: function () { fz.el = 2.6; }, yakin: function (i) { yakin = i; },
+      gecis: function () { return gecis ? { i: gecis.i, t0: gecis.t0, bitis: gecis.bitis, gir: gecis.gir, simdi: simdi } : null; }, salla: function () { fz.el = 2.6; }, yakin: function (i) { yakin = typeof i === 'string' ? portalNo(i) : i; var lg = document.getElementById('logo'); if (lg) lg.style.visibility = yakin >= 0 ? 'hidden' : ''; },
+      kamera: function (a) { testKam = a || null; }, piril: function () { return pirilTest; },   // yalnız test
       ekran: function () {   // test: portal / Feza / Bilbo ekran noktaları
         var o = { kapilar: PORTAL.map(function (p) { return toScreen(V(p.x, p.h * 0.5, DUVAR_Z)); }) };
         o.feza = toScreen(V(fz.p.x, 0.8, fz.p.z)); o.bilbo = toScreen(V(bb.p.x, 0.5, bb.p.z)); o.sira = PORTAL.map(function (p) { return p.id; });

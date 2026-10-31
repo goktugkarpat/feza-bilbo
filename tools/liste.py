@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""sw.js içindeki internetsiz dosya listesini yeniler (kök + orman/ + hala/ + huysuz/).
+"""sw.js içindeki internetsiz dosya listesini yeniler (kök + orman/ + hala/ + huysuz/ + piril/ — kökün altındaki her klasör).
 
 Çalıştır:  python3 tools/liste.py
 Yeni dosya eklenince / bir dosya değişince çalıştırın: liste güncellenir ve bir şey değiştiyse

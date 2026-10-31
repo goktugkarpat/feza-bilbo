@@ -1,7 +1,7 @@
 // Feza ve Bilbo'nun Maceraları – tek service worker (kökte; ev + üç macera).
 // İlk açılıştan sonra bütün oyun cihazda saklanır ve internetsiz çalışır.
 // DOSYA LİSTESİNİ ELLE DEĞİŞTİRMEYİN: `python3 tools/liste.py` listeyi yeniler, bir şey değiştiyse sürümü artırır.
-const CACHE = 'feza-bilbo-v5';
+const CACHE = 'feza-bilbo-v15';
 const ONEK = 'feza-bilbo-';   // aynı sitede başka oyunlar da var: yalnız bu önekli önbellekler silinir
 const DOSYALAR = /*DOSYALAR*/[
  "./",
@@ -113,9 +113,59 @@ const DOSYALAR = /*DOSYALAR*/[
  "./orman/src/08_skills.js",
  "./orman/src/09_ui.js",
  "./orman/src/ui.css",
- "./orman/vendor/three.js"
+ "./orman/vendor/three.js",
+ "./piril/ev-dugmesi.js",
+ "./piril/index.html",
+ "./piril/sesler.js",
+ "./piril/src/00_core.js",
+ "./piril/src/00_i18n.js",
+ "./piril/src/01_textures.js",
+ "./piril/src/02_audio.js",
+ "./piril/src/02l_atolye.js",
+ "./piril/src/02l_col.js",
+ "./piril/src/02l_gokkusagi.js",
+ "./piril/src/02l_hikaye.js",
+ "./piril/src/02l_mantar.js",
+ "./piril/src/02l_mercan.js",
+ "./piril/src/02l_oyun.js",
+ "./piril/src/02l_piril.js",
+ "./piril/src/02l_yuva.js",
+ "./piril/src/03_fx.js",
+ "./piril/src/04_esyalar.js",
+ "./piril/src/04_feza.js",
+ "./piril/src/04_piril.js",
+ "./piril/src/04_piril_guc.js",
+ "./piril/src/04_piril_takip.js",
+ "./piril/src/05_enemies.js",
+ "./piril/src/05a_huysuz_kayit.js",
+ "./piril/src/05c_boss_davranis.js",
+ "./piril/src/05z_atolye.js",
+ "./piril/src/05z_col.js",
+ "./piril/src/05z_gokkusagi.js",
+ "./piril/src/05z_mantar.js",
+ "./piril/src/05z_mercan.js",
+ "./piril/src/06_level.js",
+ "./piril/src/06a_bolum_kayit.js",
+ "./piril/src/06y_odakit.js",
+ "./piril/src/06z_atolye.js",
+ "./piril/src/06z_col.js",
+ "./piril/src/06z_gokkusagi.js",
+ "./piril/src/06z_mantar.js",
+ "./piril/src/06z_mercan.js",
+ "./piril/src/06z_yuva.js",
+ "./piril/src/07_game.js",
+ "./piril/src/08_skills.js",
+ "./piril/src/08j_his.js",
+ "./piril/src/08m_minigame.js",
+ "./piril/src/08n_mini_oyunlar.js",
+ "./piril/src/09_ui.js",
+ "./piril/src/09h_hub.js",
+ "./piril/src/10_story.js",
+ "./piril/src/hub.css",
+ "./piril/src/ui.css",
+ "./piril/vendor/three.js"
 ]/*DOSYALAR-SON*/;
-// imza: 5a8ffd9acab7
+// imza: 533639d33ddf
 
 self.addEventListener('install', e => e.waitUntil((async () => {
   const c = await caches.open(CACHE);

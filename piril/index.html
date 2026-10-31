@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<!-- evle ortak, yazısız yükleme örtüsü (ilk karede görünür; oyunun başlık ekranı çizilince kalkar) -->
+<script src="../yukleme.js" data-tema="piril"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Feza ile Pırıl">
+<meta name="theme-color" content="#2a2f5a">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<link rel="icon" href="../icons/icon-192.png">
+<title>Feza ile Pırıl: Kayıp Ejderha Işıkları</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #2a2f5a; touch-action: none; overscroll-behavior: none; }
+  canvas#c { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  #loading { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+    background: radial-gradient(circle at 50% 45%, #5a5aa0, #22264a); color: #fff; font: 800 26px "Avenir Next", system-ui, sans-serif; z-index: 50; }
+  #loading .ld { width: 64px; height: 64px; border-radius: 50%; border: 8px solid #ffffff33; border-top-color: #ffd66b; animation: ldspin 0.9s linear infinite; }
+  @keyframes ldspin { to { transform: rotate(360deg); } }
+</style>
+<link rel="stylesheet" href="src/ui.css">
+<link rel="stylesheet" href="src/hub.css">
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="loading"><div class="ld"></div><div>Yükleniyor…</div></div>
+<script src="ev-dugmesi.js" data-macera="piril"></script>
+<script src="vendor/three.js"></script>
+<script src="src/00_i18n.js"></script>
+<script src="sesler.js"></script>
+<script src="src/00_core.js"></script>
+<script src="src/01_textures.js"></script>
+<script src="src/02_audio.js"></script>
+<!-- ses satırları (SES): Object.assign(AUD.LINES, {...}); sonraki dosya aynı anahtarı ezer -->
+<script src="src/02l_oyun.js"></script>
+<script src="src/02l_hikaye.js"></script>
+<script src="src/02l_yuva.js"></script>
+<script src="src/02l_piril.js"></script>
+<script src="src/02l_mantar.js"></script>
+<script src="src/02l_mercan.js"></script>
+<script src="src/02l_col.js"></script>
+<script src="src/02l_atolye.js"></script>
+<script src="src/02l_gokkusagi.js"></script>
+<script src="src/03_fx.js"></script>
+<script src="src/04_feza.js"></script>
+<script src="src/04_esyalar.js"></script>
+<!-- Pırıl (PIRIL3D): model, takip, yetenekler (motor uyumu: BILBO / BILBO_FOLLOW / BILBO_FUN takma adları) -->
+<script src="src/04_piril.js"></script>
+<script src="src/04_piril_takip.js"></script>
+<script src="src/04_piril_guc.js"></script>
+<script src="src/05_enemies.js"></script>
+<script src="src/05a_huysuz_kayit.js"></script>
+<script src="src/05c_boss_davranis.js"></script>
+<!-- huysuzlar + bosslar (bölüm ajanları) -->
+<script src="src/05z_mantar.js"></script>
+<script src="src/05z_mercan.js"></script>
+<script src="src/05z_col.js"></script>
+<script src="src/05z_atolye.js"></script>
+<script src="src/05z_gokkusagi.js"></script>
+<script src="src/06a_bolum_kayit.js"></script>
+<script src="src/06y_odakit.js"></script>
+<!-- merkez + bölümler (bölüm ajanları) -->
+<script src="src/06z_yuva.js"></script>
+<script src="src/06z_mantar.js"></script>
+<script src="src/06z_mercan.js"></script>
+<script src="src/06z_col.js"></script>
+<script src="src/06z_atolye.js"></script>
+<script src="src/06z_gokkusagi.js"></script>
+<script src="src/06_level.js"></script>
+<script src="src/07_game.js"></script>
+<script src="src/08_skills.js"></script>
+<script src="src/08m_minigame.js"></script>
+<script src="src/08j_his.js"></script>
+<script src="src/08n_mini_oyunlar.js"></script>
+<script src="src/10_story.js"></script>
+<script src="src/09_ui.js"></script>
+<script src="src/09h_hub.js"></script>
+</body>
+</html>

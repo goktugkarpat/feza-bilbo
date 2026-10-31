@@ -42,9 +42,11 @@
 document.documentElement.className += ' yukluyor';
 (function () {
   var DOSYA = ['ev-sesler.js', 'bilbo-ses.js',
-    // Maceraların kendi 3D motoru, dokuları ve gerçek Feza / Bilbo / Aytuğ Hala / baba / huysuz modelleri (yalnız okunur)
+    // Maceraların kendi 3D motoru, dokuları ve gerçek Feza / Bilbo / Aytuğ Hala / baba / huysuz / Pırıl modelleri (yalnız okunur)
     'hala/vendor/three.js', 'hala/src/00_core.js', 'hala/src/01_textures.js', 'hala/src/04_feza.js', 'hala/src/04_bilbo.js', 'hala/src/04_hala.js',
-    'orman/src/04_forest_party_models.js', 'orman/src/05_enemies.js', 'orman/src/05_forest_animals.js', 'ev-muzik.js', 'ev-3d.js', 'ev-2d.js'];
+    'orman/src/04_forest_party_models.js', 'orman/src/05_enemies.js', 'orman/src/05_forest_animals.js',
+    'piril/src/04_piril.js',   // Pırıl (yavru ejderha) modeli: dördüncü kapının dünyasında Feza onun sırtında uçar
+    'ev-muzik.js', 'ev-3d.js', 'ev-2d.js'];
   var AGIRLIK = { 'ev-sesler.js': 2, 'hala/vendor/three.js': 4, 'ev-muzik.js': 3, 'hala/src/04_hala.js': 2, 'ev-3d.js': 2 }, top = 0, olan = 0;
   DOSYA.forEach(function (d) { top += AGIRLIK[d] || 1; });
   var i = 0;
